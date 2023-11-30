@@ -13,9 +13,11 @@ import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { Switch } from 'react-native-gesture-handler';
 import RideReqCard from './RideReqCard';
+import RideDetails from './RideDetails';
 
 const Rides = ({ navigation }: any) => {
     const [isEnabled, setIsEnabled] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     return (
         <SafeAreaView style={{ height: '100%' }}>
@@ -34,24 +36,30 @@ const Rides = ({ navigation }: any) => {
                     />
                 </View>
             </View>
-            <View style={{ marginTop: 15 }}>
-                <FlatList
-                    data={[1, 2, 3, 4, 5, 6]}
-                    renderItem={({ item }) => <RideReqCard navigation={navigation} />}
-                    keyExtractor={item => item.toString()}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={false}
-                            onRefresh={() => { }}
-                        />
-                    }
-                />
-            </View>
+            {isEnabled ?
+                <View style={{ marginTop: 15 }}>
+                    <FlatList
+                        data={[1, 2, 3, 4, 5, 6]}
+                        renderItem={({ item }) => <RideReqCard navigation={navigation} setModal={setModalVisible} />}
+                        keyExtractor={item => item.toString()}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={false}
+                                onRefresh={() => { }}
+                            />
+                        }
+                    />
+                </View>
+                : null}
+            {isEnabled ? null :
+                <View style={{ justifyContent: 'center', alignItems: 'center', height: '75%' }}>
+                    <LottieView style={{ width: 250, height: 250 }} source={require('../../assets/animated/animation.json')} autoPlay loop />
+                    <Text style={{ fontSize: 20, fontWeight: '500', color: 'black', marginTop: 10 }}>No Ride Requests!</Text>
+                </View>
+            }
 
-            {/* <View style={{ justifyContent: 'center', alignItems: 'center', height: '80%' }}>
-                <LottieView style={{ width: 250, height: 250 }} source={require('../../assets/animated/animation.json')} autoPlay loop />
-                <Text style={{ fontSize: 20, fontWeight: '500', color: 'black', marginTop: 10 }}>No Ride Requests</Text>
-            </View> */}
+            <RideDetails setModal={setModalVisible} modalVisible={modalVisible} navigation={navigation} />
+
         </SafeAreaView>
     );
 }

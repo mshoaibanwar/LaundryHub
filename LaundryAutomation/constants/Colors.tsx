@@ -8,3 +8,4 @@ export const LightPurple = '#38304d';
 export const LoginBtn = '#63F0C0';
 export const TabFocus = '#FFD130';
 export const DarkGrey = '#404040';
+export const LightGreen = '#e7f7f4';

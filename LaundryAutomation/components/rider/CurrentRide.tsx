@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BlueColor, DarkGrey } from '../../constants/Colors';
+import { BlueColor, DarkGrey, LightGreen } from '../../constants/Colors';
 
 import {
     Text,
@@ -12,7 +12,7 @@ import {
 import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { MessageSquare, Phone } from 'lucide-react-native';
+import { Banknote, LocateFixed, MapPin, MessageCircle, MessageSquare, Navigation, Phone } from 'lucide-react-native';
 import MapViewDirections from 'react-native-maps-directions';
 
 const CurrentRide = ({ navigation }: any) => {
@@ -62,37 +62,51 @@ const CurrentRide = ({ navigation }: any) => {
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>wali@gmail.com</Text>
                         </View>
                     </View>
-                    <View style={{ justifyContent: 'center', gap: 2 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, gap: 5 }}>
-                            <Text style={{ fontSize: 16, color: 'black' }}>Distance:</Text>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>5 KM</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, gap: 5 }}>
-                            <Text style={{ fontSize: 16, color: 'black' }}>Fare:</Text>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Rs. 120</Text>
-                        </View>
+                    <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
+                        <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                            <MessageSquare size={20} color={'green'} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                            <Phone size={20} color={'green'} />
+                        </TouchableOpacity>
                     </View>
                 </View>
                 <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginBottom: 8 }}>
                 </View>
-                <View>
-                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginHorizontal: 10 }}>Pickup Location</Text>
-                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black', marginHorizontal: 10 }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                <View style={{ alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                            <LocateFixed color='green' size={20} />
+                        </View>
+                        <View style={{ width: '90%' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
+                            <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad, 440000</Text>
+                        </View>
+                    </View>
 
-                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginHorizontal: 10 }}>Dropoff Location</Text>
-                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black', marginHorizontal: 10 }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                            <Navigation color='green' size={20} />
+                        </View>
+                        <View style={{ width: '90%' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
+                            <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                        </View>
+                    </View>
                 </View>
                 <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginVertical: 8 }}>
                 </View>
-                <View style={{ justifyContent: 'space-evenly', flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ gap: 5, alignItems: 'center' }}>
-                        <Phone size={20} color={DarkGrey} />
-                        <Text style={{ fontSize: 12, fontWeight: '400', color: 'black' }}>Call</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ gap: 5, alignItems: 'center' }}>
-                        <MessageSquare size={20} color={DarkGrey} />
-                        <Text style={{ fontSize: 12, fontWeight: '400', color: 'black' }}>Chat</Text>
-                    </TouchableOpacity>
+                <View style={{ alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <MapPin color='green' size={25} />
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>5 KM Distance</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Banknote color='green' size={25} />
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>Fare: Rs 150</Text>
+                        </View>
+                    </View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                     <TouchableOpacity onPress={() => setBtnPressCount(btnPressCount + 1)} style={{ backgroundColor: BlueColor, width: '65%', borderRadius: 5, padding: 8 }}>

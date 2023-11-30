@@ -1,10 +1,11 @@
 import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
-import { BlueColor, DarkGrey } from '../../constants/Colors'
+import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native'
+import { BlueColor, DarkGrey, LightGreen } from '../../constants/Colors'
+import { LocateFixed, Navigation } from 'lucide-react-native'
 
-const RideReqCard = ({ navigation }: any) => {
+const RideReqCard = ({ navigation, setModal }: any) => {
     return (
-        <View style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
+        <Pressable onPress={() => setModal(true)} style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ margin: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                     <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={require('../../assets/images/profileph.png')} />
@@ -24,22 +25,36 @@ const RideReqCard = ({ navigation }: any) => {
                     </View>
                 </View>
             </View>
-            <View>
-                <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginHorizontal: 10 }}>Pickup Location</Text>
-                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black', marginHorizontal: 10 }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+            <View style={{ alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '88%' }}>
+                    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                        <LocateFixed color='green' size={20} />
+                    </View>
+                    <View>
+                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad, 440000</Text>
+                    </View>
+                </View>
 
-                <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginHorizontal: 10 }}>Dropoff Location</Text>
-                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black', marginHorizontal: 10 }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '88%' }}>
+                    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                        <Navigation color='green' size={20} />
+                    </View>
+                    <View>
+                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                    </View>
+                </View>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
-                <TouchableOpacity onPress={() => navigation.navigate("CRide")} style={{ backgroundColor: BlueColor, width: '48%', borderRadius: 5, padding: 8 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Accept</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={{ backgroundColor: DarkGrey, width: '48%', borderRadius: 5, padding: 8 }}>
                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Reject</Text>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("CRide")} style={{ backgroundColor: BlueColor, width: '48%', borderRadius: 5, padding: 8 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Accept</Text>
+                </TouchableOpacity>
             </View>
-        </View>
+        </Pressable>
     )
 }
 
