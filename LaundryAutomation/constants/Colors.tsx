@@ -1,0 +1,10 @@
+export const BackgroundColor = '#F3F3F3';
+export const FrontColor = '#f1f6fd'; //Light Blue #F0F8FF
+export const GreyColor = "#f2f2f2";
+export const BlueColor = "#0E1446"; //#0E1446
+export const LightBlueColor = "#F1F5F9";
+export const DarkPurple = '#151121'; //#151121 //#110629
+export const LightPurple = '#38304d';
+export const LoginBtn = '#63F0C0';
+export const TabFocus = '#FFD130';
+export const DarkGrey = '#404040';

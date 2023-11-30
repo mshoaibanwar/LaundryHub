@@ -1,0 +1,9 @@
+body
+{
+    background-color: rgb(7, 3, 12) !important;
+}
+.nav a
+{
+    color: white !important;
+    text-decoration: none !important;
+}

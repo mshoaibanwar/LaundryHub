@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "389432286506",
+    "project_id": "laundryhub-acc7b",
+    "storage_bucket": "laundryhub-acc7b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389432286506:android:e4065c29aaba753587d253",
+        "android_client_info": {
+          "package_name": "com.was.laundryhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7jGVMJuhkNyymOwadih7qFnxQaVyqL68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,39 @@
+.pizcard
+{
+    border-radius: 29px;
+    border: none;
+}
+.card
+{
+    border-radius: 29px;
+    border: none;
+}
+.card-img
+{
+    border-radius: 28px;
+}
+.card .btndiv
+{
+    width: 92%;
+}
+.cardcont
+{
+    height: max-content;
+}
+.cardcont h2
+{
+    text-align: left;
+}
+.cardcont h4
+{
+    text-align: left;
+    width: fit-content;
+    color: #B4BCCF;
+    font-size: medium;
+}
+.cardcont h3
+{
+    margin: auto 0px;
+    font-size:larger;
+    color: #01C550;
+}
