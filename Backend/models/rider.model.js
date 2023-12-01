@@ -50,6 +50,12 @@ const riderSchema = new Schema({
         unique: false,
         default: 'Unverified'
     },
+    dutyStatus: {
+        type: String,
+        required: [false, "Please provide Duty Status!"],
+        unique: false,
+        default: 'Off'
+    },
     currentLocation: {
         type: Schema.Types.Mixed,
         required: [false, "Please provide Current Location!"],

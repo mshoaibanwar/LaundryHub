@@ -8,6 +8,7 @@ import { BackgroundColor } from '../constants/Colors';
 import Checkout from '../components/Checkout';
 import SelectAddress from '../components/SelectAddress';
 import OrderPlaced from '../components/OrderPlaced';
+import RideReq from '../components/RideReq';
 
 const ShopsStack = () => {
     const stack = createStackNavigator();
@@ -23,6 +24,7 @@ const ShopsStack = () => {
                 <stack.Screen name='SelectAddress' component={SelectAddress} options={{ headerShown: false }} />
                 <stack.Screen name='Checkout' component={Checkout} options={{ headerShown: false }} />
                 <stack.Screen name='OrderPlaced' component={OrderPlaced} options={{ headerShown: false, gestureEnabled: false }} />
+                <stack.Screen name='RideReq' component={RideReq} options={{ headerShown: false, gestureEnabled: false }} />
             </stack.Navigator>
         </>
     )

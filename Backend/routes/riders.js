@@ -36,10 +36,23 @@ router.route('/rider/:id').get((req, res) => {
             .catch(err => res.status(404).json(`Rider with id: ${req.params.id} not found`));
 });
 
-router.route('updateStatus/:id').post((req, res) => {
+router.route('/updateStatus/:id').post((req, res) => {
         Rider.findByIdAndUpdate(req.params.id,
                 {status: req.body.status})
                 .then(() => res.json('Rider Status Updated!'))
+                .catch(err => res.status(404).send(err));
+});
+
+router.route('/updateDutyStatus/:id').post((req, res) => {
+        Rider.findOneAndUpdate( {uid: req.params.id},
+                {dutyStatus: req.body.status})
+                .then(() => res.json('Rider Duty Status Updated!'))
+                .catch(err => res.status(404).send(err));
+});
+
+router.route('/getDutyStatus/:id').get((req, res) => {
+        Rider.findOne( {uid: req.params.id})
+                .then((ride) => res.json(ride.dutyStatus))
                 .catch(err => res.status(404).send(err));
 });
 

@@ -206,7 +206,7 @@ const SingleShop = (props: any) => {
                     <Text style={shopStatus == 'Closed' ? { color: 'red', fontSize: 16, fontWeight: '600' } : { color: 'green', fontSize: 16, fontWeight: '600' }}>{shopStatus}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 20, marginTop: 20 }}>
-                    <TouchableOpacity style={{ borderColor: 'red', borderWidth: 1, borderRadius: 20, paddingHorizontal: 20, justifyContent: 'center', padding: 5 }}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('ShopsStack', { screen: 'RideReq' })} style={{ borderColor: 'red', borderWidth: 1, borderRadius: 20, paddingHorizontal: 20, justifyContent: 'center', padding: 5 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <Phone color='red' size={20} />
                             <Text style={{ color: 'red' }}>Call</Text>

@@ -80,7 +80,7 @@ const Home = ({ navigation }: any) => {
     const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
-        axiosInstance.get(`notifications/seller/count/unread/${user.user._id}`)
+        axiosInstance.get(`notifications/rider/count/unread/${user.user._id}`)
             .then(function (response: any) {
                 setNotiCount(response.data.Count);
             })

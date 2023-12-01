@@ -25,6 +25,12 @@ router.route('/seller/count/unread/:id').get((req, res) => {
               .catch(err => res.status(404).send("Count Error: " + err));
 });
 
+router.route('/rider/count/unread/:id').get((req, res) => {
+  Notification.countDocuments({'userID': req.params.id, 'status': 'unread', 'to': 'rider'})
+        .then((count)=> res.json({"Count": count}))
+        .catch(err => res.status(404).send("Count Error: " + err));
+});
+
 router.route('/user/:id').get((req, res) => {
   Notification.find({ 'userID': req.params.id, 'to': 'user' })
       .then((notis) => {
@@ -39,6 +45,14 @@ router.route('/seller/:id').get((req, res) => {
               res.json(notis);
       })
       .catch(err => res.status(404).json(`Notis with seller id: ${req.params.id} not found`));
+});
+
+router.route('/rider/:id').get((req, res) => {
+  Notification.find({ 'userID': req.params.id, 'to': 'rider' })
+      .then((notis) => {
+              res.json(notis);
+      })
+      .catch(err => res.status(404).json(`Notis with rider id: ${req.params.id} not found`));
 });
 
 router.route('/add').post((req, res) => {
@@ -68,6 +82,12 @@ router.route('/user/setread/:id').post((req, res) => {
 
 router.route('/seller/setread/:id').post((req, res) => {
   Notification.updateMany({ 'userID': req.params.id, 'to': 'seller' }, { $set: { 'status': 'read' } })
+    .then(() => res.json('Notification Status Updated!'))
+    .catch(err => res.status(404).send(err));
+});
+
+router.route('/rider/setread/:id').post((req, res) => {
+  Notification.updateMany({ 'userID': req.params.id, 'to': 'rider' }, { $set: { 'status': 'read' } })
     .then(() => res.json('Notification Status Updated!'))
     .catch(err => res.status(404).send(err));
 });

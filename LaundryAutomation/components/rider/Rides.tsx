@@ -16,9 +16,32 @@ import RideReqCard from './RideReqCard';
 import RideDetails from './RideDetails';
 
 const Rides = ({ navigation }: any) => {
-    const [isEnabled, setIsEnabled] = useState(false);
+    const user: any = useAppSelector(state => state.user.value);
+    const [isEnabled, setIsEnabled] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    useEffect(() => {
+        axiosInstance.get(`riders/getDutyStatus/${user.user._id}`)
+            .then((res) => {
+                if (res.data === 'On') {
+                    setIsEnabled(true);
+                } else {
+                    setIsEnabled(false);
+                }
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }, []);
+    const toggleSwitch = () => {
+        setIsEnabled(previousState => !previousState);
+        axiosInstance.post(`riders/updateDutyStatus/${user.user._id}`, { status: isEnabled ? 'Off' : 'On' })
+            .then((res) => {
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }
     return (
         <SafeAreaView style={{ height: '100%' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 20, marginBottom: 0 }}>
@@ -58,7 +81,7 @@ const Rides = ({ navigation }: any) => {
                 </View>
             }
 
-            <RideDetails setModal={setModalVisible} modalVisible={modalVisible} navigation={navigation} />
+            <RideDetails setModal={setModalVisible} modalVisible={modalVisible} navigation={navigation} isAccepted={false} />
 
         </SafeAreaView>
     );

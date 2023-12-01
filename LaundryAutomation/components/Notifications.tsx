@@ -11,8 +11,8 @@ const Notifications = (props: any) => {
     const [notifications, setNotifications] = useState<any>([]);
     const [refreshing, setRefreshing] = React.useState(false);
     const user: any = useAppSelector((state) => state.user.value);
-    let geturl = `notifications/${user.isUser ? 'user' : 'seller'}/${user.user._id}`;
-    let setReadUrl = `notifications/${user.isUser ? 'user' : 'seller'}/setread/${user.user._id}`;
+    let geturl = `notifications/${user.userType == 'user' ? 'user' : user.userType == 'seller' ? 'seller' : 'rider'}/${user.user._id}`;
+    let setReadUrl = `notifications/${user.userType == 'user' ? 'user' : user.userType == 'seller' ? 'seller' : 'rider'}/setread/${user.user._id}`;
 
     useEffect(() => {
         setLoading(true);

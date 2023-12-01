@@ -268,7 +268,7 @@ const OrderDetail = (props: any) => {
 
                     <View style={{ marginTop: 15 }}>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Shop Details</Text>
-                        <View style={{ marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10 }}>
+                        <View style={{ marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <Text style={{ fontSize: 18, color: BlueColor }}>{ShopData?.title}</Text>
                                 <View style={{}}>
@@ -289,7 +289,7 @@ const OrderDetail = (props: any) => {
                     </View>
                     <View>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Ship & Bill To</Text>
-                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10 }}>
+                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <View style={{ gap: 2 }}>
                                     <Text style={{ color: BlueColor }}>{props?.route?.params?.address.name}</Text>
@@ -301,17 +301,17 @@ const OrderDetail = (props: any) => {
                     </View>
                     <View>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Details</Text>
-                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10 }}>
+                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 18, color: BlueColor }}>Order # {props?.route?.params?._id.slice(props?.route?.params?._id.length - 5, props?.route?.params?._id.length)}</Text>
                                 </View>
                                 <View style={{ gap: 2 }}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '97%' }}>
-                                        <Text style={{ color: 'black' }}>Placed On: </Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%' }}>
+                                        <Text style={{ color: 'black' }}>Pickup On: </Text>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.orderDate} | {props?.route?.params?.ocollection}</Text>
                                     </View>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '97%' }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%' }}>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.delivery.date} | {props?.route?.params?.delivery.time}</Text>
                                     </View>
@@ -340,7 +340,7 @@ const OrderDetail = (props: any) => {
                     </View>
                     <View>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Summary</Text>
-                        <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, marginVertical: 10 }}>
+                        <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, marginVertical: 10, backgroundColor: 'white' }}>
                             {props?.route?.params?.items.map((item: any, index: number) => (
                                 <View key={index} style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginVertical: 5 }}>
                                     <View style={{ alignItems: 'center', flexDirection: 'row', gap: 20 }}>

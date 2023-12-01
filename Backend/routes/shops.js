@@ -84,6 +84,14 @@ router.route('/shop/:id').get((req, res) => {
             .catch(err => res.status(404).json(`Shop with id: ${req.params.id} not found`));
     });
 
+router.route('/address/:id').get((req, res) => {
+        Shop.findById(req.params.id)
+            .then((shop) => {
+                    res.json({add: shop.address, cords: {lati: shop.lati, longi: shop.longi}});
+            })
+            .catch(err => res.status(404).json(`Shop with id: ${req.params.id} not found`));
+});
+
 router.route('/add').post((req, res) => {
     const uid = req.body.uid;
     const title = req.body.title;

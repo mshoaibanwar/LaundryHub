@@ -15,7 +15,7 @@ const ColDelivery = (props: any) => {
     const Months = ['Jan', 'Fab', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const Days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const [selcDay, setSelcDay] = useState<any>(null);
-    const Times = ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 11:59 AM', '12:00 PM - 01:00 PM', '01:00 PM - 02:00 PM', '02:00 PM - 03:00 PM', '03:00 PM - 04:00 PM', '04:00 PM - 05:00 PM', '05:00 PM - 06:00 PM', '06:00 PM - 07:00 PM', '07:00 PM - 08:00 PM', '08:00 PM - 09:00 PM']
+    const Times = ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 11:59 AM', '12:00 PM - 1:00 PM', '1:00 PM - 2:00 PM', '2:00 PM - 3:00 PM', '3:00 PM - 4:00 PM', '4:00 PM - 5:00 PM', '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM', '9:00 PM - 10:00 PM']
     const [selcTime, setSelcTime] = useState<any>(null);
     const [delData, setDelData] = useState<any>(null);
     const [colData, setColData] = useState<any>(null);
@@ -30,9 +30,6 @@ const ColDelivery = (props: any) => {
             nextDates.push(nextDate);
         }
     }
-
-    console.log(props?.route?.params?.timing)
-
     useEffect(() => {
         setSelcDay(nextDates[0]);
         setSelcTime(Times[toDay.getHours() - 8]);

@@ -13,9 +13,10 @@ interface propsTypes {
     setModal: React.Dispatch<React.SetStateAction<boolean>>;
     modalVisible: boolean;
     navigation: any;
+    isAccepted: boolean;
 }
 
-const RideDetails = ({ setModal, modalVisible, navigation }: propsTypes) => {
+const RideDetails = ({ setModal, modalVisible, navigation, isAccepted }: propsTypes) => {
     const user: any = useAppSelector((state) => state.user.value);
 
     const toastRef = useRef<any>(null);
@@ -51,24 +52,28 @@ const RideDetails = ({ setModal, modalVisible, navigation }: propsTypes) => {
                 <View style={{ height: 2, backgroundColor: '#e8e8e8', top: -3 }}></View>
                 <ScrollView>
                     <View style={{ padding: 20, paddingTop: 5 }}>
-                        <View style={{ marginBottom: 10 }}>
-                            <MapView
-                                style={{ width: '100%', height: 200, borderRadius: 10 }}
-                                initialRegion={{
-                                    latitude: 33.6844,
-                                    longitude: 73.0479,
-                                    latitudeDelta: 0.0922,
-                                    longitudeDelta: 0.0421,
-                                }}
-                                showsUserLocation={true}
-                                showsMyLocationButton={true}
-                            />
-                        </View>
-                        <View>
-                            <TouchableOpacity onPress={onMyOrder} style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>
-                                <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Accept Ride</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {isAccepted ? null :
+                            <View>
+                                <View style={{ marginBottom: 10 }}>
+                                    <MapView
+                                        style={{ width: '100%', height: 200, borderRadius: 10 }}
+                                        initialRegion={{
+                                            latitude: 33.6844,
+                                            longitude: 73.0479,
+                                            latitudeDelta: 0.0922,
+                                            longitudeDelta: 0.0421,
+                                        }}
+                                        showsUserLocation={true}
+                                        showsMyLocationButton={true}
+                                    />
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={onMyOrder} style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>
+                                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Accept Ride</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        }
                         <View style={{ marginVertical: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                                 <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={require('../../assets/images/profileph.png')} />

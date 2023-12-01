@@ -1,4 +1,4 @@
-import { ArrowLeft, Banknote, ChevronRightCircle, CreditCard } from 'lucide-react-native';
+import { ArrowLeft, Banknote, ChevronRightCircle, CreditCard, TimerOff } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react'
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView, View } from 'react-native'
@@ -19,6 +19,7 @@ const Checkout = (props: any) => {
     const user: any = useAppSelector((state) => state.user.value);
 
     const [basketItem, setBasketItem] = useState<any>([]);
+    const [shopAddress, setShopAddress] = useState<any>({});
 
     let subTotal = 0;
     orderDetails.prices.forEach((num: any) => {
@@ -29,6 +30,16 @@ const Checkout = (props: any) => {
     const toast = useToast();
     const dispatch = useAppDispatch();
     const basketItems: any = useAppSelector((state) => state.basket.value);
+
+    useEffect(() => {
+        axiosInstance.get(`shops/address/${orderDetails.shopid}`)
+            .then((res) => {
+                setShopAddress(res.data);
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }, [])
 
     const cloudinaryUpload = async (photo: any) => {
         const data = new FormData();
@@ -77,6 +88,18 @@ const Checkout = (props: any) => {
         return updatedBasketItems;
     };
 
+    const date = new Date();
+    let time = date.getHours();
+    const nampm = time >= 12 ? 'PM' : 'AM';
+    const ampm = (orderDetails.collection).split(':')[1].split(' ')[1];
+    let colTime = (orderDetails.collection).split(':')[0];
+    colTime = colTime + ampm;
+    time = time % 12;
+    time = time ? time : 12;
+    const currentTime = time + nampm;
+
+    console.log(orderDetails.address.coordinates)
+
     const placeOrder = async () => {
         setLoading(true);
         const ubasketItems = await updateBasketItems();
@@ -97,7 +120,26 @@ const Checkout = (props: any) => {
                     });
                     setLoading(false);
                     dispatch(emptyBasket([]));
-                    props.navigation.navigate("ShopsStack", { screen: 'OrderPlaced', params: newOrder });
+                    if (currentTime == colTime) {
+                        let rideData = { uid: user.user._id, sid: orderDetails.shopid, pLoc: orderDetails.address.add, dLoc: shopAddress.add, pCord: orderDetails.address.coordinates, dCord: shopAddress.cords, oItems: ubasketItems, pMethod: payMethod };
+                        axiosInstance.post('rides/add', rideData)
+                            .then(function (response: any) {
+                                console.log(response.data);
+                                toast.show('Ride Requested!', {
+                                    type: "success",
+                                    placement: "top",
+                                    duration: 2000,
+                                    animationType: "slide-in",
+                                });
+
+                            })
+                            .catch(function (error) {
+                                // handle error
+                                console.log(error);
+                            })
+                    }
+                    else
+                        props.navigation.navigate("ShopsStack", { screen: 'OrderPlaced', params: newOrder });
                 })
                 .catch(function (error) {
                     // handle error
@@ -109,9 +151,6 @@ const Checkout = (props: any) => {
                         animationType: "slide-in",
                     });
                 })
-                .then(function () {
-                    // always executed
-                });
 
         }
         else {
