@@ -1,7 +1,7 @@
 import React from 'react'
 import { Image, Text, View } from 'react-native'
 
-const RideCard = ({ navigation }: any) => {
+const RideCard = ({ navigation, ride }: any) => {
     return (
         <View style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -25,10 +25,10 @@ const RideCard = ({ navigation }: any) => {
             </View>
             <View style={{ margin: 10, marginTop: 0 }}>
                 <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
-                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride.pLoc}</Text>
 
                 <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
-                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride.dLoc}</Text>
             </View>
         </View>
     )

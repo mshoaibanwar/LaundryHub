@@ -60,7 +60,7 @@ const riderSchema = new Schema({
         type: Schema.Types.Mixed,
         required: [false, "Please provide Current Location!"],
         unique: false,
-        default: {lati: '0', longi: '0'}
+        default: {latitude: '0', longitude: '0'}
     },
 }, {
     timestamps: true,

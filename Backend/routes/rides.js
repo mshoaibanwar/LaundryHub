@@ -44,6 +44,15 @@ router.route('/ride/:id').get((req, res) => {
             .catch(err => res.status(404).json(`Ride with id: ${req.params.id} not found`));
 });
 
+router.route('/updateLoc/:id').post((req, res) => {
+        Ride.findByIdAndUpdate(req.params.id, {riderCords: req.body})
+                .then(() => 
+                {
+                        res.json('Rider Location Updated to: ' + req.body.latitude + " | " + req.body.longitude);
+                })
+                .catch(err => res.status(404).send(err));
+});
+
 router.route('/updateStatus/:id').post((req, res) => {
         Ride.findByIdAndUpdate(req.params.id,
                 {status: req.body.status})

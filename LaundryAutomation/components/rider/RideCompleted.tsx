@@ -28,14 +28,14 @@ const RideCompleted = (props: any) => {
                 <View style={{ height: 2, width: '100%', backgroundColor: GreyColor, marginVertical: 10 }}></View>
                 <View>
                     <Text style={{ fontWeight: '500' }}>{Date()}</Text>
-                    <View style={{ alignItems: 'center', marginVertical: 5 }}>
+                    <View style={{ alignItems: 'center', marginVertical: 5, gap: 8 }}>
                         <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '100%' }}>
                             <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                                 <LocateFixed color='green' size={20} />
                             </View>
                             <View style={{ width: '90%' }}>
                                 <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
-                                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad, 440000</Text>
+                                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{props?.route?.params?.ride?.pLoc}</Text>
                             </View>
                         </View>
 
@@ -45,7 +45,7 @@ const RideCompleted = (props: any) => {
                             </View>
                             <View style={{ width: '90%' }}>
                                 <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
-                                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{props?.route?.params?.ride?.dLoc}</Text>
                             </View>
                         </View>
                     </View>

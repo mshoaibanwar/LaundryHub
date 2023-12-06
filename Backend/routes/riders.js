@@ -56,6 +56,16 @@ router.route('/getDutyStatus/:id').get((req, res) => {
                 .catch(err => res.status(404).send(err));
 });
 
+router.route('/updateLoc/:id').post((req, res) => {
+        Rider.findOneAndUpdate({uid: req.params.id},
+                {currentLocation: req.body})
+                .then(() => 
+                {
+                        res.json('Location Updated to: ' + req.body.latitude + " | " + req.body.longitude);
+                })
+                .catch(err => res.status(404).send(err));
+});
+
 router.route('/add').post((req, res) => {
     const uid = req.body.uid;
     const address = req.body.address;

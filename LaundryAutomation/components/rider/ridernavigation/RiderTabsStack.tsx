@@ -5,18 +5,21 @@ import { BackgroundColor } from '../../../constants/Colors';
 import CurrentRide from '../CurrentRide';
 import RiderTabs from './RiderTabs';
 import RideCompleted from '../RideCompleted';
+import LocationTracker from '../LocationTracker';
 const RiderTabsStack = () => {
     const stack = createStackNavigator();
     return (
         <>
-            <stack.Navigator
-                initialRouteName='riderTabs'
-                screenOptions={{ cardStyle: { backgroundColor: BackgroundColor } }}
-            >
-                <stack.Screen name='riderTabs' component={RiderTabs} options={{ headerShown: false }} />
-                <stack.Screen name='CRide' component={CurrentRide} options={{ headerShown: false, gestureEnabled: false }} />
-                <stack.Screen name='RideComp' component={RideCompleted} options={{ headerShown: false, gestureEnabled: false }} />
-            </stack.Navigator>
+            <LocationTracker>
+                <stack.Navigator
+                    initialRouteName='riderTabs'
+                    screenOptions={{ cardStyle: { backgroundColor: BackgroundColor } }}
+                >
+                    <stack.Screen name='riderTabs' component={RiderTabs} options={{ headerShown: false }} />
+                    <stack.Screen name='CRide' component={CurrentRide} options={{ headerShown: false, gestureEnabled: false }} />
+                    <stack.Screen name='RideComp' component={RideCompleted} options={{ headerShown: false, gestureEnabled: false }} />
+                </stack.Navigator>
+            </LocationTracker>
         </>
     )
 }

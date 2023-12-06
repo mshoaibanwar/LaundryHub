@@ -13,12 +13,11 @@ import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { Switch } from 'react-native-gesture-handler';
 import RideReqCard from './RideReqCard';
-import RideDetails from './RideDetails';
 
 const Rides = ({ navigation }: any) => {
     const user: any = useAppSelector(state => state.user.value);
     const [isEnabled, setIsEnabled] = useState(true);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [rides, setRides] = useState([]);
     useEffect(() => {
         axiosInstance.get(`riders/getDutyStatus/${user.user._id}`)
             .then((res) => {
@@ -31,6 +30,15 @@ const Rides = ({ navigation }: any) => {
             .catch((err) => {
                 console.log(err.response.data);
             })
+
+        axiosInstance.get(`rides/`)
+            .then((res) => {
+                setRides(res.data);
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+
     }, []);
     const toggleSwitch = () => {
         setIsEnabled(previousState => !previousState);
@@ -62,9 +70,9 @@ const Rides = ({ navigation }: any) => {
             {isEnabled ?
                 <View style={{ marginTop: 15 }}>
                     <FlatList
-                        data={[1, 2, 3, 4, 5, 6]}
-                        renderItem={({ item }) => <RideReqCard navigation={navigation} setModal={setModalVisible} />}
-                        keyExtractor={item => item.toString()}
+                        data={rides}
+                        renderItem={({ item }) => <RideReqCard navigation={navigation} ride={item} />}
+                        keyExtractor={item => item}
                         refreshControl={
                             <RefreshControl
                                 refreshing={false}
@@ -80,8 +88,6 @@ const Rides = ({ navigation }: any) => {
                     <Text style={{ fontSize: 20, fontWeight: '500', color: 'black', marginTop: 10 }}>No Ride Requests!</Text>
                 </View>
             }
-
-            <RideDetails setModal={setModalVisible} modalVisible={modalVisible} navigation={navigation} isAccepted={false} />
 
         </SafeAreaView>
     );

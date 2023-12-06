@@ -12,6 +12,14 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(404).json('Users not found'));
 });
 
+router.route('/getUser/:id').get((req, res) => {
+    User.findById(req.params.id)
+        .then((user) => {
+            res.json(user);
+        })
+        .catch(err => res.status(404).json('User not found'));
+});
+
 router.route('/count/').get((req, res) => {
     User.find()
         .then(() => {
