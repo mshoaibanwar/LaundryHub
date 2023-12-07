@@ -45,7 +45,7 @@ router.route('/ride/:id').get((req, res) => {
 });
 
 router.route('/updateLoc/:id').post((req, res) => {
-        Ride.findByIdAndUpdate(req.params.id, {riderCords: req.body})
+        Ride.findOneAndUpdate({ uid :req.params.id}, {riderCords: req.body})
                 .then(() => 
                 {
                         res.json('Rider Location Updated to: ' + req.body.latitude + " | " + req.body.longitude);

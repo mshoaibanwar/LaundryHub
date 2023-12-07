@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, ChevronRight, Trash2 } from 'lucide-react-native'
+import { ArrowLeft } from 'lucide-react-native'
 import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BlueColor } from '../../constants/Colors'
 import { useAppSelector } from '../../hooks/Hooks'
@@ -11,16 +11,15 @@ const MyRides = (props: any) => {
     const [tab, setTab] = useState('Completed');
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = React.useState(false);
-    const [orders, setOrders] = useState([]);
+    const [rides, setRides] = useState([]);
     const user: any = useAppSelector((state) => state.user.value);
-    const [ordersfilt, setOrdersFilt] = useState(orders.filter((item: any) => (item.status != 'Delivered')));
+    const [ridesfilt, setRidesFilt] = useState(rides.filter((item: any) => (item.status != 'Delivered')));
 
     useEffect(() => {
-        axiosInstance.get(`orders/user/${user.user._id}`)
+        axiosInstance.get(`rides/`)
             .then(function (response: any) {
-                setLoading(false);
-                setOrders(response.data);
-                setOrdersFilt(response.data.filter((item: any) => (item.status != 'Delivered')));
+                setRides(response.data);
+                setRidesFilt(response.data.filter((item: any) => (item.status != 'Delivered')));
                 setLoading(false);
             })
             .catch(function (error) {
@@ -42,11 +41,11 @@ const MyRides = (props: any) => {
     const changeTab = (name: any) => {
         if (name === 'Cancelled') {
             setTab('Cancelled');
-            setOrdersFilt(orders.filter((item: any) => (item.status == 'Completed')));
+            setRidesFilt(rides.filter((item: any) => (item.status == 'Completed')));
         }
         else if (name === 'Completed') {
             setTab('Completed');
-            setOrdersFilt(orders.filter((item: any) => (item.status != 'Cancelled')));
+            setRidesFilt(rides.filter((item: any) => (item.status != 'Cancelled')));
         }
     }
     return (
@@ -68,8 +67,8 @@ const MyRides = (props: any) => {
             <ScrollView style={{ marginTop: 10 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }>
-                {ordersfilt.map((item: any) => (
-                    <RideCard key={item} />
+                {ridesfilt.map((item: any, index: number) => (
+                    <RideCard key={index} ride={item} />
                 ))}
                 <View style={{ height: 120 }}></View>
             </ScrollView>

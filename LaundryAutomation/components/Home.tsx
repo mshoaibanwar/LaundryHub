@@ -142,7 +142,7 @@ const Home = ({ navigation }: any) => {
     const mapRef = useRef<any>(null);
     const getAddress = (loc: any) => {
         mapRef.current?.addressForCoordinate({ latitude: loc?.latitude, longitude: loc?.longitude }).then((address: any) => {
-            let moduser: any = { ...user, cadd: address.name };
+            let moduser: any = { ...user, cadd: address.name, ccord: loc };
             dispatch(addUser(moduser));
         })
     }
@@ -228,7 +228,7 @@ const Home = ({ navigation }: any) => {
                                         latitudeDelta: 0.0922,
                                         longitudeDelta: 0.0421,
                                     }}
-                                    showsUserLocation
+                                    // showsUserLocation={true}
                                     cacheEnabled
                                 >
                                     <Marker

@@ -1,40 +1,43 @@
 import { Banknote, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Phone } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { BlueColor, DarkGrey, LightGreen } from '../constants/Colors'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import { useAppSelector } from '../hooks/Hooks'
+import { useDistance } from '../helpers/DistanceCalculator'
 
 const RideReq = ({ navigation }: any) => {
     const [rideAccepted, setRideAccepted] = React.useState(false)
     const mapRef = useRef<any>(null);
-    const [origin, setOrigin] = useState({ latitude: 37.78825, longitude: -122.4324 });
-    const [destination, setDestination] = useState({ latitude: 37.73825, longitude: -122.4124 });
-    const [currentLoc, setCurrentLoc] = useState({ latitude: 37.75125, longitude: -122.4524 });
     const [rideData, setRideData] = useState<any>({});
+    const [rider, setRider] = useState<any>({});
     var ws = React.useRef(new WebSocket('http://localhost:8080/')).current;
 
     const user: any = useAppSelector((state) => state.user.value);
 
-    function goToPickup(): void {
-        ws?.send(JSON.stringify({
-            msg: 'SomeThing',
-        })); // send a message
-    }
+    const distance = useDistance({ from: { latitude: rideData?.pCord?.lati, longitude: rideData?.pCord?.longi }, to: { latitude: rideData?.dCord?.lati, longitude: rideData?.dCord?.longi } });
+    let fare = distance * 20;
 
-    function goToDest(): void {
-        // axiosInstance.post(`rides/updateStatus/${rideData._id}`, {
-        //     status: 'Accepted',
-        //     uid: user.user._id
-        // })
-        //     .then((res) => {
-        //         console.log(res.data)
-        //     })
-        //     .catch((err) => {
-        //         console.log(err)
-        //     })
-    }
+    const goToRider = () => {
+        //Animate the user to new region. Complete this animation in 3 seconds
+        mapRef?.current?.animateToRegion({ latitude: rideData?.riderCords?.latitude, longitude: rideData?.riderCords?.longitude }, 2000);
+    };
+
+    const goToPickup = () => {
+        //Animate the user to new region. Complete this animation in 3 seconds
+        mapRef?.current?.animateToRegion({ latitude: Number(rideData?.pCord?.lati), longitude: Number(rideData?.pCord?.longi) }, 2000);
+    };
+    const goToDest = () => {
+        //Animate the user to new region. Complete this animation in 3 seconds
+        mapRef?.current?.animateToRegion({ latitude: Number(rideData?.dCord?.lati), longitude: Number(rideData?.dCord?.longi) }, 2000);
+    };
+
+    // function goToPickup(): void {
+    //     ws?.send(JSON.stringify({
+    //         msg: 'SomeThing',
+    //     })); // send a message
+    // }
 
     useEffect(() => {
         axiosInstance.get(`rides/user/${user.user._id}`)
@@ -42,11 +45,19 @@ const RideReq = ({ navigation }: any) => {
                 // console.log(res.data[0])
                 setRideData(res.data[0])
                 setRideAccepted(res.data[0].status !== 'Pending')
+
+                axiosInstance.get(`users/getUser/${res.data[0].uid}`)
+                    .then((res) => {
+                        setRider(res.data);
+                    })
+                    .catch((err) => {
+                        console.log(err.response.data);
+                    })
             })
             .catch((err) => {
                 console.log(err)
             })
-    }, []);
+    }, [rideAccepted]);
 
     useEffect(() => {
         initiateSocketConnection()
@@ -74,68 +85,69 @@ const RideReq = ({ navigation }: any) => {
             }
         }
     }
-
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             {rideAccepted ?
                 <View>
-                    <View style={{ height: '65%' }}>
-                        <MapView
-                            ref={mapRef} //assign our ref to this MapView
-                            style={{ flex: 1 }}
-                            showsUserLocation={true}
-                            followsUserLocation={true}
-                            loadingEnabled={true}
-                            region={{
-                                latitude: 37.78825,
-                                longitude: -122.4324,
-                                latitudeDelta: 0.105,
-                                longitudeDelta: 0.0321,
-                            }}
-                        >
-                            <Marker
-                                coordinate={origin}
-                                title={"Destination"}
-                                description={"Shop 2, street 132, G11/4"}
+                    <View style={Platform.OS == 'android' ? { height: '60.5%' } : { height: '63%' }}>
+                        {rideData ?
+                            <MapView
+                                ref={mapRef} //assign our ref to this MapView
+                                style={{ flex: 1 }}
+                                // showsUserLocation={true}
+                                followsUserLocation={true}
+                                loadingEnabled={true}
+                                region={{
+                                    latitude: rideData?.riderCords ? Number(rideData?.riderCords?.latitude) : 0,
+                                    longitude: rideData?.riderCords ? Number(rideData?.riderCords?.longitude) : 0,
+                                    latitudeDelta: 0.105,
+                                    longitudeDelta: 0.0321,
+                                }}
                             >
-                                <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
-                                    <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
-                                </View>
-                            </Marker>
-                            <Marker
-                                coordinate={destination}
-                                title={"Pickup"}
-                                description={"House 2, street 132, G11/4"}
-                            >
-                                <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
-                                    <LocateFixed color='white' size={24} />
-                                </View>
-                            </Marker>
-                            <Marker
-                                coordinate={currentLoc}
-                                title={"Bike"}
-                                description={"Your Current Location"}
-                            >
-                                <View style={{ padding: 7, backgroundColor: 'black', borderRadius: 50 }}>
-                                    <BikeIcon style={{ bottom: 1 }} color='white' size={25} />
-                                </View>
-                            </Marker>
-                            <Polyline
-                                coordinates={[origin, destination]}
-                                strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-                                strokeColors={['#7F0000']}
-                                strokeWidth={4}
-                            />
-                        </MapView>
+                                <Marker
+                                    coordinate={{ latitude: rideData?.pCord ? Number(rideData?.pCord?.lati) : 1, longitude: rideData?.pCord ? Number(rideData?.pCord?.longi) : 1 }}
+                                    title={"Pickup"}
+                                    description={"House 2, street 132, G11/4"}
+                                >
+                                    <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
+                                        <LocateFixed color='white' size={24} />
+                                    </View>
+                                </Marker>
+                                <Marker
+                                    coordinate={{ latitude: rideData?.dCord ? Number(rideData?.dCord?.lati) : 0, longitude: rideData?.dCord ? Number(rideData?.dCord?.longi) : 0 }}
+                                    title={"Destination"}
+                                    description={"Shop 2, street 132, G11/4"}
+                                >
+                                    <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
+                                        <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
+                                    </View>
+                                </Marker>
+                                <Marker
+                                    coordinate={{ latitude: rideData?.riderCords ? Number(rideData?.riderCords?.latitude) : 0, longitude: rideData?.riderCords ? Number(rideData?.riderCords?.longitude) : 0 }}
+                                    title={"Bike"}
+                                    description={"Your Current Location"}
+                                >
+                                    <View style={{ padding: 7, backgroundColor: 'black', borderRadius: 50 }}>
+                                        <BikeIcon style={{ bottom: 1 }} color='white' size={25} />
+                                    </View>
+                                </Marker>
+                                <Polyline
+                                    coordinates={[{ latitude: rideData?.pCord ? Number(rideData?.pCord?.lati) : 0, longitude: rideData?.pCord ? Number(rideData?.pCord?.longi) : 0 }, { latitude: rideData?.dCord ? Number(rideData?.dCord?.lati) : 0, longitude: rideData?.dCord ? Number(rideData?.dCord?.longi) : 0 }]}
+                                    strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                                    strokeColors={['#7F0000']}
+                                    strokeWidth={4}
+                                />
+                            </MapView>
+                            : null}
                     </View>
                     <View style={{ paddingHorizontal: 20, paddingVertical: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: 'white', bottom: 20 }}>
                         <Pressable style={{ width: 90, height: 4, backgroundColor: DarkGrey, alignSelf: 'center', borderRadius: 10 }}></Pressable>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ margin: 5, marginTop: 0, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                                <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={require('../assets/images/profileph.png')} />
+                                <Image style={{ width: 45, height: 45, borderRadius: 50 }} defaultSource={require('../assets/images/profileph.png')} source={rider?.profile ? { uri: rider?.profile } : require('../assets/images/profileph.png')} />
                                 <View style={{}}>
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>Wali M.</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>wali@gmail.com</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{rider?.name}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>+92 {rider?.phone}</Text>
                                 </View>
                             </View>
                             <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
@@ -149,26 +161,26 @@ const RideReq = ({ navigation }: any) => {
                         </View>
                         <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginBottom: 8 }}>
                         </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <Pressable onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                        <View style={{ alignItems: 'center', gap: 10 }}>
+                            <TouchableOpacity onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                                     <LocateFixed color='green' size={20} />
                                 </View>
                                 <View style={{ width: '90%' }}>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad, 440000</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{rideData?.pLoc}</Text>
                                 </View>
-                            </Pressable>
+                            </TouchableOpacity>
 
-                            <Pressable onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                            <TouchableOpacity onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                                     <Navigation color='green' size={20} />
                                 </View>
                                 <View style={{ width: '90%' }}>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>House# 123, Street# 123, Sector# 123, Islamabad</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{rideData.dLoc}</Text>
                                 </View>
-                            </Pressable>
+                            </TouchableOpacity>
                         </View>
                         <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginVertical: 8 }}>
                         </View>
@@ -176,16 +188,19 @@ const RideReq = ({ navigation }: any) => {
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%' }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <MapPin color='green' size={25} />
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>5 KM Distance</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>{distance} KM Distance</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Banknote color='green' size={25} />
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>Fare: Rs 150</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>Fare: Rs {fare}</Text>
                                 </View>
                             </View>
                         </View>
                         <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginVertical: 8 }}>
                         </View>
+                        <TouchableOpacity style={{ padding: 5, backgroundColor: 'red', marginHorizontal: 10, borderRadius: 10 }}>
+                            <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', color: 'white' }}>Cancel Ride</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 :

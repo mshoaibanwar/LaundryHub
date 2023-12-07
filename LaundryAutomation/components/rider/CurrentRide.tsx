@@ -12,14 +12,14 @@ import {
 import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
-import { Banknote, Bike, BikeIcon, LocateFixed, MapIcon, MapPin, MessageCircle, MessageSquare, Navigation, Phone } from 'lucide-react-native';
+import { Banknote, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Phone } from 'lucide-react-native';
 // import MapViewDirections from 'react-native-maps-directions';
 import { useRef } from "react";
 import RideDetails from './RideDetails';
 import ActionSheet from 'react-native-actionsheet'
-import Geolocation from '@react-native-community/geolocation';
 import { useAppSelector } from '../../hooks/Hooks';
 import { useDistance } from '../../helpers/DistanceCalculator';
+import GetLocation from 'react-native-get-location';
 
 let locationWatchId: number;
 let locationUpdateInterval: NodeJS.Timeout;
@@ -30,9 +30,9 @@ const CurrentRide = (props: any) => {
     const actionSheetRef = useRef<any>(null);
     const texts = ['Set Arrived', 'Set Pickedup', 'Set Droppedoff', 'Set Completed']
     const [btnPressCount, setBtnPressCount] = useState(0);
-    const [origin, setOrigin] = useState({ latitude: props?.route?.params?.ride?.pCord?.lati, longitude: props?.route?.params?.ride?.pCord?.longi });
-    const [destination, setDestination] = useState({ latitude: props?.route?.params?.ride?.dCord?.lati, longitude: props?.route?.params?.ride?.dCord?.longi });
-    const [currentLoc, setCurrentLoc] = useState({ latitude: 37.75125, longitude: -122.4524 });
+    const [origin, setOrigin] = useState({ latitude: Number(props?.route?.params?.ride?.pCord?.lati), longitude: Number(props?.route?.params?.ride?.pCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 });
+    const [destination, setDestination] = useState({ latitude: Number(props?.route?.params?.ride?.dCord?.lati), longitude: Number(props?.route?.params?.ride?.dCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 });
+    const [currentLoc, setCurrentLoc] = useState({ latitude: 37.75125, longitude: -122.4524, latitudeDelta: 0.105, longitudeDelta: 0.0321 });
     const [lastLoc, setLastLoc] = useState({ latitude: 0, longitude: 0 });
     // const GOOGLE_MAPS_APIKEY = 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY';
     const [modalVisible, setModalVisible] = useState(false);
@@ -42,6 +42,11 @@ const CurrentRide = (props: any) => {
 
     const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
     let fare = distance * 20;
+
+    const goToMyLoc = () => {
+        //Animate the user to new region. Complete this animation in 3 seconds
+        mapRef?.current?.animateToRegion(currentLoc, 2000);
+    };
 
     const goToPickup = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
@@ -65,32 +70,33 @@ const CurrentRide = (props: any) => {
 
     useEffect(() => {
         trackLocation();
+        return () => {
+            clearInterval(locationUpdateInterval);
+        };
     }, []);
 
     const trackLocation = () => {
-        // Watch for location changes
-        locationWatchId = Geolocation.watchPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setCurrentLoc({ latitude, longitude });
-            },
-            (error) => console.error(error),
-            { enableHighAccuracy: true, distanceFilter: 5 } // Update only when the user moves more than 5 meters
-        );
-
-        // Send location to MongoDB API every 10 seconds
         locationUpdateInterval = setInterval(() => {
-            if (
-                currentLoc.latitude !== lastLoc.latitude ||
-                currentLoc.longitude !== lastLoc.longitude
-            ) {
-                // Make API call to store coordinates in MongoDB
-                saveCoordinatesToMongoDB(currentLoc);
-
-                // Update last location
-                setLastLoc(currentLoc);
-            }
-        }, 10000); // Update every 10 seconds
+            GetLocation.getCurrentPosition({
+                enableHighAccuracy: true,
+                timeout: 5000,
+            })
+                .then(location => {
+                    const { latitude, longitude } = location;
+                    setCurrentLoc({ latitude, longitude, latitudeDelta: 0.105, longitudeDelta: 0.0321 });
+                    if (
+                        currentLoc.latitude !== lastLoc.latitude ||
+                        currentLoc.longitude !== lastLoc.longitude
+                    ) {
+                        saveCoordinatesToMongoDB({ latitude, longitude });
+                        setLastLoc({ latitude, longitude });
+                    }
+                })
+                .catch(error => {
+                    const { code, message } = error;
+                    console.warn(code, message);
+                })
+        }, 10000);
     };
 
     const saveCoordinatesToMongoDB = async (coordinates: { latitude: number; longitude: number }) => {
@@ -110,12 +116,12 @@ const CurrentRide = (props: any) => {
                 <MapView
                     ref={mapRef} //assign our ref to this MapView
                     style={{ flex: 1 }}
-                    showsUserLocation={true}
+                    // showsUserLocation={true}
                     followsUserLocation={true}
                     loadingEnabled={true}
                     region={{
-                        latitude: currentLoc.latitude,
-                        longitude: currentLoc.longitude,
+                        latitude: Number(currentLoc?.latitude),
+                        longitude: Number(currentLoc?.longitude),
                         latitudeDelta: 0.105,
                         longitudeDelta: 0.0321,
                     }}
@@ -159,12 +165,17 @@ const CurrentRide = (props: any) => {
                         apikey={GOOGLE_MAPS_APIKEY}
                     /> */}
                 </MapView>
+
+                <TouchableOpacity onPress={goToMyLoc}
+                    style={{ position: 'absolute', bottom: 35, left: 10, backgroundColor: 'white', padding: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                    <Navigation fill='blue' size={25} color='blue' />
+                </TouchableOpacity>
             </View>
             <View style={{ paddingHorizontal: 20, paddingVertical: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: 'white', bottom: 20 }}>
                 <Pressable onTouchMove={() => setModalVisible(true)} onTouchStart={() => setModalVisible(true)} style={{ width: 90, height: 4, backgroundColor: DarkGrey, alignSelf: 'center', borderRadius: 10 }}></Pressable>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ margin: 5, marginTop: 0, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                        <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={ruser ? { uri: ruser?.profile } : require('../../assets/images/profileph.png')} />
+                        <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={ruser ? { uri: ruser?.profile } : require('../../assets/images/profileph.png')} />
                         <View style={{}}>
                             <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ruser?.name}</Text>
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ruser?.phone}</Text>
@@ -182,7 +193,7 @@ const CurrentRide = (props: any) => {
                 <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginBottom: 8 }}>
                 </View>
                 <View style={{ alignItems: 'center', gap: 5 }}>
-                    <Pressable onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                    <TouchableOpacity onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                             <LocateFixed color='green' size={20} />
                         </View>
@@ -190,9 +201,9 @@ const CurrentRide = (props: any) => {
                             <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride?.pLoc}</Text>
                         </View>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                    <TouchableOpacity onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                             <Navigation color='green' size={20} />
                         </View>
@@ -200,7 +211,7 @@ const CurrentRide = (props: any) => {
                             <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride?.dLoc}</Text>
                         </View>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
                 <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginVertical: 8 }}>
                 </View>
@@ -240,7 +251,7 @@ const CurrentRide = (props: any) => {
                 onPress={(index: any) => { if (index == 0) props.navigation.navigate('RideComp', { ride, cancelled: true }) }}
             />
 
-            <RideDetails setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={ruser} isAccepted={true} />
+            <RideDetails navigation={props.navigation} setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={ruser} isAccepted={true} />
         </View>
     );
 }

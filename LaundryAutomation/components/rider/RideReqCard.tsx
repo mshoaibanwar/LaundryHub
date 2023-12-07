@@ -5,6 +5,7 @@ import { LocateFixed, Navigation } from 'lucide-react-native'
 import { axiosInstance } from '../../helpers/AxiosAPI'
 import RideDetails from './RideDetails'
 import { useDistance } from '../../helpers/DistanceCalculator'
+import { useAppSelector } from '../../hooks/Hooks'
 
 const RideReqCard = ({ navigation, ride }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -19,7 +20,9 @@ const RideReqCard = ({ navigation, ride }: any) => {
             })
     }, []);
 
+    const suser: any = useAppSelector((state) => state.user.value);
     const distance = useDistance({ from: { latitude: ride.pCord.lati, longitude: ride.pCord.longi }, to: { latitude: ride.dCord.lati, longitude: ride.dCord.longi } });
+    const away = useDistance({ from: { latitude: ride.pCord.lati, longitude: ride.pCord.longi }, to: { latitude: suser?.latitude, longitude: suser?.longitude } });
     let fare = distance * 20;
 
     return (
@@ -27,7 +30,7 @@ const RideReqCard = ({ navigation, ride }: any) => {
             <Pressable onPress={() => setModalVisible(true)} style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ margin: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                        <Image style={{ width: 40, height: 40, borderRadius: 50 }} source={user ? { uri: user.profile } : require('../../assets/images/profileph.png')} />
+                        <Image style={{ width: 40, height: 40, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user?.profile ? { uri: user?.profile } : require('../../assets/images/profileph.png')} />
                         <View style={{}}>
                             <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{user?.name}</Text>
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black', flexWrap: 'wrap' }}>+92 {user.phone}</Text>
@@ -35,8 +38,8 @@ const RideReqCard = ({ navigation, ride }: any) => {
                     </View>
                     <View style={{ justifyContent: 'center', gap: 2 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, gap: 5 }}>
-                            <Text style={{ fontSize: 16, color: 'black' }}>Distance:</Text>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>{distance} KM</Text>
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>{away} KM</Text>
+                            <Text style={{ fontSize: 16, color: 'black' }}>Away</Text>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, gap: 5 }}>
                             <Text style={{ fontSize: 16, color: 'black' }}>Fare:</Text>
@@ -44,7 +47,7 @@ const RideReqCard = ({ navigation, ride }: any) => {
                         </View>
                     </View>
                 </View>
-                <View style={{ alignItems: 'center', gap: 5 }}>
+                <View style={{ alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '88%' }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                             <LocateFixed color='green' size={20} />
@@ -53,6 +56,11 @@ const RideReqCard = ({ navigation, ride }: any) => {
                             <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride.pLoc}</Text>
                         </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', marginHorizontal: 40 }}>
+                        <View style={{ height: 30, width: 2, backgroundColor: 'green' }}></View>
+                        <Text style={{ fontSize: 16, fontWeight: '400', color: 'black' }}>{distance} KM</Text>
                     </View>
 
                     <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '88%' }}>
@@ -74,7 +82,7 @@ const RideReqCard = ({ navigation, ride }: any) => {
                     </TouchableOpacity>
                 </View>
             </Pressable>
-            <RideDetails setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={user} isAccepted={false} />
+            <RideDetails navigation={navigation} setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={user} isAccepted={false} />
         </>
     )
 }

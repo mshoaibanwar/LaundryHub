@@ -90,8 +90,8 @@ const OrderDetail = (props: any) => {
     }, [refreshing]);
 
     return (
-        <SafeAreaView>
-            <View style={{ padding: 20 }}>
+        <SafeAreaView style={{ padding: 20 }}>
+            <View style={{ paddingHorizontal: 20 }}>
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity onPress={() => props.navigation.goBack()}>
                         <ArrowLeft color='black' size={25} />
@@ -103,7 +103,7 @@ const OrderDetail = (props: any) => {
                 }>
                     <View style={{ marginTop: 15 }}>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Ship & Bill To</Text>
-                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10 }}>
+                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <View style={{ gap: 2 }}>
                                     <Text style={{ color: BlueColor, fontSize: 16 }}>{props?.route?.params?.address.name}</Text>
@@ -126,7 +126,7 @@ const OrderDetail = (props: any) => {
 
                     <View style={{ position: 'relative', zIndex: 2 }}>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Details</Text>
-                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10 }}>
+                        <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5, width: '100%' }}>
                                 <Text style={{ fontSize: 17, color: BlueColor }}>Order # {props?.route?.params?._id.slice(props?.route?.params?._id.length - 5, props?.route?.params?._id.length)}</Text>
                                 <View style={{ gap: 2 }}>
@@ -175,7 +175,7 @@ const OrderDetail = (props: any) => {
 
                     <View>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Summary</Text>
-                        <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, marginVertical: 10 }}>
+                        <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, marginVertical: 10, backgroundColor: 'white' }}>
                             {props?.route?.params?.items.map((item: any, index: number) => (
                                 <View key={index} style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginVertical: 5 }}>
                                     <View style={{ alignItems: 'center', flexDirection: 'row', gap: 20 }}>
@@ -204,7 +204,7 @@ const OrderDetail = (props: any) => {
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: 'black', fontSize: 16 }}>Total</Text>
-                                <Text style={{ color: 'red', fontSize: 16 }}>Rs. {props?.route?.params?.tprice}</Text>
+                                <Text style={{ color: BlueColor, fontSize: 16, fontWeight: '500' }}>Rs. {props?.route?.params?.tprice}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                 <Text style={{ color: 'black', fontSize: 16 }}>Payment</Text>

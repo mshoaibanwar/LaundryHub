@@ -172,7 +172,7 @@ const Account = (props: any) => {
             </View>
             <ScrollView>
                 <TouchableOpacity onPress={() => ImagePickerAlert()} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Image style={{ width: 90, height: 90, borderRadius: 50 }} source={profile ? profile : onprofile ? { uri: onprofile } : require('../assets/images/profileph.png')} resizeMode='cover' />
+                    <Image style={{ width: 90, height: 90, borderRadius: 50 }} defaultSource={require('../assets/images/profileph.png')} source={profile ? profile : onprofile ? { uri: onprofile } : require('../assets/images/profileph.png')} resizeMode='cover' />
                 </TouchableOpacity>
                 <View style={{ padding: 20, gap: 10 }}>
                     <Text style={{ color: 'black' }}>First Name</Text>

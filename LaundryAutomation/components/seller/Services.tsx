@@ -16,6 +16,7 @@ const Services = (props: any) => {
     const [price, setPrice] = useState("0");
     const [isUpdating, setIsUpdating] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [itemsList, setItemsList] = useState<any>([]);
 
     const [services, setServices] = useState([
         { label: 'Wash', value: 'Wash' },
@@ -53,7 +54,8 @@ const Services = (props: any) => {
         axiosInstance.get(`/shops/getPrices/${props.route.params.uid}`)
             .then((res) => {
                 if (res.data) {
-                    setItemsList(res.data);
+                    let revItems = res.data.reverse();
+                    setItemsList(revItems);
                 }
                 setRefreshing(false);
             })
@@ -108,8 +110,6 @@ const Services = (props: any) => {
         setServicesList(updatedServicesList);
     }
 
-    const [itemsList, setItemsList] = useState<any>([]);
-
     const onAddItem = () => {
         if (isUpdating) {
             onUpdateItemInfo(itemsValue, servicesList);
@@ -121,8 +121,8 @@ const Services = (props: any) => {
 
             if (!itemExists) {
                 const newItem = { title: itemsValue, services: servicesList };
-                updatePrices([...itemsList, newItem]);
-                setItemsList([...itemsList, newItem]);
+                updatePrices([newItem, ...itemsList]);
+                setItemsList([newItem, ...itemsList]);
                 setServicesList([]);
             } else {
                 // Display a message or handle the case where the service already exists
@@ -211,7 +211,7 @@ const Services = (props: any) => {
                                 <Text style={{ color: 'black', fontSize: 16, fontWeight: '500', width: '30%' }}>{item.serv}</Text>
                                 <View style={{ width: '40%', flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ color: 'black', fontSize: 16 }}>Rs. </Text>
-                                    <TextInput editable={isUpdating} value={item.pri} onChangeText={(nv) => onUpdateServiceInfo(item.serv, nv)} style={[{ padding: 2, color: 'black', fontSize: 18, fontWeight: '500', borderWidth: 0.5, borderRadius: 5, textAlign: 'center', width: '80%' }, Platform.OS === 'android' ? { padding: 0 } : {}]}></TextInput>
+                                    <TextInput editable={isUpdating} value={item.pri.toString()} onChangeText={(nv) => onUpdateServiceInfo(item.serv, nv)} style={[{ padding: 2, color: 'black', fontSize: 18, fontWeight: '500', borderWidth: 0.5, borderRadius: 5, textAlign: 'center', width: '80%' }, Platform.OS === 'android' ? { padding: 0 } : {}]}></TextInput>
                                 </View>
                                 <TouchableOpacity style={{}} onPress={() => onServRemove(item)}>
                                     <Trash2 color='red' size={20} />

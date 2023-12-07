@@ -1,8 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { View, Text, PermissionsAndroid, SafeAreaView, Platform } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
+import { View, Text, PermissionsAndroid, Platform } from 'react-native';
 import { axiosInstance } from '../../helpers/AxiosAPI';
-import { useAppSelector } from '../../hooks/Hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
+import { addUser } from '../../reduxStore/reducers/UserReducer';
+import GetLocation from 'react-native-get-location';
 
 interface LocationTrackerProps {
     children: ReactNode; // Explicitly define children prop
@@ -13,8 +14,9 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     const [lastLocation, setLastLocation] = useState({ latitude: 0, longitude: 0 });
     const user: any = useAppSelector((state) => state.user.value);
 
-    let locationWatchId: number;
     let locationUpdateInterval: NodeJS.Timeout;
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const requestLocationPermission = async () => {
@@ -34,7 +36,6 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
                         console.error('Location permission denied');
                     }
                 } else if (Platform.OS === 'ios') {
-                    Geolocation.requestAuthorization();
                     trackLocation();
                 }
             } catch (error) {
@@ -45,42 +46,41 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
         requestLocationPermission();
 
         return () => {
-            Geolocation.clearWatch(locationWatchId);
             clearInterval(locationUpdateInterval);
         };
     }, []);
 
     const trackLocation = () => {
-        // Watch for location changes
-        locationWatchId = Geolocation.watchPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setCurrentLocation({ latitude, longitude });
-            },
-            (error) => console.error(error),
-            { enableHighAccuracy: true, distanceFilter: 5 } // Update only when the user moves more than 5 meters
-        );
-
-        // Send location to MongoDB API every 10 seconds
         locationUpdateInterval = setInterval(() => {
-            if (
-                currentLocation.latitude !== lastLocation.latitude ||
-                currentLocation.longitude !== lastLocation.longitude
-            ) {
-                // Make API call to store coordinates in MongoDB
-                saveCoordinatesToMongoDB(currentLocation);
-
-                // Update last location
-                setLastLocation(currentLocation);
-            }
-        }, 10000); // Update every 10 seconds
-    };
+            GetLocation.getCurrentPosition({
+                enableHighAccuracy: true,
+                timeout: 10000,
+            })
+                .then(location => {
+                    const { latitude, longitude } = location;
+                    setCurrentLocation({ latitude, longitude });
+                    if (
+                        currentLocation.latitude !== lastLocation.latitude ||
+                        currentLocation.longitude !== lastLocation.longitude
+                    ) {
+                        saveCoordinatesToMongoDB({ latitude, longitude });
+                        setLastLocation({ latitude, longitude });
+                    }
+                })
+                .catch(error => {
+                    const { code, message } = error;
+                    console.warn(code, message);
+                })
+        }, 10000);
+    }
 
     const saveCoordinatesToMongoDB = async (coordinates: { latitude: number; longitude: number }) => {
         const apiUrl = `/riders/updateLoc/${user.user._id}`;
         await axiosInstance.post(apiUrl, coordinates)
             .then(function (response: any) {
-                //console.log(response.data);
+                let nuser = { ...user, ...coordinates }
+                dispatch(addUser(nuser));
+                console.log(response.data);
             })
             .catch(function (error) {
                 console.log(error);
@@ -88,10 +88,6 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     };
 
     return (
-        // <SafeAreaView>
-        //     <Text>Current Location: {currentLocation.latitude}, {currentLocation.longitude}</Text>
-        //     <Text>Last Location: {lastLocation.latitude}, {lastLocation.longitude}</Text>
-        // </SafeAreaView>
         <>
             {children}
         </>

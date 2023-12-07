@@ -10,28 +10,26 @@ import {
     RefreshControl,
 } from 'react-native';
 import ShopCard from './ShopCard';
-import { MapPin, Rat } from 'lucide-react-native';
+import { MapPin } from 'lucide-react-native';
 import { useAppSelector } from '../hooks/Hooks';
 import { useDistance } from '../helpers/DistanceCalculator';
-
-import GetLocation from 'react-native-get-location';
 import { CalcPrices } from '../helpers/PriceCalculator';
 import { axiosInstance } from '../helpers/AxiosAPI';
 import { BlueColor } from '../constants/Colors';
 
 function Shops(props: any) {
+    const user: any = useAppSelector((state) => state.user.value);
+
     const [nActive, setnActive] = useState(false);
     const [pActive, setpActive] = useState(true);
     const [cActive, setcActive] = useState(false);
     const [ShopsData, setShopsData] = useState<any>([]);
-    const [userLoc, setUserLoc] = useState<any>(null);
+    const [userLoc, setUserLoc] = useState<any>(user?.ccord);
     const [ratings, setRatings] = useState<any>([]);
 
     const basketItems: any = useAppSelector((state) => state.basket.value);
     const [ShowLoader, setShowLoader] = useState(false);
     const [refreshing, setRefreshing] = React.useState(false);
-
-    const user: any = useAppSelector((state) => state.user.value);
 
     useEffect(() => {
 
@@ -44,20 +42,6 @@ function Shops(props: any) {
                 console.log(error);
             })
     }, [refreshing]);
-
-    useEffect(() => {
-        GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 1000,
-        })
-            .then(location => {
-                setUserLoc(location);
-            })
-            .catch(error => {
-                const { code, message } = error;
-                console.warn(code, message);
-            })
-    }, []);
 
     useEffect(() => {
         setTimeout(() => {
@@ -74,7 +58,7 @@ function Shops(props: any) {
 
     let Distances: any = [];
     for (let i = 0; i < ShopsData.length; i++) {
-        const dist = useDistance({ from: { latitude: userLoc?.latitude ? userLoc.latitude : 33.703, longitude: userLoc?.longitude ? userLoc.longitude : 73.0412 }, to: { latitude: ShopsData[i]?.lati, longitude: ShopsData[i]?.longi } });
+        const dist = useDistance({ from: { latitude: userLoc?.latitude ? userLoc.latitude : 33.603, longitude: userLoc?.longitude ? userLoc.longitude : 73.4412 }, to: { latitude: ShopsData[i]?.lati, longitude: ShopsData[i]?.longi } });
         Distances.push(dist);
     }
 
@@ -160,7 +144,6 @@ function Shops(props: any) {
     useEffect(() => {
         OnPopular();
     }, [ratings]);
-
 
     return (
         <SafeAreaView>

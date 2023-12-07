@@ -1,14 +1,12 @@
-import { X, UserCog, MapPin, Folder, Languages, BadgeInfo, Lock, LogOut, Bike, Banknote, LocateFixed, Navigation, Router, Phone, Scroll, BikeIcon } from 'lucide-react-native'
+import { X, MapPin, Banknote, LocateFixed, Navigation, Router, Phone, BikeIcon } from 'lucide-react-native'
 import React, { useRef } from 'react'
-import { Image, ScrollView, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
+import { Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Modal, Pressable, Text, View } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Toast from 'react-native-toast-notifications';
-import { CommonActions, StackActions, useNavigation } from '@react-navigation/native';
-import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import { LightGreen } from '../../constants/Colors';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { useDistance } from '../../helpers/DistanceCalculator';
+import { useAppSelector } from '../../hooks/Hooks';
 
 interface propsTypes {
     setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,13 +14,26 @@ interface propsTypes {
     isAccepted: boolean;
     ride: any;
     user: any;
+    navigation: any;
 }
 
-const RideDetails = ({ setModal, modalVisible, isAccepted, ride, user }: propsTypes) => {
+const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { pCord: { lati: 0, longi: 0 }, dCord: { lati: 0, longi: 0 }, riderCords: { lati: 0, longi: 0 } }, user }: propsTypes) => {
     const toastRef = useRef<any>(null);
+    const mapRef = useRef<any>(null);
     const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
-    let away = useDistance({ from: { latitude: ride?.riderCords?.lati, longitude: ride?.riderCords?.longi }, to: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi } });
+    const suser: any = useAppSelector((state) => state.user.value);
+    let away = useDistance({ from: { latitude: suser?.latitude, longitude: suser?.longitude }, to: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi } });
     let fare = distance * 20;
+
+    const goToPickup = () => {
+        //Animate the user to new region. Complete this animation in 3 seconds
+        mapRef?.current?.animateToRegion({ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 }, 2000);
+    };
+    const goToDest = () => {
+        //Animate the user to new region. Complete this animation in 3 seconds
+        mapRef?.current?.animateToRegion({ latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 }, 2000);
+    };
+
     return (
         <Modal
             animationType="slide"
@@ -47,36 +58,38 @@ const RideDetails = ({ setModal, modalVisible, isAccepted, ride, user }: propsTy
                             <View>
                                 <View style={{ marginBottom: 10 }}>
                                     <MapView
+                                        // ref={mapRef}
+                                        ref={mapRef}
                                         style={{ width: '100%', height: 200, borderRadius: 10 }}
                                         initialRegion={{
-                                            latitude: ride.pCord.lati,
-                                            longitude: ride.pCord.longi,
+                                            latitude: ride ? Number(ride?.pCord?.lati) : 0,
+                                            longitude: ride ? Number(ride?.pCord?.longi) : 0,
                                             latitudeDelta: 0.0922,
                                             longitudeDelta: 0.0421,
                                         }}
-                                        showsUserLocation={true}
+                                        // showsUserLocation={true}
                                         showsMyLocationButton={true}
                                     >
                                         <Marker
-                                            coordinate={{ latitude: ride.pCord.lati, longitude: ride.pCord.longi }}
-                                            title={"Destination"}
-                                            description={"Shop 2, street 132, G11/4"}
-                                        >
-                                            <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
-                                                <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
-                                            </View>
-                                        </Marker>
-                                        <Marker
-                                            coordinate={{ latitude: ride.dCord.lati, longitude: ride.dCord.longi }}
+                                            coordinate={{ latitude: ride ? Number(ride?.pCord?.lati) : 0, longitude: ride ? Number(ride?.pCord?.longi) : 0 }}
                                             title={"Pickup"}
-                                            description={"House 2, street 132, G11/4"}
+                                            description={ride?.pLoc}
                                         >
                                             <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
                                                 <LocateFixed color='white' size={24} />
                                             </View>
                                         </Marker>
                                         <Marker
-                                            coordinate={{ latitude: ride.riderCords.lati, longitude: ride.riderCords.longi }}
+                                            coordinate={{ latitude: ride ? Number(ride?.dCord?.lati) : 0, longitude: ride ? Number(ride?.dCord?.longi) : 0 }}
+                                            title={"Destination"}
+                                            description={ride?.dLoc}
+                                        >
+                                            <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
+                                                <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
+                                            </View>
+                                        </Marker>
+                                        <Marker
+                                            coordinate={{ latitude: ride?.riderCords?.lati ? Number(ride?.riderCords?.lati) : 0, longitude: ride?.riderCords?.longi ? Number(ride?.riderCords?.longi) : 0 }}
                                             title={"Bike"}
                                             description={"Your Current Location"}
                                         >
@@ -86,7 +99,7 @@ const RideDetails = ({ setModal, modalVisible, isAccepted, ride, user }: propsTy
                                         </Marker>
 
                                         <Polyline
-                                            coordinates={[{ latitude: ride.pCord.lati, longitude: ride.pCord.longi }, { latitude: ride.dCord.lati, longitude: ride.dCord.longi }]}
+                                            coordinates={[{ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi) }, { latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi) }]}
                                             strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
                                             strokeColors={['#7F0000']}
                                             strokeWidth={4}
@@ -95,7 +108,7 @@ const RideDetails = ({ setModal, modalVisible, isAccepted, ride, user }: propsTy
                                     </MapView>
                                 </View>
                                 <View>
-                                    <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate("CRide", { ride, user }); setModal(false) }} style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>
                                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Accept Ride</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -103,7 +116,7 @@ const RideDetails = ({ setModal, modalVisible, isAccepted, ride, user }: propsTy
                         }
                         <View style={{ marginVertical: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={user ? { uri: user.profile } : require('../../assets/images/profileph.png')} />
+                                <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user ? { uri: user.profile } : require('../../assets/images/profileph.png')} />
                                 <View style={{}}>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{user?.name}</Text>
                                     <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{user?.phone}</Text>
@@ -126,25 +139,25 @@ const RideDetails = ({ setModal, modalVisible, isAccepted, ride, user }: propsTy
                         </View>
                         <View style={{ height: 1, backgroundColor: '#e8e8e8', marginVertical: 10 }}></View>
                         <View style={{ gap: 10 }}>
-                            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '85%' }}>
+                            <TouchableOpacity onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '85%' }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                                     <LocateFixed color='green' size={25} />
                                 </View>
                                 <View>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride.pLoc}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride?.pLoc}</Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
 
-                            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '85%' }}>
+                            <TouchableOpacity onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '85%' }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                                     <Navigation color='green' size={25} />
                                 </View>
                                 <View>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride.dLoc}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride?.dLoc}</Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
 
                             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '85%' }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>

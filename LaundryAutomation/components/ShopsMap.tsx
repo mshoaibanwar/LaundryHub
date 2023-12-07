@@ -53,20 +53,11 @@ const ShopsMap = ({ route, navigation }: any) => {
     const SLIDER_WIDTH = Dimensions.get('window').width;
     const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 1 / 1.1);
 
-    const [userCords, setUserCords] = useState<Location>({ latitude: 33.70395347266037, longitude: 73.04128451925754 });
-
     const mapRef = useRef<any>(null);
     const caroRef = useRef<any>(null);
 
-    const getAddress = () => {
-        mapRef.current?.addressForCoordinate({ latitude: userCords.latitude, longitude: userCords.longitude }).then((address: any) => console.log(address))
-        mapRef.current?.animateToRegion({ latitude: userCords.latitude, longitude: userCords.longitude });
-    }
-
-    //getAddress();
-
     const goToMarker = (lati: number, longi: number) => {
-        mapRef.current?.animateToRegion({ latitude: lati, longitude: longi, latitudeDelta: 0.0239, longitudeDelta: 0.0112 });
+        mapRef?.current?.animateToRegion({ latitude: lati, longitude: longi, latitudeDelta: 0.0239, longitudeDelta: 0.0112 });
     }
 
     const getIndex = (lati: number, longi: number) => {
@@ -77,7 +68,7 @@ const ShopsMap = ({ route, navigation }: any) => {
     useEffect(() => {
         // Update the document title using the browser API
         if (route.params) {
-            caroRef.current?.snapToItem(getIndex(route.params.prop ? route.params.prop.lati : route.params.prop1.lati, route.params.prop ? route.params.prop.longi : route.params.prop1.longi), true, true);
+            caroRef?.current?.snapToItem(getIndex(route.params.prop ? route.params.prop.lati : route.params.prop1.lati, route.params.prop ? route.params.prop.longi : route.params.prop1.longi), true, true);
         }
     });
 
@@ -87,12 +78,12 @@ const ShopsMap = ({ route, navigation }: any) => {
                 ref={mapRef}
                 style={{ width: "100%", height: '100%' }}
                 region={{
-                    latitude: route.params ? route.params.prop ? route.params.prop.lati : route.params.prop1.lati : userCords.latitude,
-                    longitude: route.params ? route.params.prop ? route.params.prop.longi : route.params.prop1.longi : userCords.longitude,
-                    latitudeDelta: route.params ? 0.0239 : 0.2239,
-                    longitudeDelta: route.params ? 0.0112 : 0.1412,
+                    latitude: route?.params ? route?.params?.prop ? route?.params?.prop?.lati : route?.params?.prop1?.lati : 33.70395347266037,
+                    longitude: route?.params ? route?.params?.prop ? route?.params?.prop?.longi : route?.params?.prop1?.longi : 73.04128451925754,
+                    latitudeDelta: route?.params ? 0.0239 : 0.2239,
+                    longitudeDelta: route?.params ? 0.0112 : 0.1412,
                 }}
-                showsUserLocation
+                // showsUserLocation={true}
                 //followsUserLocation
                 showsMyLocationButton
                 loadingEnabled
@@ -101,10 +92,10 @@ const ShopsMap = ({ route, navigation }: any) => {
                     <Marker
                         key={index}
                         identifier={item.title}
-                        coordinate={{ latitude: item.lati, longitude: item.longi }}
+                        coordinate={{ latitude: Number(item?.lati), longitude: Number(item?.longi) }}
                         title={item.title}
                         description={'Basket Price : [ Rs. ' + pricelist[index] + ' ]'}
-                        onSelect={e => { goToMarker(e.nativeEvent.coordinate?.latitude, e.nativeEvent.coordinate?.longitude); caroRef.current.snapToItem(getIndex(e.nativeEvent.coordinate?.latitude, e.nativeEvent.coordinate?.longitude), true, true) }}
+                        onSelect={e => { caroRef.current.snapToItem(getIndex(e.nativeEvent.coordinate?.latitude, e.nativeEvent.coordinate?.longitude), true, true) }}
                     />
                 ))}
             </MapView>

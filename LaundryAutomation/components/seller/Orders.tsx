@@ -68,7 +68,7 @@ const Orders = (props: any) => {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }>
                 {ordersfilt.map((item: any) => (
-                    <TouchableOpacity onPress={() => props?.navigation?.navigate('OrdersStack', { screen: 'OrderDetail', params: item })} key={item._id} style={{ marginBottom: 5, borderWidth: 0.5, borderRadius: 10, padding: 20, borderColor: 'black' }}>
+                    <TouchableOpacity onPress={() => props?.navigation?.navigate('OrdersStack', { screen: 'OrderDetail', params: item })} key={item._id} style={{ marginBottom: 5, borderWidth: 0.5, borderRadius: 10, padding: 20, borderColor: 'black', backgroundColor: 'white' }}>
                         <View style={styles.orderView}>
                             <Text style={styles.ordertxtLeft}>Order # {item._id.slice(item._id.length - 5, item._id.length)}</Text>
                             <ChevronRight color='black' size={25} />
