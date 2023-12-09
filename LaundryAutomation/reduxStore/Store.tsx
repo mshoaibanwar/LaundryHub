@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OrderReducer from './reducers/OrderReducer';
 import TempOrderSlice from './reducers/TempOrderReducer';
 import userSlice from './reducers/UserReducer';
+import MessagesReducer from './reducers/MessagesReducer';
 import ShopDataReducer from './reducers/ShopDataReducer';
 
 const persistConfig = {
@@ -30,6 +31,7 @@ const allReducers = combineReducers({
     basket: basketReducer,
     order: OrderReducer,
     temporder: TempOrderSlice,
+    msg: MessagesReducer,
     user: userSlice,
 })
 

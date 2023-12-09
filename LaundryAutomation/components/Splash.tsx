@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Platform, SafeAreaView, Text } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { View } from 'react-native';
@@ -7,12 +7,19 @@ import { useAppSelector } from '../hooks/Hooks';
 import { axiosInstance } from '../helpers/AxiosAPI';
 import { useToast } from 'react-native-toast-notifications';
 import messaging from '@react-native-firebase/messaging';
+import socket from '../helpers/Socket';
 
 const Splash = (props: any) => {
     const user: any = useAppSelector((state) => state.user.value);
     const toast = useToast();
     const closeSplashScreen = async () => {
+        console.log("Splash Screen Closed");
         if (user?.token != undefined) {
+            socket.send(
+                JSON.stringify({
+                    userId: user.user._id,
+                })
+            );
             if (Platform.OS === 'android') {
                 await messaging().registerDeviceForRemoteMessages();
                 const token = await messaging().getToken();
@@ -119,10 +126,15 @@ const Splash = (props: any) => {
         else
             props.navigation.navigate("Login");
     }
+
+    useEffect(() => {
+        setTimeout(closeSplashScreen, 2500);
+    }, []);
+
     return (
         <SafeAreaView style={{ backgroundColor: DarkPurple, height: '100%', justifyContent: 'center', alignItems: 'center' }}>
             <View style={{ bottom: 30 }}>
-                <LottieView style={{ left: 5, width: 220, height: 220 }} source={require('../assets/animated/laundry.json')} loop={false} autoPlay onAnimationFinish={closeSplashScreen} />
+                <LottieView style={{ left: 5, width: 220, height: 220 }} source={require('../assets/animated/laundry.json')} loop={false} autoPlay />
                 {/* onAnimationFinish={closeSplashScreen} */}
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={{ color: LoginBtn, fontSize: 40, fontWeight: '700' }}>Laundry</Text>

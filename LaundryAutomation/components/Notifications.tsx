@@ -5,6 +5,7 @@ import { axiosInstance } from '../helpers/AxiosAPI'
 import { useAppSelector } from '../hooks/Hooks'
 import LottieView from 'lottie-react-native'
 import { DarkGrey } from '../constants/Colors'
+import socket from '../helpers/Socket'
 
 const Notifications = (props: any) => {
     const [loading, setLoading] = useState(false);
@@ -14,7 +15,7 @@ const Notifications = (props: any) => {
     let geturl = `notifications/${user.userType == 'user' ? 'user' : user.userType == 'seller' ? 'seller' : 'rider'}/${user.user._id}`;
     let setReadUrl = `notifications/${user.userType == 'user' ? 'user' : user.userType == 'seller' ? 'seller' : 'rider'}/setread/${user.user._id}`;
 
-    useEffect(() => {
+    const fetchNotifications = () => {
         setLoading(true);
         axiosInstance.get(geturl)
             .then(function (response: any) {
@@ -27,7 +28,19 @@ const Notifications = (props: any) => {
                 setRefreshing(false);
                 setLoading(false);
             })
+    }
+    useEffect(() => {
+        fetchNotifications();
     }, [refreshing])
+
+    // useEffect(() => {
+    //     socket.onmessage = (event: any) => {
+    //         const data = JSON.parse(event.data);
+    //         if (data?.userId === user.user._id) {
+    //             fetchNotifications();
+    //         }
+    //     }
+    // }, [])
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);

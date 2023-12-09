@@ -13,6 +13,7 @@ import { useAppDispatch } from '../hooks/Hooks'
 import { addUser } from '../reduxStore/reducers/UserReducer'
 import messaging from '@react-native-firebase/messaging';
 import { addShopData } from '../reduxStore/reducers/ShopDataReducer'
+import socket from '../helpers/Socket'
 
 const Login = (props: any) => {
     const [loading, setLoading] = useState(false);
@@ -61,6 +62,11 @@ const Login = (props: any) => {
             .then(function (response: any) {
                 response.data.userType = isUser ? 'user' : isRider ? 'rider' : 'seller';
                 dispatch(addUser(response.data));
+                socket.send(
+                    JSON.stringify({
+                        userId: response.data.user._id,
+                    })
+                );
                 toast.show("Logged In!", {
                     type: "success",
                     placement: "top",

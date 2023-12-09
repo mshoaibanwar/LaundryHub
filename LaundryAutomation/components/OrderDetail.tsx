@@ -10,6 +10,7 @@ import LottieView from 'lottie-react-native'
 import { Linking } from 'react-native'
 import Toast from "react-native-toast-notifications";
 import { time } from 'console';
+import { set } from 'react-hook-form';
 
 const OrderDetail = (props: any) => {
     const [rating, setRating] = useState(0);
@@ -20,6 +21,7 @@ const OrderDetail = (props: any) => {
     const [ShopData, setShopData] = useState<any>([]);
 
     const [canChangePickup, setCanChangePickup] = useState<any>(false);
+    const [showBookRide, setShowBookRide] = useState<any>(false);
 
     const toast = useToast();
     const user: any = useAppSelector((state) => state.user.value);
@@ -240,6 +242,61 @@ const OrderDetail = (props: any) => {
         }
     }
 
+    useEffect(() => {
+        if (props?.route?.params?.status == 'Confirmed') {
+            const date = new Date();
+            let time = date.getHours();
+            const nampm = time >= 12 ? 'PM' : 'AM';
+            const ampm = (props?.route?.params?.ocollection)?.split(':')[1]?.split(' ')[1];
+            let colTime = (props?.route?.params?.ocollection)?.split(':')[0];
+            colTime = colTime + ampm;
+            time = time % 12;
+            time = time ? time : 12;
+            const currentTime = time + nampm;
+            const isCurrentTimeGreaterThanColTime = currentTime.localeCompare(colTime) > 0;
+            //Date
+            const dateString = props?.route?.params?.orderDate;
+            const targetDate = new Date(dateString);
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+            const isToday = targetDate.toDateString() === currentDate.toDateString();
+            const isPast = targetDate < currentDate;
+            if (isToday) {
+                if (isCurrentTimeGreaterThanColTime) {
+                    setShowBookRide(true);
+                }
+            }
+            else if (isPast) {
+                setShowBookRide(true);
+            }
+        }
+        else {
+            setShowBookRide(false);
+        }
+    }, []);
+
+    const BookRide = () => {
+        let rideData = { uid: user?.user?._id, sid: props?.route?.params?.shopid, pLoc: props?.route?.params?.address?.add, dLoc: ShopData?.address, pCord: props?.route?.params?.address?.cords ? props?.route?.params?.address?.cords : { lati: 12, longi: 23 }, dCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: props?.route?.params?.items, pMethod: props?.route?.params?.pMethod };
+        setLoading(true);
+        axiosInstance.post('rides/add', rideData)
+            .then(function (response: any) {
+                setLoading(false);
+                toast.show('Ride Requested!', {
+                    type: "success",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                });
+                props.navigation.navigate("RideReq");
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error.response);
+            })
+    }
+
+    //console.log(ShopData)
+
     return (
         <SafeAreaView>
             <View style={{ padding: 20 }}>
@@ -311,6 +368,11 @@ const OrderDetail = (props: any) => {
                                         <Text style={{ color: 'black' }}>Pickup On: </Text>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.orderDate} | {props?.route?.params?.ocollection}</Text>
                                     </View>
+                                    {showBookRide ?
+                                        <TouchableOpacity onPress={BookRide} style={{ padding: 5, backgroundColor: BlueColor, borderRadius: 5, marginRight: 10 }}>
+                                            <Text style={{ textAlign: 'center', color: 'white', fontSize: 16 }}>Book Rider for Pickup</Text>
+                                        </TouchableOpacity>
+                                        : null}
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%' }}>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.delivery.date} | {props?.route?.params?.delivery.time}</Text>

@@ -46,9 +46,9 @@ router.route('/ride/:id').get((req, res) => {
 
 router.route('/updateLoc/:id').post((req, res) => {
         Ride.findOneAndUpdate({ uid :req.params.id}, {riderCords: req.body})
-                .then(() => 
+                .then((result) => 
                 {
-                        res.json('Rider Location Updated to: ' + req.body.latitude + " | " + req.body.longitude);
+                        res.json('Rider Location Updated to: ' + req.body.latitude + " | " + req.body.longitude + " | " + result);
                 })
                 .catch(err => res.status(404).send(err));
 });

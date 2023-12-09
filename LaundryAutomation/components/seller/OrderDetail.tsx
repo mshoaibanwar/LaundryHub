@@ -17,11 +17,12 @@ const OrderDetail = (props: any) => {
     const [statuses, setStatuses] = useState([
         { label: 'Pending', value: 'Pending' },
         { label: 'Confirmed', value: 'Confirmed' },
-        { label: 'Pending Payment', value: 'Pending Payment' },
+        { label: 'Received', value: 'Received' },
         { label: 'Processing', value: 'Processing' },
-        { label: 'Cancelled', value: 'Cancelled' },
         { label: 'Delivering', value: 'Delivering' },
         { label: 'Delivered', value: 'Delivered' },
+        { label: 'Pending Payment', value: 'Pending Payment' },
+        { label: 'Cancelled', value: 'Cancelled' },
     ]);
 
     const onRefresh = React.useCallback(() => {

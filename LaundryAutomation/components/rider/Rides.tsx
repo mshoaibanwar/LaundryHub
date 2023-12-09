@@ -13,6 +13,7 @@ import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { Switch } from 'react-native-gesture-handler';
 import RideReqCard from './RideReqCard';
+import socket from '../../helpers/Socket';
 
 const Rides = ({ navigation }: any) => {
     const user: any = useAppSelector(state => state.user.value);
@@ -41,6 +42,11 @@ const Rides = ({ navigation }: any) => {
 
     }, []);
     const toggleSwitch = () => {
+        socket.send(
+            JSON.stringify({
+                RiderStatus: !isEnabled,
+            })
+        );
         setIsEnabled(previousState => !previousState);
         axiosInstance.post(`riders/updateDutyStatus/${user.user._id}`, { status: isEnabled ? 'Off' : 'On' })
             .then((res) => {
@@ -50,6 +56,12 @@ const Rides = ({ navigation }: any) => {
                 console.log(err.response.data);
             })
     }
+    useEffect(() => {
+        socket.onmessage = (e) => {
+            const message = e.data;
+            console.log(message);
+        }
+    }, []);
     return (
         <SafeAreaView style={{ height: '100%' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 20, marginBottom: 0 }}>

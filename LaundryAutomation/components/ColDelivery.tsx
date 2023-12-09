@@ -75,7 +75,7 @@ const ColDelivery = (props: any) => {
     const onCheckout = () => {
         if (delData != null && props?.route?.params?.name != undefined) { //&& colData != null
             let delDate = delData[0].getDate() + "-" + (delData[0].getMonth() + 1) + "-" + new Date().getFullYear();
-            const address = { name: props?.route?.params?.name, num: props?.route?.params?.num, add: props?.route?.params?.add, coordinates: { lati: props?.route?.params?.stateD?.latitude, longi: props?.route?.params?.stateD?.longitude } }
+            const address = { name: props?.route?.params?.name, num: props?.route?.params?.num, add: props?.route?.params?.add, coordinates: { lati: props?.route?.params?.cords?.lat, longi: props?.route?.params?.cords?.lon } }
             const order: any = { collection: colData, delivery: { date: delDate, time: delData[1] }, address: address };
             dispatch(mergeTempOrder(order));
             props.navigation.navigate("ShopsStack", { screen: 'Checkout', params: order });
@@ -188,8 +188,6 @@ const ColDelivery = (props: any) => {
                                     </TouchableOpacity>
                                 )}
                                 horizontal={true}
-                                //Setting the number of column
-                                // numColumns={6}
                                 keyExtractor={item => item.getDate().toString()}
                             />
                         </>
@@ -205,8 +203,6 @@ const ColDelivery = (props: any) => {
                             </TouchableOpacity>
                         )}
                         horizontal={true}
-                        //Setting the number of column
-                        // numColumns={6}
                         keyExtractor={item => item}
                     />
                 </View>

@@ -6,10 +6,12 @@ import { axiosInstance } from '../../helpers/AxiosAPI'
 import RideDetails from './RideDetails'
 import { useDistance } from '../../helpers/DistanceCalculator'
 import { useAppSelector } from '../../hooks/Hooks'
+import LottieView from 'lottie-react-native'
 
 const RideReqCard = ({ navigation, ride }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [user, setUser] = useState<any>({});
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         axiosInstance.get(`users/getUser/${ride.uid}`)
             .then((res) => {
@@ -24,6 +26,18 @@ const RideReqCard = ({ navigation, ride }: any) => {
     const distance = useDistance({ from: { latitude: ride.pCord.lati, longitude: ride.pCord.longi }, to: { latitude: ride.dCord.lati, longitude: ride.dCord.longi } });
     const away = useDistance({ from: { latitude: ride.pCord.lati, longitude: ride.pCord.longi }, to: { latitude: suser?.latitude, longitude: suser?.longitude } });
     let fare = distance * 20;
+
+    const acceptRide = () => {
+        setLoading(true);
+        axiosInstance.post(`rides/acceptRide/${ride._id}`, { rid: suser.user._id, status: 'Accepted' })
+            .then((res) => {
+                setLoading(false);
+                navigation.navigate("CRide", { ride, user });
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }
 
     return (
         <>
@@ -77,11 +91,18 @@ const RideReqCard = ({ navigation, ride }: any) => {
                     <TouchableOpacity style={{ backgroundColor: DarkGrey, width: '48%', borderRadius: 5, padding: 8 }}>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Reject</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("CRide", { ride, user })} style={{ backgroundColor: BlueColor, width: '48%', borderRadius: 5, padding: 8 }}>
+                    <TouchableOpacity onPress={acceptRide} style={{ backgroundColor: BlueColor, width: '48%', borderRadius: 5, padding: 8 }}>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Accept</Text>
                     </TouchableOpacity>
                 </View>
             </Pressable>
+
+            {loading ?
+                <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
+                    <LottieView style={{ width: 150, height: 150 }} source={require('../../assets/animated/loading.json')} autoPlay loop />
+                </View>
+                : null}
+
             <RideDetails navigation={navigation} setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={user} isAccepted={false} />
         </>
     )

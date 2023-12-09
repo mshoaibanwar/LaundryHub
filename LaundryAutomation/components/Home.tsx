@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { BackgroundColor, BlueColor } from '../constants/Colors';
+import socket from '../helpers/Socket';
 
 import {
     StyleSheet,
@@ -107,7 +108,7 @@ const Home = ({ navigation }: any) => {
     const SLIDER_WIDTH = Dimensions.get('window').width / 1.11;
     const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 1 / 2);
 
-    useEffect(() => {
+    const getNotiCount = () => {
         axiosInstance.get(`notifications/user/count/unread/${user.user._id}`)
             .then(function (response: any) {
                 setNotiCount(response.data.Count);
@@ -115,7 +116,19 @@ const Home = ({ navigation }: any) => {
             .catch(function (error) {
                 // handle error
             })
-    }, [refreshing, navigation,])
+    }
+    useEffect(() => {
+        getNotiCount();
+    }, [refreshing, navigation])
+
+    useEffect(() => {
+        socket.onmessage = (event: any) => {
+            const data = JSON.parse(event.data);
+            if (data?.userId === user.user._id) {
+                getNotiCount();
+            }
+        }
+    }, [])
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -155,7 +168,7 @@ const Home = ({ navigation }: any) => {
                     <Text style={styles.nameText}>{user?.user?.name.split(' ')[0]}</Text>
                 </View>
                 <View style={styles.iconView}>
-                    <TouchableOpacity onPress={() => navigation.navigate("HomeStack", { screen: 'Noti' })} style={styles.icon}>
+                    <TouchableOpacity onPress={() => { navigation.navigate("HomeStack", { screen: 'Noti' }); }} style={styles.icon}>
                         <Bell size={35} color='orange' fill='orange' />
                         {notiCount > 0 ?
                             <View style={{ position: 'absolute', top: -3, right: -3, backgroundColor: 'green', borderRadius: 50, width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}>
@@ -173,7 +186,6 @@ const Home = ({ navigation }: any) => {
                 </View>
             </View>
             <View style={{}}>
-
                 <FlatList
                     style={{ paddingHorizontal: 20 }}
                     data={Data}

@@ -1,11 +1,11 @@
-import { ArrowLeft, Banknote, ChevronRightCircle, CreditCard, TimerOff } from 'lucide-react-native';
+import { ArrowLeft, Banknote, CreditCard } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react'
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView, View } from 'react-native'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks';
 import { BlueColor } from '../constants/Colors';
 import { useToast } from "react-native-toast-notifications";
-import { addOrder, emptyOrders } from '../reduxStore/reducers/OrderReducer';
+import { addOrder } from '../reduxStore/reducers/OrderReducer';
 import { axiosInstance } from '../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { emptyBasket } from '../reduxStore/reducers/BasketReducer';
@@ -98,8 +98,6 @@ const Checkout = (props: any) => {
     time = time ? time : 12;
     const currentTime = time + nampm;
 
-    console.log(orderDetails.address.coordinates)
-
     const placeOrder = async () => {
         setLoading(true);
         const ubasketItems = await updateBasketItems();
@@ -124,14 +122,13 @@ const Checkout = (props: any) => {
                         let rideData = { uid: user.user._id, sid: orderDetails.shopid, pLoc: orderDetails.address.add, dLoc: shopAddress.add, pCord: orderDetails.address.coordinates, dCord: shopAddress.cords, oItems: ubasketItems, pMethod: payMethod };
                         axiosInstance.post('rides/add', rideData)
                             .then(function (response: any) {
-                                console.log(response.data);
                                 toast.show('Ride Requested!', {
                                     type: "success",
                                     placement: "top",
                                     duration: 2000,
                                     animationType: "slide-in",
                                 });
-
+                                props.navigation.navigate("RideReq");
                             })
                             .catch(function (error) {
                                 // handle error

@@ -1,18 +1,21 @@
-import { Banknote, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Phone } from 'lucide-react-native'
+import { Banknote, Bike, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Phone } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { BlueColor, DarkGrey, LightGreen } from '../constants/Colors'
 import { axiosInstance } from '../helpers/AxiosAPI'
-import { useAppSelector } from '../hooks/Hooks'
+import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
 import { useDistance } from '../helpers/DistanceCalculator'
+import socket from '../helpers/Socket'
+import { emptyMsg } from '../reduxStore/reducers/MessagesReducer'
 
 const RideReq = ({ navigation }: any) => {
     const [rideAccepted, setRideAccepted] = React.useState(false)
     const mapRef = useRef<any>(null);
     const [rideData, setRideData] = useState<any>({});
     const [rider, setRider] = useState<any>({});
-    var ws = React.useRef(new WebSocket('http://localhost:8080/')).current;
+    const [riderLocation, setRiderLocation] = useState<any>({ latitude: 0, longitude: 0 });
+    const [disableBtn, setDisableBtn] = useState(false);
 
     const user: any = useAppSelector((state) => state.user.value);
 
@@ -21,16 +24,16 @@ const RideReq = ({ navigation }: any) => {
 
     const goToRider = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
-        mapRef?.current?.animateToRegion({ latitude: rideData?.riderCords?.latitude, longitude: rideData?.riderCords?.longitude }, 2000);
+        mapRef?.current?.animateToRegion({ latitude: riderLocation?.latitude, longitude: riderLocation?.longitude, latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
     const goToPickup = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
-        mapRef?.current?.animateToRegion({ latitude: Number(rideData?.pCord?.lati), longitude: Number(rideData?.pCord?.longi) }, 2000);
+        mapRef?.current?.animateToRegion({ latitude: Number(rideData?.pCord?.lati), longitude: Number(rideData?.pCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
     const goToDest = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
-        mapRef?.current?.animateToRegion({ latitude: Number(rideData?.dCord?.lati), longitude: Number(rideData?.dCord?.longi) }, 2000);
+        mapRef?.current?.animateToRegion({ latitude: Number(rideData?.dCord?.lati), longitude: Number(rideData?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
     // function goToPickup(): void {
@@ -46,7 +49,7 @@ const RideReq = ({ navigation }: any) => {
                 setRideData(res.data[0])
                 setRideAccepted(res.data[0].status !== 'Pending')
 
-                axiosInstance.get(`users/getUser/${res.data[0].uid}`)
+                axiosInstance.get(`users/getUser/${res.data[0].rid}`)
                     .then((res) => {
                         setRider(res.data);
                     })
@@ -60,36 +63,33 @@ const RideReq = ({ navigation }: any) => {
     }, [rideAccepted]);
 
     useEffect(() => {
-        initiateSocketConnection()
-    }, [])
-
-    const initiateSocketConnection = () => {
-        // Add URL to the server which will contain the server side setup
-        ws = new WebSocket(`http://localhost:8080/`)
-
-        // When a connection is made to the server, send the user ID so we can track which
-        // socket belongs to which user
-        ws.onopen = () => {
-            ws.send(
-                JSON.stringify({
-                    userId: user.user._id,
-                })
-            )
-        }
-        // Ran when teh app receives a message from the server
-        ws.onmessage = (e) => {
-            const message = e.data
-            console.log(message)
-            if (message == 'Ride Accepted') {
-                setRideAccepted(true)
+        socket.onmessage = (e) => {
+            const message = JSON.parse(e.data);
+            if (message.riderLocation) {
+                setRiderLocation(message.riderLocation);
+            }
+            if (message.rideStatus) {
+                if (message.rideStatus == 'Set Arrived') {
+                    setDisableBtn(true);
+                }
+                if (message.rideStatus == 'Set Completed') {
+                    navigation.navigate('RideComp', { ride: rideData });
+                }
             }
         }
+    }, [])
+
+    const dispatch = useAppDispatch();
+    const cancelRide = () => {
+        dispatch(emptyMsg([]));
+        navigation.goBack();
     }
+
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             {rideAccepted ?
                 <View>
-                    <View style={Platform.OS == 'android' ? { height: '60.5%' } : { height: '63%' }}>
+                    <View style={Platform.OS == 'android' ? { height: '60.5%' } : { height: '66%' }}>
                         {rideData ?
                             <MapView
                                 ref={mapRef} //assign our ref to this MapView
@@ -98,8 +98,8 @@ const RideReq = ({ navigation }: any) => {
                                 followsUserLocation={true}
                                 loadingEnabled={true}
                                 region={{
-                                    latitude: rideData?.riderCords ? Number(rideData?.riderCords?.latitude) : 0,
-                                    longitude: rideData?.riderCords ? Number(rideData?.riderCords?.longitude) : 0,
+                                    latitude: riderLocation ? Number(riderLocation?.latitude) : 0,
+                                    longitude: riderLocation ? Number(riderLocation?.longitude) : 0,
                                     latitudeDelta: 0.105,
                                     longitudeDelta: 0.0321,
                                 }}
@@ -123,7 +123,7 @@ const RideReq = ({ navigation }: any) => {
                                     </View>
                                 </Marker>
                                 <Marker
-                                    coordinate={{ latitude: rideData?.riderCords ? Number(rideData?.riderCords?.latitude) : 0, longitude: rideData?.riderCords ? Number(rideData?.riderCords?.longitude) : 0 }}
+                                    coordinate={{ latitude: riderLocation ? Number(riderLocation?.latitude) : 0, longitude: riderLocation ? Number(riderLocation?.longitude) : 0 }}
                                     title={"Bike"}
                                     description={"Your Current Location"}
                                 >
@@ -140,7 +140,7 @@ const RideReq = ({ navigation }: any) => {
                             </MapView>
                             : null}
                     </View>
-                    <View style={{ paddingHorizontal: 20, paddingVertical: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: 'white', bottom: 20 }}>
+                    <View style={{ paddingHorizontal: 20, paddingVertical: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: 'white', bottom: 20, height: '34%' }}>
                         <Pressable style={{ width: 90, height: 4, backgroundColor: DarkGrey, alignSelf: 'center', borderRadius: 10 }}></Pressable>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ margin: 5, marginTop: 0, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
@@ -151,7 +151,7 @@ const RideReq = ({ navigation }: any) => {
                                 </View>
                             </View>
                             <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                                <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Chat', rider?._id)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
                                     <MessageSquare size={20} color={'green'} />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
@@ -161,46 +161,60 @@ const RideReq = ({ navigation }: any) => {
                         </View>
                         <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginBottom: 8 }}>
                         </View>
-                        <View style={{ alignItems: 'center', gap: 10 }}>
-                            <TouchableOpacity onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
-                                <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
-                                    <LocateFixed color='green' size={20} />
-                                </View>
-                                <View style={{ width: '90%' }}>
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{rideData?.pLoc}</Text>
-                                </View>
-                            </TouchableOpacity>
+                        <ScrollView>
+                            <View style={{ alignItems: 'center', gap: 10, height: 10 }}>
+                                <TouchableOpacity onPress={goToRider} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                                    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                                        <Bike color='green' size={20} />
+                                    </View>
+                                    <View style={{ width: '90%' }}>
+                                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Rider Location</Text>
+                                        <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>Click to View</Text>
+                                    </View>
+                                </TouchableOpacity>
 
-                            <TouchableOpacity onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
-                                <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
-                                    <Navigation color='green' size={20} />
-                                </View>
-                                <View style={{ width: '90%' }}>
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{rideData.dLoc}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginVertical: 8 }}>
-                        </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <MapPin color='green' size={25} />
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>{distance} KM Distance</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Banknote color='green' size={25} />
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>Fare: Rs {fare}</Text>
+                                <TouchableOpacity onPress={goToPickup} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                                    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                                        <LocateFixed color='green' size={20} />
+                                    </View>
+                                    <View style={{ width: '90%' }}>
+                                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Pickup Location</Text>
+                                        <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{rideData?.pLoc}</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={goToDest} style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '95%' }}>
+                                    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                                        <Navigation color='green' size={20} />
+                                    </View>
+                                    <View style={{ width: '90%' }}>
+                                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Dropoff Location</Text>
+                                        <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{rideData.dLoc}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
+                        <View style={{ position: 'absolute', bottom: 5, alignSelf: 'center', backgroundColor: 'white', width: '100%', paddingHorizontal: 10 }}>
+                            <View style={{ height: 1, width: '100%', backgroundColor: 'grey', marginVertical: 8 }}>
+                            </View>
+                            <View style={{ alignItems: 'center', width: '90%' }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <MapPin color='green' size={25} />
+                                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>{distance} KM Distance</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Banknote color='green' size={25} />
+                                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginLeft: 10 }}>Fare: Rs {fare}</Text>
+                                    </View>
                                 </View>
                             </View>
+                            <View style={{ height: 1, width: '100%', backgroundColor: 'grey', marginVertical: 8 }}>
+                            </View>
+                            <TouchableOpacity disabled={disableBtn} onPress={cancelRide} style={disableBtn ? { width: '100%', padding: 8, backgroundColor: 'grey', borderRadius: 10, alignSelf: 'center' } : { width: '100%', padding: 8, backgroundColor: 'red', borderRadius: 10, alignSelf: 'center' }}>
+                                <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', color: 'white' }}>Cancel Ride</Text>
+                            </TouchableOpacity>
                         </View>
-                        <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginVertical: 8 }}>
-                        </View>
-                        <TouchableOpacity style={{ padding: 5, backgroundColor: 'red', marginHorizontal: 10, borderRadius: 10 }}>
-                            <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', color: 'white' }}>Cancel Ride</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
                 :
@@ -218,7 +232,7 @@ const RideReq = ({ navigation }: any) => {
                     </View>
                 </View>
             }
-        </View>
+        </View >
     )
 }
 

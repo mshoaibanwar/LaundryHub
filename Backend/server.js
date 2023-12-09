@@ -128,18 +128,18 @@ var server = app.listen(8080, function () {
 
   function verifyUserAndAddUserIdToSocket(ws, userId) {
     // Verify user exists, or if a JWT is sent instead of user ID, verify that JWT here...
-  
-    ws.id = JSON.stringify({ userId })
+      ws.id = JSON.stringify({ userId })  
   }
 
   function removeOtherUserLocationSockets(wss, userId) {
     // Iterate through all connected clients
     wss.clients.forEach((client) => {
         // Check if the client has an 'id' property and it matches the specified userId
-        if (client.id && JSON.parse(client.id).userId !== userId) {
+        if (client.id && JSON.parse(client.id).userId === userId) {
             // Close the WebSocket connection for other users
             client.close();
             console.log(`Closed WebSocket connection for user ID ${JSON.parse(client.id).userId}`);
+            wss.clients.delete(client);
         }
     });
 }
@@ -153,19 +153,26 @@ var server = app.listen(8080, function () {
 
       console.log(received)
 
-      if (received && received.userId) {
-        verifyUserAndAddUserIdToSocket(ws, received.userId)
-        removeOtherUserLocationSockets(wss, received.userId)
+      if(received && received.to) {
+        wss.clients.forEach(function each(client) {
+          if (client.id && JSON.parse(client.id).userId == received.to) {
+            if(received.msg)
+              client.send(JSON.stringify({msg: received.msg}));
+            else if(received.riderLocation)
+              client.send(JSON.stringify({riderLocation: received.riderLocation}));
+            else if(received.rideStatus)
+              client.send(JSON.stringify({rideStatus: received.rideStatus}));
+          }
+        });
       }
+
+      if (received && received.userId) {
+        removeOtherUserLocationSockets(wss, received.userId)
+        verifyUserAndAddUserIdToSocket(ws, received.userId)
+      }
+      console.log(wss.clients.size)
     })
   })
-
-  let message = 'I am Server Talking to you';
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message.toString());
-      }
-    });
 
   app.set("wss", wss)
 

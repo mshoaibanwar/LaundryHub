@@ -17,18 +17,18 @@ import { Banknote, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Pho
 import { useRef } from "react";
 import RideDetails from './RideDetails';
 import ActionSheet from 'react-native-actionsheet'
-import { useAppSelector } from '../../hooks/Hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import { useDistance } from '../../helpers/DistanceCalculator';
-import GetLocation from 'react-native-get-location';
+import socket from '../../helpers/Socket';
+import { emptyMsg } from '../../reduxStore/reducers/MessagesReducer';
 
-let locationWatchId: number;
 let locationUpdateInterval: NodeJS.Timeout;
 
 const CurrentRide = (props: any) => {
     const [ride, setRide] = useState<any>(props?.route?.params?.ride);
     const mapRef = useRef<any>(null);
     const actionSheetRef = useRef<any>(null);
-    const texts = ['Set Arrived', 'Set Pickedup', 'Set Droppedoff', 'Set Completed']
+    const texts = ['Set Arrived', 'Set Pickedup', 'Set Droppedoff', 'Set Completed', 'Completed']
     const [btnPressCount, setBtnPressCount] = useState(0);
     const [origin, setOrigin] = useState({ latitude: Number(props?.route?.params?.ride?.pCord?.lati), longitude: Number(props?.route?.params?.ride?.pCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 });
     const [destination, setDestination] = useState({ latitude: Number(props?.route?.params?.ride?.dCord?.lati), longitude: Number(props?.route?.params?.ride?.dCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 });
@@ -40,12 +40,14 @@ const CurrentRide = (props: any) => {
     const user: any = useAppSelector((state) => state.user.value);
     let ruser = props?.route?.params?.user;
 
+    const dispatch = useAppDispatch();
+
     const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
     let fare = distance * 20;
 
     const goToMyLoc = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
-        mapRef?.current?.animateToRegion(currentLoc, 2000);
+        mapRef?.current?.animateToRegion({ latitude: Number(user?.latitude), longitude: Number(user?.longitude), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
     const goToPickup = () => {
@@ -59,7 +61,12 @@ const CurrentRide = (props: any) => {
 
     const onRideBtnPress = () => {
         setBtnPressCount(btnPressCount + 1);
+        socket.send(JSON.stringify({
+            rideStatus: texts[btnPressCount],
+            to: ruser._id,
+        }))
         if (btnPressCount == 3) {
+            dispatch(emptyMsg([]));
             props.navigation.navigate('RideComp', { ride });
         }
     }
@@ -69,6 +76,10 @@ const CurrentRide = (props: any) => {
     }
 
     useEffect(() => {
+        socket.send(JSON.stringify({
+            riderLocation: { latitude: user?.latitude, longitude: user?.longitude },
+            to: ruser._id,
+        }));
         trackLocation();
         return () => {
             clearInterval(locationUpdateInterval);
@@ -77,38 +88,24 @@ const CurrentRide = (props: any) => {
 
     const trackLocation = () => {
         locationUpdateInterval = setInterval(() => {
-            GetLocation.getCurrentPosition({
-                enableHighAccuracy: true,
-                timeout: 5000,
-            })
-                .then(location => {
-                    const { latitude, longitude } = location;
-                    setCurrentLoc({ latitude, longitude, latitudeDelta: 0.105, longitudeDelta: 0.0321 });
-                    if (
-                        currentLoc.latitude !== lastLoc.latitude ||
-                        currentLoc.longitude !== lastLoc.longitude
-                    ) {
-                        saveCoordinatesToMongoDB({ latitude, longitude });
-                        setLastLoc({ latitude, longitude });
-                    }
-                })
-                .catch(error => {
-                    const { code, message } = error;
-                    console.warn(code, message);
-                })
+            socket.send(JSON.stringify({
+                riderLocation: { latitude: user?.latitude, longitude: user?.longitude },
+                to: ruser._id,
+            }))
+            //saveCoordinatesToMongoDB({ latitude: user?.latitude, longitude: user?.longitude });
         }, 10000);
     };
 
-    const saveCoordinatesToMongoDB = async (coordinates: { latitude: number; longitude: number }) => {
-        const apiUrl = `/rides/updateLoc/${user.user._id}`;
-        await axiosInstance.post(apiUrl, coordinates)
-            .then(function (response: any) {
-                console.log(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    };
+    // const saveCoordinatesToMongoDB = async (coordinates: { latitude: number; longitude: number }) => {
+    //     const apiUrl = `/rides/updateLoc/${user.user._id}`;
+    //     await axiosInstance.post(apiUrl, coordinates)
+    //         .then(function (response: any) {
+    //             console.log(response.data);
+    //         })
+    //         .catch(function (error) {
+    //             console.log(error);
+    //         });
+    // };
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -120,8 +117,8 @@ const CurrentRide = (props: any) => {
                     followsUserLocation={true}
                     loadingEnabled={true}
                     region={{
-                        latitude: Number(currentLoc?.latitude),
-                        longitude: Number(currentLoc?.longitude),
+                        latitude: Number(user?.latitude),
+                        longitude: Number(user?.longitude),
                         latitudeDelta: 0.105,
                         longitudeDelta: 0.0321,
                     }}
@@ -145,7 +142,7 @@ const CurrentRide = (props: any) => {
                         </View>
                     </Marker>
                     <Marker
-                        coordinate={currentLoc}
+                        coordinate={{ latitude: Number(user?.latitude), longitude: Number(user?.longitude) }}
                         title={"Bike"}
                         description={"Your Current Location"}
                     >
@@ -182,7 +179,7 @@ const CurrentRide = (props: any) => {
                         </View>
                     </View>
                     <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                        <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                        <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ruser._id)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
                             <MessageSquare size={20} color={'green'} />
                         </TouchableOpacity>
                         <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
@@ -248,7 +245,7 @@ const CurrentRide = (props: any) => {
                 options={['Yes, Cancel', 'No']}
                 cancelButtonIndex={1}
                 destructiveButtonIndex={0}
-                onPress={(index: any) => { if (index == 0) props.navigation.navigate('RideComp', { ride, cancelled: true }) }}
+                onPress={(index: any) => { if (index == 0) { dispatch(emptyMsg([])); props.navigation.navigate('RideComp', { ride, cancelled: true }) } }}
             />
 
             <RideDetails navigation={props.navigation} setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={ruser} isAccepted={true} />

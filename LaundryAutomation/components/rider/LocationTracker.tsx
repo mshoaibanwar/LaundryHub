@@ -1,9 +1,11 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { View, Text, PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import { axiosInstance } from '../../helpers/AxiosAPI';
 import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import { addUser } from '../../reduxStore/reducers/UserReducer';
 import GetLocation from 'react-native-get-location';
+import socket from '../../helpers/Socket';
+import { addMsg } from '../../reduxStore/reducers/MessagesReducer';
 
 interface LocationTrackerProps {
     children: ReactNode; // Explicitly define children prop
@@ -19,6 +21,21 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 10000,
+        })
+            .then(location => {
+                const { latitude, longitude } = location;
+                setCurrentLocation({ latitude, longitude });
+                saveCoordinatesToMongoDB({ latitude, longitude });
+                setLastLocation({ latitude, longitude });
+            })
+            .catch(error => {
+                const { code, message } = error;
+                console.warn(code, message);
+            })
+
         const requestLocationPermission = async () => {
             try {
                 if (Platform.OS === 'android') {
@@ -59,13 +76,8 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
                 .then(location => {
                     const { latitude, longitude } = location;
                     setCurrentLocation({ latitude, longitude });
-                    if (
-                        currentLocation.latitude !== lastLocation.latitude ||
-                        currentLocation.longitude !== lastLocation.longitude
-                    ) {
-                        saveCoordinatesToMongoDB({ latitude, longitude });
-                        setLastLocation({ latitude, longitude });
-                    }
+                    saveCoordinatesToMongoDB({ latitude, longitude });
+                    setLastLocation({ latitude, longitude });
                 })
                 .catch(error => {
                     const { code, message } = error;
@@ -75,7 +87,7 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     }
 
     const saveCoordinatesToMongoDB = async (coordinates: { latitude: number; longitude: number }) => {
-        const apiUrl = `/riders/updateLoc/${user.user._id}`;
+        const apiUrl = `/riders/updateLoc/${user?.user?._id}`;
         await axiosInstance.post(apiUrl, coordinates)
             .then(function (response: any) {
                 let nuser = { ...user, ...coordinates }
@@ -86,6 +98,16 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
                 console.log(error);
             });
     };
+
+    useEffect(() => {
+        socket.onmessage = (e) => {
+            const message = JSON.parse(e.data);
+            if (message.msg) {
+                const nMsg: any = { from: 'other', msg: message.msg };
+                dispatch(addMsg(nMsg))
+            }
+        }
+    }, []);
 
     return (
         <>

@@ -135,7 +135,6 @@ router.route('/update').post((req, res) => {
 router.route('/updateToken').post((req, res) => {
     User.findOneAndUpdate({ email: req.body.email }, { token: req.body.token })
         .then((user) => {
-            console.log(req.body.email);
             res.json("Token Updated");
         })
         .catch(err => res.status(404).send('User not found!'));
