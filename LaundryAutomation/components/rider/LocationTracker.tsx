@@ -12,8 +12,6 @@ interface LocationTrackerProps {
 }
 
 const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
-    const [currentLocation, setCurrentLocation] = useState({ latitude: 0, longitude: 0 });
-    const [lastLocation, setLastLocation] = useState({ latitude: 0, longitude: 0 });
     const user: any = useAppSelector((state) => state.user.value);
 
     let locationUpdateInterval: NodeJS.Timeout;
@@ -27,9 +25,7 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
         })
             .then(location => {
                 const { latitude, longitude } = location;
-                setCurrentLocation({ latitude, longitude });
                 saveCoordinatesToMongoDB({ latitude, longitude });
-                setLastLocation({ latitude, longitude });
             })
             .catch(error => {
                 const { code, message } = error;
@@ -75,9 +71,8 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
             })
                 .then(location => {
                     const { latitude, longitude } = location;
-                    setCurrentLocation({ latitude, longitude });
-                    saveCoordinatesToMongoDB({ latitude, longitude });
-                    setLastLocation({ latitude, longitude });
+                    if (user.latitude !== latitude && user.longitude !== longitude)
+                        saveCoordinatesToMongoDB({ latitude, longitude });
                 })
                 .catch(error => {
                     const { code, message } = error;
@@ -92,7 +87,7 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
             .then(function (response: any) {
                 let nuser = { ...user, ...coordinates }
                 dispatch(addUser(nuser));
-                console.log(response.data);
+                console.log(nuser);
             })
             .catch(function (error) {
                 console.log(error);

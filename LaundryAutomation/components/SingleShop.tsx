@@ -66,29 +66,32 @@ const SingleShop = (props: any) => {
     const toast = useToast();
 
     const date = new Date();
-    let today = date.getDay();
-    let hourNow = date.getHours();
-    let startTime = props.route.params?.itemsdet?.timing[today].time?.start.split(':')[0];
-    let endTime = props.route.params?.itemsdet?.timing[today].time?.end.split(':')[0];
+    const today = date.getDay();
+    const hourNow = date.getHours();
+    const shopTiming = props.route.params?.itemsdet?.timing[today]?.time;
 
     useEffect(() => {
-        // Update the document title using the browser API
-        if (props.route.params?.itemsdet?.timing[today].status == 'off') {
+        if (!shopTiming || props.route.params?.itemsdet?.timing[today].status == 'off') {
+            // Handle case where shopTiming is not available for the current day
             setShopStatus('Closed');
-        }
-        else {
-            setShopStatus('Open');
-        }
-        if (hourNow > 12) {
-            hourNow = hourNow - 12;
-        }
-        if (hourNow >= endTime) {
-            setShopStatus('Closed');
-        }
-        if (hourNow < startTime) {
-            setShopStatus('Closed');
+        } else {
+            const startTime = convertToMinutes(shopTiming?.start);
+            const endTime = convertToMinutes(shopTiming?.end);
+            const currentTime = convertToMinutes(`${hourNow}:${date.getMinutes()} ${hourNow >= 12 ? 'PM' : 'AM'}`);
+            if (currentTime >= startTime && currentTime <= endTime) {
+                setShopStatus('Open');
+            } else {
+                setShopStatus('Closed');
+            }
         }
     }, []);
+
+    function convertToMinutes(timeString: any) {
+        const [hour, minute] = timeString.match(/\d+/g).map(Number);
+        const isPM = /PM/i.test(timeString);
+        const adjustedHour = (hour % 12) + (isPM ? 12 : 0);
+        return adjustedHour * 60 + minute;
+    }
 
     const OnSelectDateTime = () => {
         if (shopStatus == 'Open') {

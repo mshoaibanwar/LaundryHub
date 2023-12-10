@@ -11,16 +11,28 @@ const Ratings = (props: any) => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
 
+    const user: any = useAppSelector((state) => state.user.value);
+
     const shopData: any = useAppSelector((state) => state.shopdata.value);
 
     useEffect(() => {
-        axiosInstance.get(`/ratings/shop/${shopData?._id}`)
-            .then((res) => {
-                setRatings(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+        if (user?.userType == 'rider') {
+            axiosInstance.get(`/ratings/shop/${user?.user?._id}`)
+                .then((res) => {
+                    setRatings(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+        else
+            axiosInstance.get(`/ratings/shop/${shopData?._id}`)
+                .then((res) => {
+                    setRatings(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
     }, [refreshing, loading])
 
     const onRefresh = React.useCallback(() => {

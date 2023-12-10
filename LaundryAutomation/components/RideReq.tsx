@@ -2,12 +2,11 @@ import { Banknote, Bike, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigatio
 import React, { useEffect, useRef, useState } from 'react'
 import { Image, Platform, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import MapView, { Marker, Polyline } from 'react-native-maps'
-import { BlueColor, DarkGrey, LightGreen } from '../constants/Colors'
+import { DarkGrey, LightGreen } from '../constants/Colors'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
 import { useDistance } from '../helpers/DistanceCalculator'
 import socket from '../helpers/Socket'
-import { emptyMsg } from '../reduxStore/reducers/MessagesReducer'
 
 const RideReq = ({ navigation }: any) => {
     const [rideAccepted, setRideAccepted] = React.useState(false)
@@ -81,8 +80,10 @@ const RideReq = ({ navigation }: any) => {
 
     const dispatch = useAppDispatch();
     const cancelRide = () => {
-        dispatch(emptyMsg([]));
-        navigation.goBack();
+        // dispatch(emptyMsg([]));
+        // navigation.goBack();
+
+        navigation.navigate('RideComp', { ride: rideData });
     }
 
     return (

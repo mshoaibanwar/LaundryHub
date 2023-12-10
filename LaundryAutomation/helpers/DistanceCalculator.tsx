@@ -13,7 +13,8 @@ export const useDistance = ({ from, to }: UseDistanceTypes): number => {
             Math.cos(toRadius(to.latitude)) * Math.cos(toRadius(from.latitude)) * Math.cos(toRadius(from.longitude) - toRadius(to.longitude)),
         ) * earthRadius;
 
-    return Math.round(convertDistance(distance, 'km'));
+    //return Math.round(convertDistance(distance, 'km'));
+    return convertDistance(distance, 'km').toFixed(2) as any;
 };
 
 // Convert to a different unit

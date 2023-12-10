@@ -41,7 +41,7 @@ const RideReqCard = ({ navigation, ride }: any) => {
 
     return (
         <>
-            <Pressable onPress={() => setModalVisible(true)} style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
+            <Pressable key={ride._id} onPress={() => setModalVisible(true)} style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ margin: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                         <Image style={{ width: 40, height: 40, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user?.profile ? { uri: user?.profile } : require('../../assets/images/profileph.png')} />

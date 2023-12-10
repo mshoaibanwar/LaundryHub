@@ -44,7 +44,13 @@ const orderSchema = new Schema({
         required: false,
         default: "Pending",
         unique: false,
-    }
+    },
+    ride: {
+        type: Boolean,
+        required: false,
+        default: true,
+        unique: false,
+    },
 }, {
     timestamps: true,
 });

@@ -1,12 +1,13 @@
-import { X, MapPin, Banknote, LocateFixed, Navigation, Router, Phone, BikeIcon } from 'lucide-react-native'
-import React, { useRef } from 'react'
+import { X, MapPin, Banknote, LocateFixed, Navigation, Router, Phone, BikeIcon, Star, Reply } from 'lucide-react-native'
+import React, { useEffect, useRef } from 'react'
 import { Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Modal, Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-notifications';
-import { LightGreen } from '../../constants/Colors';
+import { DarkGrey, LightGreen } from '../../constants/Colors';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { useDistance } from '../../helpers/DistanceCalculator';
 import { useAppSelector } from '../../hooks/Hooks';
+import { axiosInstance } from '../../helpers/AxiosAPI';
 
 interface propsTypes {
     setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,6 +19,8 @@ interface propsTypes {
 }
 
 const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { pCord: { lati: 0, longi: 0 }, dCord: { lati: 0, longi: 0 }, riderCords: { lati: 0, longi: 0 } }, user }: propsTypes) => {
+    const [rating, setRating] = React.useState<any>(null);
+    const [rated, setRated] = React.useState(false);
     const toastRef = useRef<any>(null);
     const mapRef = useRef<any>(null);
     const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
@@ -33,6 +36,21 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
         //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 }, 2000);
     };
+
+    useEffect(() => {
+        if (isAccepted)
+            axiosInstance.get(`ratings/ride/${ride?._id}`)
+                .then(function (response: any) {
+                    if (response.data.length > 0) {
+                        setRated(true);
+                        setRating(response?.data[0]);
+                    }
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+    }, [])
 
     return (
         <Modal
@@ -170,6 +188,26 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                             </View>
                         </View>
                         <View style={{ height: 1, backgroundColor: '#e8e8e8', marginVertical: 10 }}></View>
+                        {rating ?
+                            <View>
+                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Rating:</Text>
+                                <View style={{ marginVertical: 3, padding: 10, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between', borderWidth: 0.5, backgroundColor: 'white' }}>
+                                    <View style={{ width: '80%', gap: 3 }}>
+                                        <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>{rating?.uname}</Text>
+                                        <Text style={{ fontSize: 12, fontWeight: '400', color: DarkGrey }}>{rating?.createdAt?.split('T')[0]} | {rating?.createdAt?.split('T')[1].split('.')[0]}</Text>
+                                        <Text style={{ fontSize: 14, fontWeight: '500', color: 'black' }}>{rating?.review}</Text>
+                                    </View>
+                                    <View style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                                            <Star size={20} color='#FFD130' fill='#FFD130' />
+                                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>{rating?.rating}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={{ height: 1, backgroundColor: '#e8e8e8', marginVertical: 10 }}></View>
+                            </View>
+                            : null}
+
                         <View>
                             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'baseline' }}>
                                 <Text style={{ fontSize: 18 }}>Items</Text>

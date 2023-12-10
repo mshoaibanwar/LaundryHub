@@ -20,6 +20,18 @@ router.route('/count/').get((req, res) => {
         .catch(err => res.status(404).json("Error: " + err));
 });
 
+router.route('/user/count/:uid').get((req, res) => {
+        Ride.countDocuments({ rid: req.params.uid})
+        .then((count)=> res.json({"Count": count}))
+        .catch(err => res.status(404).send("Count Error: " + err));
+    });
+
+router.route('/user/cancelled/count/:uid').get((req, res) => {
+        Ride.countDocuments({ rid: req.params.uid, status: 'Cancelled'})
+        .then((count)=> res.json({"Count": count}))
+        .catch(err => res.status(404).send("Count Error: " + err));
+    });
+
 router.route('/user/:uid').get((req, res) => {
         Ride.find({ uid: req.params.uid, status: { $in: ['Pending', 'Accepted', 'Pickedup', 'Droppedoff'] } })
         .then((Ride) => {

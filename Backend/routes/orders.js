@@ -74,6 +74,7 @@ router.route('/add').post((req, res) => {
     const prices = req.body.prices;
     const tprice = req.body.tprice;
     const status = req.body.status;
+    const ride = req.body.ride;
 
     const newOrder = new Order(); 
     newOrder.uid = uid;      
@@ -88,6 +89,7 @@ router.route('/add').post((req, res) => {
     newOrder.prices = prices;
     newOrder.tprice = tprice;
     newOrder.status = status;
+    newOrder.ride = ride;
             
     newOrder.save()
         .then((order) => 

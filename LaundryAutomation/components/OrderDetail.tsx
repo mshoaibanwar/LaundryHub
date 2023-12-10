@@ -9,8 +9,7 @@ import { useAppSelector } from '../hooks/Hooks'
 import LottieView from 'lottie-react-native'
 import { Linking } from 'react-native'
 import Toast from "react-native-toast-notifications";
-import { time } from 'console';
-import { set } from 'react-hook-form';
+import { constants } from 'buffer';
 
 const OrderDetail = (props: any) => {
     const [rating, setRating] = useState(0);
@@ -38,10 +37,10 @@ const OrderDetail = (props: any) => {
     }
 
     useEffect(() => {
-
         axiosInstance.get(`/shops/shop/${props?.route?.params?.shopid}`)
             .then(function (response: any) {
                 setShopData(response.data);
+                isShopOpen(response.data);
             })
             .catch(function (error) {
                 // handle error
@@ -63,9 +62,6 @@ const OrderDetail = (props: any) => {
                 // handle error
                 setLoading(false);
             })
-            .then(function () {
-                // always executed
-            });
     }, [refreshing])
 
     const onRefresh = React.useCallback(() => {
@@ -242,6 +238,34 @@ const OrderDetail = (props: any) => {
         }
     }
 
+    const [shopStatus, setShopStatus] = useState('Closed');
+
+    const isShopOpen = (ShopData: any) => {
+        const date = new Date();
+        const today = date.getDay();
+        const hourNow = date.getHours();
+        const shopTiming = ShopData?.timing[today]?.time;
+        if (!shopTiming || ShopData?.timing[today].status == 'off') {
+            // Handle case where shopTiming is not available for the current day
+            setShopStatus('Closed');
+        } else {
+            const startTime = convertToMinutes(shopTiming?.start);
+            const endTime = convertToMinutes(shopTiming?.end);
+            const currentTime = convertToMinutes(`${hourNow}:${date.getMinutes()} ${hourNow >= 12 ? 'PM' : 'AM'}`);
+            if (currentTime >= startTime && currentTime <= endTime) {
+                setShopStatus('Open');
+            } else {
+                setShopStatus('Closed');
+            }
+        }
+    }
+    function convertToMinutes(timeString: any) {
+        const [hour, minute] = timeString.match(/\d+/g).map(Number);
+        const isPM = /PM/i.test(timeString);
+        const adjustedHour = (hour % 12) + (isPM ? 12 : 0);
+        return adjustedHour * 60 + minute;
+    }
+
     useEffect(() => {
         if (props?.route?.params?.status == 'Confirmed') {
             const date = new Date();
@@ -295,8 +319,6 @@ const OrderDetail = (props: any) => {
             })
     }
 
-    //console.log(ShopData)
-
     return (
         <SafeAreaView>
             <View style={{ padding: 20 }}>
@@ -337,7 +359,7 @@ const OrderDetail = (props: any) => {
                                     <Phone color='black' size={20} />
                                     <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Phone</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', ShopData.uid)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                     <MessageSquare color='black' size={20} />
                                     <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Chat</Text>
                                 </TouchableOpacity>
@@ -368,7 +390,7 @@ const OrderDetail = (props: any) => {
                                         <Text style={{ color: 'black' }}>Pickup On: </Text>
                                         <Text style={{ color: 'black' }}>{props?.route?.params?.orderDate} | {props?.route?.params?.ocollection}</Text>
                                     </View>
-                                    {showBookRide ?
+                                    {showBookRide && shopStatus == 'Open' ?
                                         <TouchableOpacity onPress={BookRide} style={{ padding: 5, backgroundColor: BlueColor, borderRadius: 5, marginRight: 10 }}>
                                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 16 }}>Book Rider for Pickup</Text>
                                         </TouchableOpacity>

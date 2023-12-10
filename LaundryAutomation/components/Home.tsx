@@ -200,15 +200,25 @@ const Home = ({ navigation }: any) => {
                     keyExtractor={item => item.id}
 
                     ListHeaderComponent={
-                        <View style={{}}>
-                            <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4 }}>
-                                <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>Lets begin your order!</Text>
-                                <TouchableOpacity onPress={() => { navigation.navigate("BasketStack", { screen: 'Basket' }) }} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
-                                    <Text style={{ color: 'white', fontSize: 18, fontWeight: '300', textAlign: 'center' }}>Add Items in the Basket</Text>
-                                </TouchableOpacity>
+                        <>
+                            <View style={{}}>
+                                <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4 }}>
+                                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>Lets begin your order!</Text>
+                                    <TouchableOpacity onPress={() => { navigation.navigate("BasketStack", { screen: 'Basket' }) }} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
+                                        <Text style={{ color: 'white', fontSize: 18, fontWeight: '300', textAlign: 'center' }}>Add Items in the Basket</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                            <Text style={{ marginVertical: 10, fontSize: 18, fontWeight: '600', color: 'black' }}>Top Services</Text>
-                        </View>
+                            <View style={{}}>
+                                <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4 }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', color: 'black' }}>View, reschedule, and book riders for your orders effortlessly by viewing orders.</Text>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('OrderPlaced') }} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
+                                        <Text style={{ color: 'white', fontSize: 18, fontWeight: '300', textAlign: 'center' }}>View My Orders</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Text style={{ marginVertical: 10, fontSize: 18, fontWeight: '600', color: 'black' }}>Top Services</Text>
+                            </View>
+                        </>
                     }
                     ListFooterComponent={
                         <View style={{}}>

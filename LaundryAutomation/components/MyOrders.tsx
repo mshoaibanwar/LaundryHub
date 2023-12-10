@@ -75,7 +75,7 @@ const MyOrders = (props: any) => {
                             <ChevronRight color='black' size={25} />
                         </View>
                         <View style={styles.orderView}>
-                            <Text style={styles.ordertxtLeft}>Placed On:</Text>
+                            <Text style={styles.ordertxtLeft}>Pickup On:</Text>
                             <Text style={styles.ordertxtRight}>{item.orderDate}</Text>
                         </View>
                         <View style={styles.orderView}>

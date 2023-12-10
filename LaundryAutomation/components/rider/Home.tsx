@@ -22,6 +22,10 @@ import StatsCard from '../seller/StatsCard';
 
 const Home = ({ navigation }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [ridesCount, setRidesCount] = useState(0);
+    const [cancelledCount, setCancelledCount] = useState(0);
+    const [ratingsCount, setRatingsCount] = useState(0);
+    const [avgRating, setAvgRating] = useState(0);
 
     React.useEffect(
         () => {
@@ -38,25 +42,25 @@ const Home = ({ navigation }: any) => {
             {
                 id: '0',
                 name: 'Rides',
-                count: 14,
+                count: ridesCount,
                 img: <PackageCheck size={35} color='green' fill='orange' />
             },
             {
                 id: '1',
                 name: 'Cancelled',
-                count: 2,
+                count: cancelledCount,
                 img: <Box size={35} color='red' fill='orange' />
             },
             {
                 id: '2',
                 name: 'Ratings',
-                count: 9765,
+                count: ratingsCount,
                 img: <Star size={35} color='orange' fill='orange' />
             },
             {
                 id: '3',
                 name: 'Avg. Rating',
-                count: 4.7,
+                count: avgRating,
                 img: <Star size={35} color={BlueColor} fill='orange' />
             },
             {
@@ -86,6 +90,42 @@ const Home = ({ navigation }: any) => {
             })
             .catch(function (error) {
                 // handle error
+            })
+
+        axiosInstance.get('rides/user/count/' + user.user._id)
+            .then(function (response: any) {
+                setRidesCount(response.data.Count);
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
+            })
+
+        axiosInstance.get('rides/user/cancelled/count/' + user.user._id)
+            .then(function (response: any) {
+                setCancelledCount(response.data.Count);
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
+            })
+
+        axiosInstance.get('ratings/user/count/' + user.user._id)
+            .then(function (response: any) {
+                setRatingsCount(response.data.Count);
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
+            })
+
+        axiosInstance.get('ratings/user/avg/' + user.user._id)
+            .then(function (response: any) {
+                setAvgRating(response.data);
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
             })
     }, [refreshing, navigation,])
 

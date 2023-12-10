@@ -51,12 +51,12 @@ const RatingItem = (props: any) => {
             {props.rating?.feedback ?
                 <View style={{ flexDirection: 'row', alignSelf: 'flex-end', marginVertical: 3 }}>
                     <CornerLeftUp size={30} color='grey' />
-                    <Text style={{ width: '70%', fontSize: 15, fontWeight: '500', color: 'black', padding: 10, borderWidth: 0.7, borderRadius: 10 }}>{props.rating?.feedback}</Text>
+                    <Text style={{ width: '70%', fontSize: 15, fontWeight: '500', color: 'black', padding: 10, borderWidth: 0.7, borderRadius: 10, backgroundColor: 'white' }}>{props.rating?.feedback}</Text>
                 </View> : null
             }
             {replying ?
                 <View style={{ flexDirection: 'row', alignSelf: 'flex-end', gap: 8, marginVertical: 3 }}>
-                    <TextInput multiline value={reply} onChangeText={setReply} placeholder='Add your Reply....' style={{ width: '70%', fontSize: 15, fontWeight: '500', color: 'black', padding: 10, borderWidth: 0.5, borderRadius: 5 }}></TextInput>
+                    <TextInput multiline value={reply} onChangeText={setReply} placeholder='Add your Reply....' style={{ width: '70%', fontSize: 15, fontWeight: '500', color: 'black', padding: 10, borderWidth: 0.5, borderRadius: 5, backgroundColor: 'white' }}></TextInput>
                     <TouchableOpacity onPress={onSendReply} style={{ alignItems: 'center', justifyContent: 'center' }}>
                         <SendHorizonal size={30} color='black' />
                     </TouchableOpacity>

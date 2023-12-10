@@ -23,7 +23,6 @@ const ShopsStack = () => {
                 <stack.Screen name='ColDel' component={ColDelivery} options={{ headerShown: false }} />
                 <stack.Screen name='SelectAddress' component={SelectAddress} options={{ headerShown: false }} />
                 <stack.Screen name='Checkout' component={Checkout} options={{ headerShown: false }} />
-                <stack.Screen name='OrderPlaced' component={OrderPlaced} options={{ headerShown: false, gestureEnabled: false }} />
             </stack.Navigator>
         </>
     )

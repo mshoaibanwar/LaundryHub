@@ -9,6 +9,8 @@ import { addOrder } from '../reduxStore/reducers/OrderReducer';
 import { axiosInstance } from '../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { emptyBasket } from '../reduxStore/reducers/BasketReducer';
+import { useDistance } from '../helpers/DistanceCalculator';
+import { Switch } from 'react-native-gesture-handler';
 
 const Checkout = (props: any) => {
     const [payMethod, setPayMehod] = useState('');
@@ -17,16 +19,27 @@ const Checkout = (props: any) => {
     const [uploadingCount, setUploadingCount] = useState(1);
     const orderDetails: any = useAppSelector((state) => state.temporder.value);
     const user: any = useAppSelector((state) => state.user.value);
+    const [bookRider, setBookRider] = useState(false);
 
     const [basketItem, setBasketItem] = useState<any>([]);
     const [shopAddress, setShopAddress] = useState<any>({});
+
+    orderDetails.address.coordinates
+    shopAddress.cords
+    const distance = useDistance({ from: orderDetails.address.coordinates, to: shopAddress.cords });
 
     let subTotal = 0;
     orderDetails.prices.forEach((num: any) => {
         subTotal += num;
     })
-    const delFee = 50;
-    const tPrice = subTotal + delFee;
+    let delFee = 0;
+    let tPrice = 0;
+    if (bookRider) {
+        delFee = 80 + distance * 10;
+        tPrice = subTotal + delFee + delFee;
+    }
+    else
+        tPrice = subTotal;
     const toast = useToast();
     const dispatch = useAppDispatch();
     const basketItems: any = useAppSelector((state) => state.basket.value);
@@ -105,7 +118,7 @@ const Checkout = (props: any) => {
         if (payMethod != '') {
             const date = new Date();
             let orderDate = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-            const newOrder: any = { address: orderDetails.address, ocollection: orderDetails.collection, delivery: orderDetails.delivery, items: ubasketItems, shopid: orderDetails.shopid, prices: orderDetails.prices, delFee: delFee, tprice: tPrice, pMethod: payMethod, status: 'Pending', orderDate: orderDate, uid: user.user._id };
+            const newOrder: any = { address: orderDetails.address, ocollection: orderDetails.collection, delivery: orderDetails.delivery, items: ubasketItems, shopid: orderDetails.shopid, prices: orderDetails.prices, delFee: delFee, tprice: tPrice, pMethod: payMethod, status: 'Pending', orderDate: orderDate, uid: user.user._id, ride: bookRider };
 
             axiosInstance.post('orders/add', newOrder)
                 .then(function (response: any) {
@@ -120,23 +133,10 @@ const Checkout = (props: any) => {
                     dispatch(emptyBasket([]));
                     if (currentTime == colTime) {
                         let rideData = { uid: user.user._id, sid: orderDetails.shopid, pLoc: orderDetails.address.add, dLoc: shopAddress.add, pCord: orderDetails.address.coordinates, dCord: shopAddress.cords, oItems: ubasketItems, pMethod: payMethod };
-                        axiosInstance.post('rides/add', rideData)
-                            .then(function (response: any) {
-                                toast.show('Ride Requested!', {
-                                    type: "success",
-                                    placement: "top",
-                                    duration: 2000,
-                                    animationType: "slide-in",
-                                });
-                                props.navigation.navigate("RideReq");
-                            })
-                            .catch(function (error) {
-                                // handle error
-                                console.log(error);
-                            })
+                        props.navigation.navigate('OrderPlaced', { newOrder, RideData: rideData, ride: bookRider });
                     }
                     else
-                        props.navigation.navigate("ShopsStack", { screen: 'OrderPlaced', params: newOrder });
+                        props.navigation.navigate('OrderPlaced', { newOrder, ride: bookRider });
                 })
                 .catch(function (error) {
                     // handle error
@@ -192,6 +192,10 @@ const Checkout = (props: any) => {
                             </TouchableOpacity>
                         </View>
                     </View>
+                    <View style={{ marginVertical: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={{ color: 'black', fontSize: 16 }}>Book Rider for Pickup and Delivery</Text>
+                        <Switch value={bookRider} onValueChange={() => setBookRider(!bookRider)} />
+                    </View>
                     <View>
                         <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>Order Summary</Text>
                         <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 20, marginVertical: 10, backgroundColor: 'white' }}>
@@ -207,13 +211,13 @@ const Checkout = (props: any) => {
                                 <Text style={{ color: 'black' }}>Rs. {subTotal}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ color: 'black' }}>Delivery Fee</Text>
+                                <Text style={{ color: 'black' }}>Delivery Fee (x2)</Text>
                                 <Text style={{ color: 'black' }}>Rs. {delFee}</Text>
                             </View>
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: 'black' }}>Total</Text>
-                                <Text style={{ color: 'black' }}>Rs. {subTotal + delFee}</Text>
+                                <Text style={{ color: 'black' }}>Rs. {tPrice}</Text>
                             </View>
 
                         </View>
