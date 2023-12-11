@@ -9,7 +9,6 @@ import { useAppSelector } from '../hooks/Hooks'
 import LottieView from 'lottie-react-native'
 import { Linking } from 'react-native'
 import Toast from "react-native-toast-notifications";
-import { constants } from 'buffer';
 
 const OrderDetail = (props: any) => {
     const [rating, setRating] = useState(0);
@@ -300,7 +299,7 @@ const OrderDetail = (props: any) => {
     }, []);
 
     const BookRide = () => {
-        let rideData = { uid: user?.user?._id, sid: props?.route?.params?.shopid, pLoc: props?.route?.params?.address?.add, dLoc: ShopData?.address, pCord: props?.route?.params?.address?.cords ? props?.route?.params?.address?.cords : { lati: 12, longi: 23 }, dCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: props?.route?.params?.items, pMethod: props?.route?.params?.pMethod };
+        let rideData = { uid: user?.user?._id, sid: props?.route?.params?.shopid, pLoc: props?.route?.params?.address?.add, dLoc: ShopData?.address, pCord: props?.route?.params?.address?.coordinates ? props?.route?.params?.address?.coordinates : props?.route?.params?.address?.cords, dCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: props?.route?.params?.items, pMethod: props?.route?.params?.pMethod, fare: props?.route?.params?.delFee, bkdBy: 'Customer' };
         setLoading(true);
         axiosInstance.post('rides/add', rideData)
             .then(function (response: any) {
@@ -501,8 +500,6 @@ const OrderDetail = (props: any) => {
                                     </TouchableOpacity>
                                 )}
                                 horizontal={true}
-                                //Setting the number of column
-                                // numColumns={6}
                                 keyExtractor={item => item.getDate().toString()}
                             />
                         </>
@@ -518,8 +515,6 @@ const OrderDetail = (props: any) => {
                             </TouchableOpacity>
                         )}
                         horizontal={true}
-                        //Setting the number of column
-                        // numColumns={6}
                         keyExtractor={item => item}
                     />
                 </View>

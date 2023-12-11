@@ -127,6 +127,7 @@ const Home = ({ navigation }: any) => {
                 // handle error
                 console.log(error.response.data);
             })
+
     }, [refreshing, navigation,])
 
     const onRefresh = React.useCallback(() => {

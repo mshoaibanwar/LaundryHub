@@ -11,7 +11,7 @@ type Props =
     {
         img: any,
         name: string,
-        count: number,
+        count: any,
         navigation: any
     };
 
@@ -19,8 +19,8 @@ const StatsCard: React.FC<Props> = ({ navigation, img, name, count }) => {
     return (
         <TouchableOpacity style={styles.view}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text>{img}</Text>
-                <Text adjustsFontSizeToFit={true} numberOfLines={1} style={{ fontSize: 33, fontWeight: '700', maxWidth: 60, color: 'black' }}>{count}</Text>
+                <View>{img}</View>
+                <Text adjustsFontSizeToFit={true} numberOfLines={1} style={{ fontSize: 33, fontWeight: '700', color: 'black' }}>{count}</Text>
             </View>
             <Text numberOfLines={1} style={styles.title}>{name}</Text>
         </TouchableOpacity>

@@ -19,23 +19,26 @@ const Checkout = (props: any) => {
     const [uploadingCount, setUploadingCount] = useState(1);
     const orderDetails: any = useAppSelector((state) => state.temporder.value);
     const user: any = useAppSelector((state) => state.user.value);
-    const [bookRider, setBookRider] = useState(false);
+    const [bookRider, setBookRider] = useState(true);
 
     const [basketItem, setBasketItem] = useState<any>([]);
     const [shopAddress, setShopAddress] = useState<any>({});
+    const [distance, setDistance] = useState(0);
 
-    orderDetails.address.coordinates
-    shopAddress.cords
-    const distance = useDistance({ from: orderDetails.address.coordinates, to: shopAddress.cords });
+    useEffect(() => {
+        if (orderDetails?.address?.coordinates && shopAddress?.cords) {
+            setDistance(useDistance({ from: { latitude: orderDetails?.address?.coordinates?.lati, longitude: orderDetails?.address?.coordinates?.longi }, to: { latitude: shopAddress?.cords?.lati, longitude: shopAddress?.cords?.longi } }));
+        }
+    }, [orderDetails?.address?.coordinates, shopAddress?.cords])
 
     let subTotal = 0;
-    orderDetails.prices.forEach((num: any) => {
+    orderDetails?.prices.forEach((num: any) => {
         subTotal += num;
     })
     let delFee = 0;
     let tPrice = 0;
     if (bookRider) {
-        delFee = 80 + distance * 10;
+        delFee = Math.round(80 + distance * 10);
         tPrice = subTotal + delFee + delFee;
     }
     else
@@ -45,7 +48,7 @@ const Checkout = (props: any) => {
     const basketItems: any = useAppSelector((state) => state.basket.value);
 
     useEffect(() => {
-        axiosInstance.get(`shops/address/${orderDetails.shopid}`)
+        axiosInstance.get(`shops/address/${orderDetails?.shopid}`)
             .then((res) => {
                 setShopAddress(res.data);
             })
@@ -104,8 +107,8 @@ const Checkout = (props: any) => {
     const date = new Date();
     let time = date.getHours();
     const nampm = time >= 12 ? 'PM' : 'AM';
-    const ampm = (orderDetails.collection).split(':')[1].split(' ')[1];
-    let colTime = (orderDetails.collection).split(':')[0];
+    const ampm = (orderDetails?.collection)?.split(':')[1]?.split(' ')[1];
+    let colTime = (orderDetails?.collection)?.split(':')[0];
     colTime = colTime + ampm;
     time = time % 12;
     time = time ? time : 12;
@@ -118,12 +121,12 @@ const Checkout = (props: any) => {
         if (payMethod != '') {
             const date = new Date();
             let orderDate = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-            const newOrder: any = { address: orderDetails.address, ocollection: orderDetails.collection, delivery: orderDetails.delivery, items: ubasketItems, shopid: orderDetails.shopid, prices: orderDetails.prices, delFee: delFee, tprice: tPrice, pMethod: payMethod, status: 'Pending', orderDate: orderDate, uid: user.user._id, ride: bookRider };
+            const newOrder: any = { address: orderDetails?.address, ocollection: orderDetails?.collection, delivery: orderDetails?.delivery, items: ubasketItems, shopid: orderDetails?.shopid, prices: orderDetails?.prices, delFee: delFee, tprice: tPrice, pMethod: payMethod, status: 'Pending', orderDate: orderDate, uid: user.user._id, ride: bookRider };
 
             axiosInstance.post('orders/add', newOrder)
                 .then(function (response: any) {
                     dispatch(addOrder(newOrder));
-                    toast.show(response.data, {
+                    toast.show(response?.data?.msg, {
                         type: "success",
                         placement: "top",
                         duration: 2000,
@@ -132,11 +135,11 @@ const Checkout = (props: any) => {
                     setLoading(false);
                     dispatch(emptyBasket([]));
                     if (currentTime == colTime) {
-                        let rideData = { uid: user.user._id, sid: orderDetails.shopid, pLoc: orderDetails.address.add, dLoc: shopAddress.add, pCord: orderDetails.address.coordinates, dCord: shopAddress.cords, oItems: ubasketItems, pMethod: payMethod };
-                        props.navigation.navigate('OrderPlaced', { newOrder, RideData: rideData, ride: bookRider });
+                        let rideData = { uid: user.user._id, sid: orderDetails?.shopid, pLoc: orderDetails?.address?.add, dLoc: shopAddress.add, pCord: orderDetails?.address?.coordinates, dCord: shopAddress.cords, oItems: ubasketItems, pMethod: payMethod, fare: delFee, bkdBy: 'Customer' };
+                        props.navigation.navigate('OrderPlaced', { id: response?.data?.id, RideData: rideData, ride: bookRider });
                     }
                     else
-                        props.navigation.navigate('OrderPlaced', { newOrder, ride: bookRider });
+                        props.navigation.navigate('OrderPlaced', { id: response?.data?.id, ride: bookRider });
                 })
                 .catch(function (error) {
                     // handle error
@@ -192,7 +195,7 @@ const Checkout = (props: any) => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ marginVertical: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{ marginVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16 }}>Book Rider for Pickup and Delivery</Text>
                         <Switch value={bookRider} onValueChange={() => setBookRider(!bookRider)} />
                     </View>
@@ -202,7 +205,7 @@ const Checkout = (props: any) => {
                             {basketItems.map((item: any, index: number) => (
                                 <View key={index} style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
                                     <Text style={{ color: 'black' }}>{item.item}</Text>
-                                    <Text style={{ color: 'black' }}>Rs. {orderDetails.prices[index]}</Text>
+                                    <Text style={{ color: 'black' }}>Rs. {orderDetails?.prices[index]}</Text>
                                 </View>
                             ))}
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
@@ -226,10 +229,10 @@ const Checkout = (props: any) => {
                         <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>Delivery Address</Text>
                         <View style={{ flexDirection: 'row', marginVertical: 10, padding: 20, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
-                                <Text style={{ color: 'black' }}>{orderDetails.address.add}</Text>
+                                <Text style={{ color: 'black' }}>{orderDetails?.address?.add}</Text>
                                 <View style={{ gap: 2 }}>
-                                    <Text style={{ color: BlueColor }}>{orderDetails.address.name}</Text>
-                                    <Text style={{ color: BlueColor }}>{orderDetails.address.num}</Text>
+                                    <Text style={{ color: BlueColor }}>{orderDetails?.address?.name}</Text>
+                                    <Text style={{ color: BlueColor }}>{orderDetails?.address?.num}</Text>
                                 </View>
                             </View>
                         </View>

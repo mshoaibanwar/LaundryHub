@@ -103,7 +103,7 @@ const RideCompleted = (props: any) => {
                     </View>
                 </View>
                 <View style={{ height: 2, width: '100%', backgroundColor: GreyColor, marginVertical: 10 }}></View>
-                <TouchableOpacity onPress={() => props?.navigation.navigate('HomeStack', { screen: 'Home' })} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
+                <TouchableOpacity onPress={() => props.navigation.navigate('ShopsStack', { screen: 'Shops' })} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
                     <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>Done</Text>
                 </TouchableOpacity>
             </View>

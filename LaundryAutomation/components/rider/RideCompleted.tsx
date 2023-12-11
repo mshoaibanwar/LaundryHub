@@ -7,6 +7,7 @@ const RideCompleted = (props: any) => {
     const onDone = () => {
         props?.navigation.navigate("riderTabs")
     }
+
     return (
         <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ padding: 20, marginHorizontal: 30, shadowOffset: { width: 1, height: 1 }, backgroundColor: 'white', borderRadius: 10, shadowOpacity: 0.5 }}>
@@ -59,8 +60,8 @@ const RideCompleted = (props: any) => {
                                     <MapPin color='green' size={20} />
                                 </View>
                                 <View style={{ width: '90%' }}>
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Distance Travelled</Text>
-                                    <Text style={{ fontSize: 18, fontWeight: '300', color: 'black' }}>8 KM</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Distance</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '300', color: 'black' }}>{props?.route?.params?.distance} KM</Text>
                                 </View>
                             </View>
 
@@ -70,7 +71,7 @@ const RideCompleted = (props: any) => {
                                 </View>
                                 <View style={{ width: '90%' }}>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Earned</Text>
-                                    <Text style={{ fontSize: 18, fontWeight: '300', color: 'black' }}>Rs. 180</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '300', color: 'black' }}>Rs. {props?.route?.params?.ride?.fare}</Text>
                                 </View>
                             </View>
 
@@ -80,7 +81,7 @@ const RideCompleted = (props: any) => {
                                 </View>
                                 <View style={{ width: '90%' }}>
                                     <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Payment Method</Text>
-                                    <Text style={{ fontSize: 18, fontWeight: '300', color: 'black' }}>Credit Card</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '300', color: 'black' }}>{props?.route?.params?.ride?.pMethod}</Text>
                                 </View>
                             </View>
                         </View>

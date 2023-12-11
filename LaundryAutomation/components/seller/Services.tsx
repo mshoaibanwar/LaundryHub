@@ -100,8 +100,19 @@ const Services = (props: any) => {
                 setPrice("0");
             } else {
                 // Display a message or handle the case where the service already exists
-                console.log(`Service "${servicesValue}" already exists.`);
+                toast.show(`Service "${servicesValue}" already exists.`, {
+                    type: "warning",
+                    placement: "top",
+                    duration: 2000,
+                });
             }
+        }
+        else {
+            toast.show(`Service price must be greater than Zero.`, {
+                type: "warning",
+                placement: "top",
+                duration: 2000,
+            });
         }
     }
 
@@ -115,21 +126,44 @@ const Services = (props: any) => {
             onUpdateItemInfo(itemsValue, servicesList);
             setServicesList([]);
         }
-        if (itemsValue && servicesList.length > 0) {
-            // Check if the service already exists in the list
-            const itemExists = itemsList.some((item: any) => item.title === itemsValue);
 
-            if (!itemExists) {
+        // Check if the service already exists in the list
+        const itemExists = itemsList.some((item: any) => item.title === itemsValue);
+
+        if (!itemExists) {
+            if (itemsValue && servicesList.length > 0) {
                 const newItem = { title: itemsValue, services: servicesList };
                 updatePrices([newItem, ...itemsList]);
                 setItemsList([newItem, ...itemsList]);
                 setServicesList([]);
-            } else {
-                // Display a message or handle the case where the service already exists
-                console.log(`Item "${servicesValue}" already exists.`);
+                setItems((prevItems) => prevItems.filter(item => item.value !== itemsValue));
             }
+            else {
+                toast.show(`Please add Services and their Prices too!`, {
+                    type: "warning",
+                    placement: "top",
+                    duration: 2000,
+                });
+            }
+        } else {
+            // Display a message or handle the case where the service already exists
+            toast.show(`Item "${itemsValue}" already exists.`, {
+                type: "warning",
+                placement: "top",
+                duration: 1000,
+            });
         }
+
     }
+    useEffect(() => {
+        const updatedItems = items.filter((item) =>
+            !itemsList.some((listItem: any) => listItem.title === item.value)
+        );
+        setItems(updatedItems);
+        setItemsValue(updatedItems[0].value)
+    }, [itemsList])
+
+    // console.log(itemsList)
 
     const onUpdateServiceInfo = (selectedService: any, newServiceInfo: any) => {
         const updatedServicesList = servicesList.map((service: any) => {
@@ -172,6 +206,12 @@ const Services = (props: any) => {
         updatePrices(await updatedItemsList);
     }
 
+    const onCancelUpdate = () => {
+        setIsUpdating(false);
+        setServicesList([]);
+        setItemsValue(items[0].value);
+    }
+
 
     return (
         <SafeAreaView style={{ margin: 20, height: '100%' }}>
@@ -189,7 +229,7 @@ const Services = (props: any) => {
                         containerStyle={{ width: '50%' }}
                         style={isUpdating ? { backgroundColor: DarkGrey, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 } : { backgroundColor: BlueColor, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 }}
                         textStyle={{ color: 'white', fontSize: 16, fontWeight: '500' }}
-                        placeholder='Kurta'
+                        placeholder={itemsValue}
                         dropDownContainerStyle={{ backgroundColor: BlueColor, borderRadius: 10, borderTopColor: 'grey' }}
                         open={openitemSelc}
                         theme='DARK'
@@ -247,6 +287,12 @@ const Services = (props: any) => {
                 <TouchableOpacity onPress={onAddItem} style={{ backgroundColor: BlueColor, padding: 8, borderRadius: 10, marginTop: 10 }}>
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '500' }}>{isUpdating ? 'Update Item' : 'Add Item'}</Text>
                 </TouchableOpacity>
+                {isUpdating ?
+                    <TouchableOpacity onPress={onCancelUpdate} style={{ backgroundColor: 'red', padding: 8, borderRadius: 10, marginTop: 5 }}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
+                    </TouchableOpacity>
+                    : null
+                }
 
             </View>
 

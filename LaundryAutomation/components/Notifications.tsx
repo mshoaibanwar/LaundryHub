@@ -33,14 +33,14 @@ const Notifications = (props: any) => {
         fetchNotifications();
     }, [refreshing])
 
-    // useEffect(() => {
-    //     socket.onmessage = (event: any) => {
-    //         const data = JSON.parse(event.data);
-    //         if (data?.userId === user.user._id) {
-    //             fetchNotifications();
-    //         }
-    //     }
-    // }, [])
+    useEffect(() => {
+        socket.onmessage = (e: any) => {
+            const data = JSON.parse(e.data)
+            if (data?.notification) {
+                fetchNotifications();
+            }
+        }
+    }, [])
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);

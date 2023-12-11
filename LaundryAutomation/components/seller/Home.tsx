@@ -21,11 +21,17 @@ import { useAppSelector } from '../../hooks/Hooks';
 import Menu from '.././Menu';
 import { axiosInstance } from '../../helpers/AxiosAPI';
 
-import { Bell, Box, PackageCheck, Star } from 'lucide-react-native';
+import { Banknote, Bell, Box, PackageCheck, Star } from 'lucide-react-native';
 import LottieView from 'lottie-react-native';
+import socket from '../../helpers/Socket';
 
 const Home = ({ navigation }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [ratingsCount, setRatingsCount] = useState(0);
+    const [avgRating, setAvgRating] = useState(0);
+    const [ordersCount, setOrdersCount] = useState(0);
+    const [activeOrdersCount, setActiveOrdersCount] = useState(0);
+    const [earnings, setEarnings] = useState(0);
 
     React.useEffect(
         () => {
@@ -42,26 +48,32 @@ const Home = ({ navigation }: any) => {
             {
                 id: '0',
                 name: 'Active Orders',
-                count: 4,
+                count: activeOrdersCount,
                 img: <Box size={45} color='red' fill='orange' />
             },
             {
                 id: '1',
                 name: 'Orders',
-                count: 187,
+                count: ordersCount,
                 img: <PackageCheck size={45} color='green' fill='orange' />
             },
             {
                 id: '2',
                 name: 'Ratings',
-                count: 976,
+                count: ratingsCount,
                 img: <Star size={45} color='orange' fill='orange' />
             },
             {
                 id: '3',
                 name: 'Avg. Rating',
-                count: 4.7,
+                count: avgRating,
                 img: <Star size={45} color={BlueColor} fill='orange' />
+            },
+            {
+                id: '4',
+                name: 'Earnings',
+                count: `Rs. ${earnings}`,
+                img: <Banknote size={45} color={BlueColor} />
             },
         ];
 
@@ -71,7 +83,7 @@ const Home = ({ navigation }: any) => {
     const [notiCount, setNotiCount] = useState(0);
     const [refreshing, setRefreshing] = React.useState(false);
 
-    useEffect(() => {
+    const getNotiCount = () => {
         axiosInstance.get(`notifications/seller/count/unread/${user.user._id}`)
             .then(function (response: any) {
                 setNotiCount(response.data.Count);
@@ -79,7 +91,42 @@ const Home = ({ navigation }: any) => {
             .catch(function (error) {
                 // handle error
             })
+    }
+
+    useEffect(() => {
+        getNotiCount();
+        axiosInstance.get('ratings/shop/countAvg/' + shopData._id)
+            .then(function (response: any) {
+                setAvgRating(response.data.avg);
+                setRatingsCount(response.data.ratings);
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
+            })
+
+        axiosInstance.get('orders/shop/dashValuesCount/' + shopData._id)
+            .then(function (response: any) {
+                setOrdersCount(response.data.orders);
+                setActiveOrdersCount(response.data.ordersActive);
+                setEarnings(response.data.earnings);
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
+            })
+
     }, [refreshing, navigation,])
+
+    useEffect(() => {
+        socket.onmessage = (e: any) => {
+            const data = JSON.parse(e.data)
+            console.log(data)
+            if (data?.notification) {
+                getNotiCount();
+            }
+        }
+    }, [])
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -114,7 +161,6 @@ const Home = ({ navigation }: any) => {
                 </View>
             </View>
             <View style={{}}>
-
                 <FlatList
                     style={{ paddingHorizontal: 20 }}
                     data={Data}

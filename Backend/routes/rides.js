@@ -1,5 +1,6 @@
 const router = require('express').Router();
 let Ride = require('../models/ride.model');
+const Rider = require('../models/rider.model');
 var ObjectId = require('mongodb').ObjectID;
 
 router.route('/').get((req, res) => {
@@ -68,13 +69,13 @@ router.route('/updateLoc/:id').post((req, res) => {
 router.route('/updateStatus/:id').post((req, res) => {
         Ride.findByIdAndUpdate(req.params.id,
                 {status: req.body.status})
-                .then(() => 
+                .then((ride) => 
                 {
                         const wss = req.app.get("wss")
                         wss.clients.forEach((client) => {
                                 wss.clients.forEach(function each(client) {
-                                        if(client.id && JSON.parse(client.id).userId == req.body.uid)
-                                                client.send(req.body.status);
+                                        if(client.id && JSON.parse(client.id).userId == ride.uid)
+                                                client.send(JSON.stringify({rideStatus: req.body.status}));
                                       });
                               })
                         res.json('Ride Status Updated!');
@@ -85,12 +86,12 @@ router.route('/updateStatus/:id').post((req, res) => {
 router.route('/acceptRide/:id').post((req, res) => {
     Ride.findByIdAndUpdate(req.params.id,
             {rid: req.body.rid, status: req.body.status})
-            .then(() => {
+            .then((ride) => {
                 const wss = req.app.get("wss")
                         wss.clients.forEach((client) => {
                                 wss.clients.forEach(function each(client) {
-                                        if(client.id && JSON.parse(client.id).userId == req.body.uid)
-                                                client.send('Ride Accepted');
+                                        if(client.id && JSON.parse(client.id).userId == ride.uid)
+                                                client.send(JSON.stringify({rideStatus: req.body.status}));
                                       });
                               })
                 res.json('Ride Accepted!')
@@ -107,6 +108,8 @@ router.route('/add').post((req, res) => {
     const dCord = req.body.dCord;
     const oItems = req.body.oItems;
     const pMethod = req.body.pMethod;
+    const fare = req.body.fare;
+    const bkdBy = req.body.bkdBy;
             
     const newRide = new Ride();
     newRide.uid = uid;
@@ -117,9 +120,30 @@ router.route('/add').post((req, res) => {
     newRide.dCord = dCord;
     newRide.oItems = oItems;
     newRide.pMethod = pMethod;
+    newRide.fare = fare;
+    newRide.bkdBy = bkdBy;
             
     newRide.save()
-        .then(() => res.json('Ride Added!'))
+        .then(() => 
+        {
+                Rider.find({}, 'uid') // Assuming 'uid' is the field you want to retrieve
+                .then((riders) => {
+                        const riderIds = riders.map(rider => rider.uid.toString());
+                        // Assuming you have access to the object you want to send to riders
+                        const wss = req.app.get("wss")
+                        // Iterate over WebSocket clients and send the message to riders
+                        wss.clients.forEach((client) => {
+                        if (client.id && riderIds.includes(JSON.parse(client.id).userId)) {
+                                console.log("Sending message to a connected rider");
+                                client.send(JSON.stringify({newRide: "New Ride Request!"}));
+                        }
+                        });
+                })
+                .catch((error) => {
+                        console.error('Error fetching riders:', error);
+                });
+                res.json('Ride Added!')
+        })
         .catch(err => res.status(404).send(err));
 
 });

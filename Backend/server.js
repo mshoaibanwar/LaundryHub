@@ -162,6 +162,8 @@ var server = app.listen(8080, function () {
               client.send(JSON.stringify({riderLocation: received.riderLocation}));
             else if(received.rideStatus)
               client.send(JSON.stringify({rideStatus: received.rideStatus}));
+            // else if(received.orderStatus)
+            //   client.send(JSON.stringify({orderStatus: received.orderStatus}));
           }
         });
       }

@@ -8,7 +8,7 @@ import { axiosInstance } from '../helpers/AxiosAPI'
 
 const SelectAddress = (props: any) => {
     const [addresses, setAddresses] = React.useState([]);
-    const selected = props?.route?.params ? props?.route?.params : -1;
+    const selected = props?.route?.params?.id ? props?.route?.params?.id : -1;
     const [refreshing, setRefreshing] = React.useState(false);
 
     const user: any = useAppSelector((state) => state.user.value);
@@ -50,7 +50,7 @@ const SelectAddress = (props: any) => {
                     </View>
                     : null}
                 {addresses.map((item: any) => (
-                    <TouchableOpacity key={item._id} onPress={() => props.navigation.navigate('ShopsStack', { screen: 'ColDel', params: item })}>
+                    <TouchableOpacity key={item._id} onPress={() => props.navigation.navigate('ShopsStack', { screen: 'ColDel', params: { ...props?.route?.params, ...item } })}>
                         <View style={selected == item.id ? styles.selectedBtn : styles.btn}>
                             <View>
                                 {item.type == 'Home' ?

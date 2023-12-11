@@ -65,6 +65,18 @@ const rideSchema = new Schema({
         required: [true, "Please provide Payment Method!"],
         unique: false
     },
+    fare: {
+        type: Number,
+        required: [true, "Please provide Fare!"],
+        unique: false,
+        default: 0
+    },
+    bkdBy: {
+        type: String,
+        required: [true, "Please provide Booked By!"],
+        unique: false,
+        default: 'Customer'
+    },
 }, {
     timestamps: true,
 });

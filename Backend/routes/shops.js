@@ -84,6 +84,21 @@ router.route('/shop/:id').get((req, res) => {
             .catch(err => res.status(404).json(`Shop with id: ${req.params.id} not found`));
     });
 
+router.route('/shopInfo/:id').get((req, res) => {
+        Shop.findById(req.params.id)
+            .then((shop) => {
+                const { title, contact, uid } = shop;
+
+                // Create a new object with the required fields
+                const shopInfo = { title, contact, uid };
+    
+                // Send the modified data in the response
+                res.json(shopInfo);
+            })
+            .catch(err => res.status(404).json(`Shop with id: ${req.params.id} not found`));
+    });
+
+
 router.route('/address/:id').get((req, res) => {
         Shop.findById(req.params.id)
             .then((shop) => {

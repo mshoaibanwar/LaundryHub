@@ -3,20 +3,21 @@ import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } fro
 import socket from '../helpers/Socket'
 import { ChevronLeft } from 'lucide-react-native'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
-import { addMsg } from '../reduxStore/reducers/MessagesReducer'
+import { addMsg, selectUserChat } from '../reduxStore/reducers/MessagesReducer'
 
 const Chat = (props: any) => {
     const [message, setMessage] = React.useState<string>("")
     const [messages, setMessages] = React.useState<any>([])
     const dispatch = useAppDispatch();
-    const msgs: any = useAppSelector(state => state.msg.value);
+    let userId: string = props?.route?.params.toString();
+    const msgs = useAppSelector(selectUserChat(userId));
     const sendMessage = () => {
         if (message === "") return
         const updatedMessages = [...messages, { from: 'me', msg: message }];
         // Set the state with the new array
         setMessages(updatedMessages);
         const nMsg: any = { from: 'me', msg: message };
-        dispatch(addMsg(nMsg))
+        dispatch(addMsg({ userId, message: nMsg }));
         socket.send(JSON.stringify({
             msg: message,
             to: props?.route?.params.toString(),
@@ -30,7 +31,7 @@ const Chat = (props: any) => {
             if (parsedMsg.msg) {
                 const nMsg: any = { from: 'other', msg: parsedMsg.msg };
                 setMessages((prevMessages: any) => [...prevMessages, { from: 'other', msg: parsedMsg.msg }]);
-                dispatch(addMsg(nMsg))
+                dispatch(addMsg({ userId, message: nMsg }));
             }
         })
     }, [])

@@ -8,17 +8,36 @@ import {
     RefreshControl,
 } from 'react-native';
 
-import { useAppSelector } from '../../hooks/Hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { Switch } from 'react-native-gesture-handler';
 import RideReqCard from './RideReqCard';
 import socket from '../../helpers/Socket';
+import { addUser } from '../../reduxStore/reducers/UserReducer';
 
 const Rides = ({ navigation }: any) => {
     const user: any = useAppSelector(state => state.user.value);
     const [isEnabled, setIsEnabled] = useState(true);
     const [rides, setRides] = useState([]);
+    const dispatch = useAppDispatch();
+    const [refreshing, setRefreshing] = useState(false);
+
+    const getRides = () => {
+        axiosInstance.get(`rides/`)
+            .then((res) => {
+                setRides(res.data.reverse());
+                setRefreshing(false);
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }
+
+    useEffect(() => {
+        getRides();
+    }, [refreshing]);
+
     useEffect(() => {
         axiosInstance.get(`riders/getDutyStatus/${user.user._id}`)
             .then((res) => {
@@ -32,14 +51,7 @@ const Rides = ({ navigation }: any) => {
                 console.log(err.response.data);
             })
 
-        axiosInstance.get(`rides/`)
-            .then((res) => {
-                setRides(res.data);
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            })
-
+        getRides();
     }, []);
     const toggleSwitch = () => {
         socket.send(
@@ -51,15 +63,19 @@ const Rides = ({ navigation }: any) => {
         axiosInstance.post(`riders/updateDutyStatus/${user.user._id}`, { status: isEnabled ? 'Off' : 'On' })
             .then((res) => {
                 console.log(res.data);
+                dispatch(addUser({ ...user, status: !isEnabled }));
             })
             .catch((err) => {
                 console.log(err.response.data);
             })
+        getRides();
     }
     useEffect(() => {
         socket.onmessage = (e) => {
-            const message = e.data;
-            console.log(message);
+            const message = JSON.parse(e.data);
+            if (message?.newRide) {
+                getRides();
+            }
         }
     }, []);
     return (
@@ -88,7 +104,7 @@ const Rides = ({ navigation }: any) => {
                         refreshControl={
                             <RefreshControl
                                 refreshing={false}
-                                onRefresh={() => { }}
+                                onRefresh={() => { setRefreshing(true); }}
                             />
                         }
                     />

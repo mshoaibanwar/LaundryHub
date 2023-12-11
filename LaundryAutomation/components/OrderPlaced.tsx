@@ -45,14 +45,15 @@ const OrderPlaced = (props: any) => {
         socket.onmessage = (e: any) => {
             const data = JSON.parse(e.data)
             console.log(data)
-            if (data?.orderStatus && data?.oid === props?.route?.params?.id) {
-                if (data?.orderStatus === 'confirmed')
+            if (data?.orderStatus && data?.oid == props?.route?.params?.id) {
+                if (data?.orderStatus == 'Confirmed')
                     setConfirmed(true)
-                if (data?.orderStatus === 'cancelled')
+                if (data?.orderStatus == 'Cancelled')
                     setCancelled(true)
             }
         }
     }, [])
+
     return (
         <SafeAreaView>
             {cancelled && <View style={{ backgroundColor: 'red', padding: 10, alignItems: 'center' }}>

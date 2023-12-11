@@ -5,6 +5,7 @@ import { BlueColor } from '../../constants/Colors'
 import { useAppSelector } from '../../hooks/Hooks'
 import { axiosInstance } from '../../helpers/AxiosAPI'
 import LottieView from 'lottie-react-native'
+import socket from '../../helpers/Socket'
 
 const Orders = (props: any) => {
     const [tab, setTab] = useState('Pending');
@@ -14,7 +15,7 @@ const Orders = (props: any) => {
     const shop: any = useAppSelector((state) => state.shopdata.value);
     const [ordersfilt, setOrdersFilt] = useState(orders.filter((item: any) => (item.status != 'livered')));
 
-    useEffect(() => {
+    const getOrders = () => {
         axiosInstance.get(`orders/shop/${shop?._id}`)
             .then(function (response: any) {
                 setLoading(false);
@@ -26,10 +27,19 @@ const Orders = (props: any) => {
                 // handle error
                 setLoading(false);
             })
-            .then(function () {
-                // always executed
-            });
+    }
+    useEffect(() => {
+        getOrders();
     }, [refreshing])
+
+    useEffect(() => {
+        socket.onmessage = (e: any) => {
+            const data = JSON.parse(e.data);
+            if (data?.notification == "New Order!") {
+                getOrders();
+            }
+        }
+    }, [])
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);

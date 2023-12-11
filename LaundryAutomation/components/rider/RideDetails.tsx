@@ -1,6 +1,6 @@
 import { X, MapPin, Banknote, LocateFixed, Navigation, Router, Phone, BikeIcon, Star, Reply } from 'lucide-react-native'
 import React, { useEffect, useRef } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Modal, Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-notifications';
 import { DarkGrey, LightGreen } from '../../constants/Colors';
@@ -15,10 +15,11 @@ interface propsTypes {
     isAccepted: boolean;
     ride: any;
     user: any;
+    shop: any;
     navigation: any;
 }
 
-const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { pCord: { lati: 0, longi: 0 }, dCord: { lati: 0, longi: 0 }, riderCords: { lati: 0, longi: 0 } }, user }: propsTypes) => {
+const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { pCord: { lati: 0, longi: 0 }, dCord: { lati: 0, longi: 0 }, riderCords: { lati: 0, longi: 0 } }, user, shop }: propsTypes) => {
     const [rating, setRating] = React.useState<any>(null);
     const [rated, setRated] = React.useState(false);
     const toastRef = useRef<any>(null);
@@ -26,15 +27,15 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
     const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
     const suser: any = useAppSelector((state) => state.user.value);
     let away = useDistance({ from: { latitude: suser?.latitude, longitude: suser?.longitude }, to: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi } });
-    let fare = distance * 20;
+    let fare = Math.round(80 + distance * 10);
 
     const goToPickup = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
-        mapRef?.current?.animateToRegion({ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 }, 2000);
+        mapRef?.current?.animateToRegion({ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
     const goToDest = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
-        mapRef?.current?.animateToRegion({ latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 }, 2000);
+        mapRef?.current?.animateToRegion({ latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
     useEffect(() => {
@@ -51,6 +52,17 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                     console.log(error);
                 })
     }, [])
+
+    const acceptRide = () => {
+        axiosInstance.post(`rides/acceptRide/${ride._id}`, { rid: suser.user._id, status: 'Accepted' })
+            .then((res) => {
+                setModal(false);
+                navigation.navigate("CRide", { ride, user, shop });
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }
 
     return (
         <Modal
@@ -126,7 +138,7 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                                     </MapView>
                                 </View>
                                 <View>
-                                    <TouchableOpacity onPress={() => { navigation.navigate("CRide", { ride, user }); setModal(false) }} style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={acceptRide} style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>
                                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Accept Ride</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -134,15 +146,15 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                         }
                         <View style={{ marginVertical: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user ? { uri: user.profile } : require('../../assets/images/profileph.png')} />
+                                <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user?.profile ? { uri: user?.profile } : require('../../assets/images/profileph.png')} />
                                 <View style={{}}>
-                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{user?.name}</Text>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{user?.phone}</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ride?.bkdBy == 'Shop' ? shop?.title : user?.name}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>+92 {ride?.bkdBy == 'Shop' ? shop?.contact : user?.phone}</Text>
                                 </View>
                             </View>
-                            <View style={{ padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                            <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${ride?.bkdBy == 'Shop' ? shop?.contact : user?.phone}`)} style={{ padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
                                 <Phone color='green' size={25} />
-                            </View>
+                            </TouchableOpacity>
                         </View>
                         <View style={{ height: 1, backgroundColor: '#e8e8e8', marginVertical: 10 }}></View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -188,6 +200,22 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                             </View>
                         </View>
                         <View style={{ height: 1, backgroundColor: '#e8e8e8', marginVertical: 10 }}></View>
+                        <Text style={{ fontSize: 16, marginBottom: 5 }}>Deliver To:</Text>
+                        <View style={{ marginVertical: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user?.profile ? { uri: user?.profile } : require('../../assets/images/profileph.png')} />
+                                <View style={{}}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ride?.bkdBy == 'Shop' ? user?.name : shop?.title}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>+92 {ride?.bkdBy == 'Shop' ? user?.phone : shop?.contact}</Text>
+                                </View>
+                            </View>
+                            <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${ride?.bkdBy == 'Shop' ? user?.phone : shop?.contact}`)} style={{ padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
+                                <Phone color='green' size={25} />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{ height: 1, backgroundColor: '#e8e8e8', marginVertical: 10 }}></View>
+
                         {rating ?
                             <View>
                                 <Text style={{ fontSize: 16, fontWeight: '500' }}>Rating:</Text>

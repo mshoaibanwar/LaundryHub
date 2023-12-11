@@ -34,6 +34,32 @@ router.route('/count/pending/').get((req, res) => {
             .catch(err => res.status(404).json("Error: " + err));
     });
 
+router.route('/shop/dashValuesCount/:id').get(async(req, res) => {
+        try {
+                let counts = {};
+            
+                const totalOrdersCount = await Order.countDocuments({ shopid: req.params.id });
+                counts.orders = totalOrdersCount;
+            
+                const activeOrdersCount = await Order.countDocuments({
+                  shopid: req.params.id,
+                  status: { $nin: ['Delivered', 'Cancelled'] }
+                });
+                counts.ordersActive = activeOrdersCount;
+            
+                const orders = await Order.find({ shopid: req.params.id });
+                const totalEarnings = orders.reduce((totalEarnings, order) => {
+                  const orderEarnings = order.tprice - order.delFee * 2;
+                  return totalEarnings + orderEarnings;
+                }, 0);
+                counts.earnings = totalEarnings;
+            
+                res.json(counts);
+        } catch (error) {
+                res.status(500).json({ error: error });
+        }
+    });
+
 router.route('/user/:id').get((req, res) => {
     Order.find({ 'uid': req.params.id })
         .then((order) => {
@@ -95,7 +121,7 @@ router.route('/add').post((req, res) => {
         .then((order) => 
         {
                 User.findById(order.uid)
-                .then((user) => {
+                .then(async (user) => {
                         if(user.token != '')
                         {
                                 admin.messaging().sendToDevice(user.token, {
@@ -105,12 +131,19 @@ router.route('/add').post((req, res) => {
                                         },
                                 });
                         }
-                        Notification.create({ 'userID': order.uid, 'title': `Your Order is Placed!`, 'body': `Your order # ${order._id} is placed successfully. It will be picked on ${orderDate} at ${order.ocollection} and will be delivered on ${order.delivery.date} at ${order.delivery.time}.`, 'to': 'user'})
+                        await Notification.create({ userID: order.uid, title: `Your Order is Placed!`, body: `Your order # ${order._id} is placed successfully. It will be picked on ${orderDate} at ${order.ocollection} and will be delivered on ${order.delivery.date} at ${order.delivery.time}.`, to: 'user'})
+                        const wss = req.app.get("wss")
+                                        wss.clients.forEach((client) => {
+                                                wss.clients.forEach(function each(client) {
+                                                        if(client.id && JSON.parse(client.id).userId == order.uid)
+                                                                client.send(JSON.stringify({notification: 'Order Placed!'}));
+                                                });
+                                        })
 
                         Shop.findById(order.shopid)
                         .then((shop) => {
                                 User.findById(shop.uid)
-                                .then((user) => {
+                                .then(async (user) => {
                                         if(user.token != '')
                                         {
                                                 admin.messaging().sendToDevice(user.token, {
@@ -120,8 +153,15 @@ router.route('/add').post((req, res) => {
                                                         },
                                                 });
                                         }
-                                        Notification.create({ 'userID': order.uid, 'title': `You got a new Order!`, 'body': `You received a new order request. View order to accept or reject.`, 'to': 'seller'})
-                                        res.json('Order Placed!');
+                                        await Notification.create({ userID: user._id, title: `You got a new Order!`, body: `You received a new order request. View order to accept or reject.`, to: 'seller'})
+                                        const wss = req.app.get("wss")
+                                        wss.clients.forEach((client) => {
+                                                wss.clients.forEach(function each(client) {
+                                                        if(client.id && JSON.parse(client.id).userId == user._id)
+                                                                client.send(JSON.stringify({notification: 'New Order!'}));
+                                                });
+                                        })
+                                        res.json({id: order._id, msg:'Order Placed!'});
                                 })
                                 .catch(err => console.log(err));
                         })
@@ -138,6 +178,13 @@ router.route('/update/:id').post((req, res) => {
     Order.findByIdAndUpdate(req.params.id, {'status': req.body.status})
         .then((order) => 
         {
+                const wss = req.app.get("wss")
+                        wss.clients.forEach((client) => {
+                                wss.clients.forEach(function each(client) {
+                                        if(client.id && JSON.parse(client.id).userId == order.uid)
+                                                client.send(JSON.stringify({orderStatus: req.body.status, oid: order._id}));
+                                      });
+                              })
                 User.findById(order.uid)
                 .then((user) => {
                         if(user.token != '')

@@ -1,11 +1,12 @@
 import { ArrowLeft, MessageSquare, Phone } from 'lucide-react-native'
 import React, { useEffect, useState } from 'react'
 import { Image, Linking, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { BlueColor, DarkGrey, DarkPurple, LightPurple } from '../../constants/Colors'
+import { BlueColor, DarkGrey, GreyColor } from '../../constants/Colors'
 import { axiosInstance } from '../../helpers/AxiosAPI'
 import { useToast } from 'react-native-toast-notifications'
 import LottieView from 'lottie-react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
+import { useAppSelector } from '../../hooks/Hooks'
 
 const OrderDetail = (props: any) => {
     const [refreshing, setRefreshing] = React.useState(false);
@@ -13,13 +14,18 @@ const OrderDetail = (props: any) => {
     const [openStatusSelc, setOpenStatusSelc] = useState(false);
     const [statusValue, setStatusValue] = useState(props?.route?.params?.status);
     const toast = useToast();
+    const [showBookRide, setShowBookRide] = useState<any>(true);
+    const [disableBookRide, setDisableBookRide] = useState<any>(true);
+
+    const user: any = useAppSelector((state) => state.user.value);
+    const ShopData: any = useAppSelector((state) => state.shopdata.value);
 
     const [statuses, setStatuses] = useState([
         { label: 'Pending', value: 'Pending' },
         { label: 'Confirmed', value: 'Confirmed' },
         { label: 'Received', value: 'Received' },
         { label: 'Processing', value: 'Processing' },
-        { label: 'Delivering', value: 'Delivering' },
+        { label: 'Ready', value: 'Ready' },
         { label: 'Delivered', value: 'Delivered' },
         { label: 'Pending Payment', value: 'Pending Payment' },
         { label: 'Cancelled', value: 'Cancelled' },
@@ -59,7 +65,7 @@ const OrderDetail = (props: any) => {
 
     let pdate = props?.route?.params?.orderDate;
     let ptime = props?.route?.params?.ocollection;
-    let phour = parseInt(ptime.split('-')[1].split(':')[0]) + 12;
+    let phour = parseInt(ptime?.split('-')[1]?.split(':')[0]) + 12;
 
     const ptargetTime = new Date(pdate.slice(6, 10), pdate.slice(3, 5) - 1, pdate.slice(0, 2), phour, 0, 0, 0);
     const dtargetTime = new Date(ddate.slice(6, 10), ddate.slice(3, 5) - 1, ddate.slice(0, 2), dhour, 0, 0, 0);
@@ -75,9 +81,9 @@ const OrderDetail = (props: any) => {
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             if (isp == 'p')
-                setPTimeRemaining(`${Math.floor(hours / 24)} days ${hours % 24} hour ${minutes} min`);
+                setPTimeRemaining(`${Math.floor(hours / 24)} day(s) ${hours % 24} hour(s) ${minutes} min(s)`);
             else
-                setDTimeRemaining(`${Math.floor(hours / 24)} days ${hours % 24} hour ${minutes} min`);
+                setDTimeRemaining(`${Math.floor(hours / 24)} day(s) ${hours % 24} hour(s) ${minutes} min(s)`);
         } else {
             if (isp == 'p')
                 setPTimeRemaining('Time is up!');
@@ -89,6 +95,61 @@ const OrderDetail = (props: any) => {
         updateTimeRemaining(ptargetTime, 'p');
         updateTimeRemaining(dtargetTime, 'd');
     }, [refreshing]);
+
+
+    useEffect(() => {
+        if (statusValue == 'Ready') {
+            const date = new Date();
+            let time = date.getHours();
+            const nampm = time >= 12 ? 'PM' : 'AM';
+            const ampm = (props?.route?.params?.delivery?.time)?.split(':')[1]?.split(' ')[1];
+            let delTime = (props?.route?.params?.delivery?.time)?.split(':')[0];
+            delTime = delTime + ampm;
+            time = time % 12;
+            time = time ? time : 12;
+            const currentTime = time + nampm;
+            const isCurrentTimeGreaterThanDelTime = currentTime.localeCompare(delTime) > 0;
+            //Date
+            const dateString = props?.route?.params?.delivery?.date;
+            const targetDate = new Date(dateString);
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+            const isToday = targetDate.toDateString() === currentDate.toDateString();
+            const isFuture = targetDate > currentDate;
+            if (isToday) {
+                if (isCurrentTimeGreaterThanDelTime) {
+                    setDisableBookRide(false);
+                }
+            }
+            else if (isFuture) {
+                setDisableBookRide(false);
+            }
+        }
+        else {
+            setShowBookRide(false);
+        }
+    }, [statusValue]);
+
+
+    const BookRide = () => {
+        let rideData = { uid: props?.route?.params?.uid, sid: props?.route?.params?.shopid, dLoc: props?.route?.params?.address?.add, pLoc: ShopData?.address, dCord: props?.route?.params?.address?.coordinates ? props?.route?.params?.address?.coordinates : props?.route?.params?.address?.cords, pCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: props?.route?.params?.items, pMethod: props?.route?.params?.pMethod, fare: props?.route?.params?.delFee, bkdBy: 'Shop' };
+        setLoading(true);
+        axiosInstance.post('rides/add', rideData)
+            .then(function (response: any) {
+                setLoading(false);
+                toast.show('Ride Requested!', {
+                    type: "success",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                });
+                props.navigation.navigate("RideReq");
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error.response);
+            })
+    }
 
     return (
         <SafeAreaView style={{ padding: 20 }}>
@@ -108,15 +169,15 @@ const OrderDetail = (props: any) => {
                             <View style={{ gap: 5 }}>
                                 <View style={{ gap: 2 }}>
                                     <Text style={{ color: BlueColor, fontSize: 16 }}>{props?.route?.params?.address.name}</Text>
-                                    <Text style={{ color: BlueColor, fontSize: 16 }}>{props?.route?.params?.address.num}</Text>
+                                    <Text style={{ color: BlueColor, fontSize: 16 }}>+92 {props?.route?.params?.address.num}</Text>
                                 </View>
                                 <Text style={{ color: 'black', fontSize: 16 }}>{props?.route?.params?.address.add}</Text>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', borderTopWidth: 0.5, borderColor: 'grey', paddingTop: 8, marginTop: 4 }}>
-                                    <TouchableOpacity onPress={() => Linking.openURL(`tel:${props?.route?.params?.phone}`)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center', borderRightWidth: 0.5, borderColor: 'grey' }}>
+                                    <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${props?.route?.params?.address?.num}`)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center', borderRightWidth: 0.5, borderColor: 'grey' }}>
                                         <Phone color='black' size={20} />
                                         <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Phone</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', props?.route?.params?.uid)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                         <MessageSquare color='black' size={20} />
                                         <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Chat</Text>
                                     </TouchableOpacity>
@@ -145,6 +206,11 @@ const OrderDetail = (props: any) => {
                                         <Text style={{ color: 'black', fontSize: 14, fontWeight: '600' }}>{props?.route?.params?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
                                         <Text style={{ color: 'black', fontSize: 14, fontWeight: '500' }}>{props?.route?.params?.delivery.date} | {props?.route?.params?.delivery.time}</Text>
                                     </View>
+                                    {showBookRide && props?.route?.params?.ride ?
+                                        <TouchableOpacity disabled={disableBookRide} onPress={BookRide} style={[{ padding: 5, backgroundColor: BlueColor, borderRadius: 5, marginVertical: 5 }, disableBookRide ? { backgroundColor: 'grey' } : null]}>
+                                            <Text style={{ textAlign: 'center', color: 'white', fontSize: 18 }}>Book Rider for Delivery</Text>
+                                        </TouchableOpacity>
+                                        : null}
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Text style={{ color: 'black', fontSize: 14, fontWeight: '600' }}>Time to Deliver: </Text>
                                         <Text style={{ color: 'green', fontSize: 14, fontWeight: '600' }}>{dtimeRemaining}</Text>

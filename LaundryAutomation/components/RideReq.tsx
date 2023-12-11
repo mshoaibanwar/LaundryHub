@@ -19,7 +19,7 @@ const RideReq = ({ navigation }: any) => {
     const user: any = useAppSelector((state) => state.user.value);
 
     const distance = useDistance({ from: { latitude: rideData?.pCord?.lati, longitude: rideData?.pCord?.longi }, to: { latitude: rideData?.dCord?.lati, longitude: rideData?.dCord?.longi } });
-    let fare = distance * 20;
+    let fare = Math.round(80 + distance * 10);
 
     const goToRider = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
@@ -34,12 +34,6 @@ const RideReq = ({ navigation }: any) => {
         //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: Number(rideData?.dCord?.lati), longitude: Number(rideData?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
-
-    // function goToPickup(): void {
-    //     ws?.send(JSON.stringify({
-    //         msg: 'SomeThing',
-    //     })); // send a message
-    // }
 
     useEffect(() => {
         axiosInstance.get(`rides/user/${user.user._id}`)
@@ -68,6 +62,9 @@ const RideReq = ({ navigation }: any) => {
                 setRiderLocation(message.riderLocation);
             }
             if (message.rideStatus) {
+                if (message.rideStatus == 'Accepted') {
+                    setRideAccepted(true);
+                }
                 if (message.rideStatus == 'Set Arrived') {
                     setDisableBtn(true);
                 }
@@ -227,9 +224,9 @@ const RideReq = ({ navigation }: any) => {
                         <View>
                             <Text style={{ fontSize: 18, top: -80 }}>Finding Rider...</Text>
                         </View>
-                        <Pressable onPress={goToDest} style={{ padding: 5, backgroundColor: 'red' }}>
+                        {/* <Pressable onPress={goToDest} style={{ padding: 5, backgroundColor: 'red' }}>
                             <Text style={{ fontSize: 18 }}>Update Ride</Text>
-                        </Pressable>
+                        </Pressable> */}
                     </View>
                 </View>
             }

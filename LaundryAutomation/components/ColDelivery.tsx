@@ -9,13 +9,14 @@ import { useToast } from "react-native-toast-notifications";
 import { mergeTempOrder } from '../reduxStore/reducers/TempOrderReducer';
 import { BlueColor } from '../constants/Colors';
 import Toast from "react-native-toast-notifications";
+import { set } from 'react-hook-form';
 
 const ColDelivery = (props: any) => {
     const [modalVisible, setModalVisible] = useState(false);
     const Months = ['Jan', 'Fab', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const Days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const [selcDay, setSelcDay] = useState<any>(null);
-    const Times = ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 11:59 AM', '12:00 PM - 1:00 PM', '1:00 PM - 2:00 PM', '2:00 PM - 3:00 PM', '3:00 PM - 4:00 PM', '4:00 PM - 5:00 PM', '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM', '9:00 PM - 10:00 PM']
+    const Times = ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 11:59 AM', '12:00 PM - 1:00 PM', '1:00 PM - 2:00 PM', '2:00 PM - 3:00 PM', '3:00 PM - 4:00 PM', '4:00 PM - 5:00 PM', '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM', '9:00 PM - 10:00 PM', '10:00 PM - 11:00 PM', '11:00 PM - 11:59 PM']
     const [selcTime, setSelcTime] = useState<any>(null);
     const [delData, setDelData] = useState<any>(null);
     const [colData, setColData] = useState<any>(null);
@@ -33,6 +34,8 @@ const ColDelivery = (props: any) => {
     useEffect(() => {
         setSelcDay(nextDates[0]);
         setSelcTime(Times[toDay.getHours() - 8]);
+        setDelData([nextDates[0], Times[toDay.getHours() - 8]]);
+        setColData(Times[toDay.getHours() - 8]);
     }, []);
 
     const SelectData = () => {
@@ -136,7 +139,7 @@ const ColDelivery = (props: any) => {
             </View>
             <View style={{ marginTop: 10, width: '100%' }}>
                 <Text style={{ fontSize: 20, fontWeight: '600', marginVertical: verticalScale(10), color: 'black' }}>Address</Text>
-                <TouchableOpacity onPress={() => { props.navigation.navigate("ShopsStack", { screen: 'SelectAddress', params: props?.route?.params?.id }) }} style={{ flexDirection: 'row', justifyContent: 'space-between', borderWidth: 0.5, padding: 20, alignItems: 'center', marginVertical: verticalScale(10), borderRadius: 10, backgroundColor: 'white' }}>
+                <TouchableOpacity onPress={() => { props.navigation.navigate("ShopsStack", { screen: 'SelectAddress', params: props?.route?.params }) }} style={{ flexDirection: 'row', justifyContent: 'space-between', borderWidth: 0.5, padding: 20, alignItems: 'center', marginVertical: verticalScale(10), borderRadius: 10, backgroundColor: 'white' }}>
                     <View style={{ gap: 5 }}>
                         <Text style={{ fontSize: 18, color: 'black' }}>Add your address</Text>
                         {props?.route?.params?.add ?

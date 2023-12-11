@@ -12,8 +12,6 @@ interface LocationTrackerProps {
 }
 
 const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
-    const user: any = useAppSelector((state) => state.user.value);
-
     let locationUpdateInterval: NodeJS.Timeout;
 
     const dispatch = useAppDispatch();
@@ -63,6 +61,7 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
         };
     }, []);
 
+    const user: any = useAppSelector((state) => state.user.value);
     const trackLocation = () => {
         locationUpdateInterval = setInterval(() => {
             GetLocation.getCurrentPosition({
@@ -87,7 +86,6 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
             .then(function (response: any) {
                 let nuser = { ...user, ...coordinates }
                 dispatch(addUser(nuser));
-                console.log(nuser);
             })
             .catch(function (error) {
                 console.log(error);

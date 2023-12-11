@@ -7,6 +7,7 @@ import {
     Image,
     TouchableOpacity,
     Pressable,
+    Linking,
 } from 'react-native';
 
 import { axiosInstance } from '../../helpers/AxiosAPI';
@@ -21,6 +22,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import { useDistance } from '../../helpers/DistanceCalculator';
 import socket from '../../helpers/Socket';
 import { emptyMsg } from '../../reduxStore/reducers/MessagesReducer';
+import { on } from 'events';
 
 let locationUpdateInterval: NodeJS.Timeout;
 
@@ -30,12 +32,11 @@ const CurrentRide = (props: any) => {
     const actionSheetRef = useRef<any>(null);
     const texts = ['Set Arrived', 'Set Pickedup', 'Set Droppedoff', 'Set Completed', 'Completed']
     const [btnPressCount, setBtnPressCount] = useState(0);
-    const [origin, setOrigin] = useState({ latitude: Number(props?.route?.params?.ride?.pCord?.lati), longitude: Number(props?.route?.params?.ride?.pCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 });
-    const [destination, setDestination] = useState({ latitude: Number(props?.route?.params?.ride?.dCord?.lati), longitude: Number(props?.route?.params?.ride?.dCord?.longi), latitudeDelta: 0.105, longitudeDelta: 0.0321 });
-    const [currentLoc, setCurrentLoc] = useState({ latitude: 37.75125, longitude: -122.4524, latitudeDelta: 0.105, longitudeDelta: 0.0321 });
-    const [lastLoc, setLastLoc] = useState({ latitude: 0, longitude: 0 });
-    // const GOOGLE_MAPS_APIKEY = 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY';
+    const [origin, setOrigin] = useState({ latitude: Number(props?.route?.params?.ride?.pCord?.lati), longitude: Number(props?.route?.params?.ride?.pCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 });
+    const [destination, setDestination] = useState({ latitude: Number(props?.route?.params?.ride?.dCord?.lati), longitude: Number(props?.route?.params?.ride?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 });
+    const [shop, setShop] = useState<any>(props?.route?.params?.shop);
     const [modalVisible, setModalVisible] = useState(false);
+    const [isPicked, setIsPicked] = useState(false);
 
     const user: any = useAppSelector((state) => state.user.value);
     let ruser = props?.route?.params?.user;
@@ -43,7 +44,7 @@ const CurrentRide = (props: any) => {
     const dispatch = useAppDispatch();
 
     const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
-    let fare = distance * 20;
+    let fare = Math.round(80 + distance * 10);
 
     const goToMyLoc = () => {
         //Animate the user to new region. Complete this animation in 3 seconds
@@ -65,9 +66,18 @@ const CurrentRide = (props: any) => {
             rideStatus: texts[btnPressCount],
             to: ruser._id,
         }))
+        if (btnPressCount == 1) {
+            setIsPicked(true);
+        }
         if (btnPressCount == 3) {
-            dispatch(emptyMsg([]));
-            props.navigation.navigate('RideComp', { ride });
+            dispatch(emptyMsg());
+            axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Completed' })
+                .then((res) => {
+                    props.navigation.navigate('RideComp', { ride, distance });
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                })
         }
     }
 
@@ -92,20 +102,19 @@ const CurrentRide = (props: any) => {
                 riderLocation: { latitude: user?.latitude, longitude: user?.longitude },
                 to: ruser._id,
             }))
-            //saveCoordinatesToMongoDB({ latitude: user?.latitude, longitude: user?.longitude });
         }, 10000);
     };
 
-    // const saveCoordinatesToMongoDB = async (coordinates: { latitude: number; longitude: number }) => {
-    //     const apiUrl = `/rides/updateLoc/${user.user._id}`;
-    //     await axiosInstance.post(apiUrl, coordinates)
-    //         .then(function (response: any) {
-    //             console.log(response.data);
-    //         })
-    //         .catch(function (error) {
-    //             console.log(error);
-    //         });
-    // };
+    const onRideCancel = () => {
+        dispatch(emptyMsg());
+        axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Cancelled' })
+            .then((res) => {
+                props.navigation.navigate('RideComp', { ride, cancelled: true });
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+    }
 
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
@@ -170,23 +179,43 @@ const CurrentRide = (props: any) => {
             </View>
             <View style={{ paddingHorizontal: 20, paddingVertical: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: 'white', bottom: 20 }}>
                 <Pressable onTouchMove={() => setModalVisible(true)} onTouchStart={() => setModalVisible(true)} style={{ width: 90, height: 4, backgroundColor: DarkGrey, alignSelf: 'center', borderRadius: 10 }}></Pressable>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ margin: 5, marginTop: 0, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                        <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={ruser ? { uri: ruser?.profile } : require('../../assets/images/profileph.png')} />
-                        <View style={{}}>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ruser?.name}</Text>
-                            <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ruser?.phone}</Text>
+                {isPicked ?
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ margin: 5, marginTop: 0, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                            <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={ruser?.profile ? { uri: ruser?.profile } : require('../../assets/images/profileph.png')} />
+                            <View style={{}}>
+                                <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ride?.bkdBy == 'Shop' ? ruser?.name : shop?.title}</Text>
+                                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride?.bkdBy == 'Shop' ? ruser?.phone : shop?.contact}</Text>
+                            </View>
+                        </View>
+                        <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ride?.bkdBy == 'Shop' ? ruser._id : shop.uid)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                                <MessageSquare size={20} color={'green'} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${ride?.bkdBy == 'Shop' ? ruser?.phone : shop?.contact}`)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                                <Phone size={20} color={'green'} />
+                            </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                        <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ruser._id)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
-                            <MessageSquare size={20} color={'green'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
-                            <Phone size={20} color={'green'} />
-                        </TouchableOpacity>
+                    :
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ margin: 5, marginTop: 0, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                            <Image style={{ width: 50, height: 50, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={ruser?.profile ? { uri: ruser?.profile } : require('../../assets/images/profileph.png')} />
+                            <View style={{}}>
+                                <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ride?.bkdBy == 'Shop' ? shop?.title : ruser?.name}</Text>
+                                <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>{ride?.bkdBy == 'Shop' ? shop?.contact : ruser?.phone}</Text>
+                            </View>
+                        </View>
+                        <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ride?.bkdBy == 'Shop' ? shop.uid : ruser._id)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                                <MessageSquare size={20} color={'green'} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${ride?.bkdBy == 'Shop' ? shop?.contact : ruser?.phone}`)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                                <Phone size={20} color={'green'} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                }
                 <View style={{ height: 1, width: '93%', backgroundColor: 'grey', marginHorizontal: 10, marginBottom: 8 }}>
                 </View>
                 <View style={{ alignItems: 'center', gap: 5 }}>
@@ -245,10 +274,10 @@ const CurrentRide = (props: any) => {
                 options={['Yes, Cancel', 'No']}
                 cancelButtonIndex={1}
                 destructiveButtonIndex={0}
-                onPress={(index: any) => { if (index == 0) { dispatch(emptyMsg([])); props.navigation.navigate('RideComp', { ride, cancelled: true }) } }}
+                onPress={(index: any) => { if (index == 0) { onRideCancel() } }}
             />
 
-            <RideDetails navigation={props.navigation} setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={ruser} isAccepted={true} />
+            <RideDetails navigation={props.navigation} setModal={setModalVisible} modalVisible={modalVisible} ride={ride} user={ruser} isAccepted={true} shop={props?.route?.params?.shop} />
         </View>
     );
 }

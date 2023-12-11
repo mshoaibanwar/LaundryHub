@@ -16,11 +16,11 @@ import ForgotPswrd from './components/ForgotPswrd';
 import Splash from './components/Splash';
 import AddShopData from './components/seller/AddShopData';
 import ShopLocation from './components/seller/ShopLocation';
-import SellerTabs from './components/seller/sellernavigation/SellerTabs';
 import { BackgroundColor } from './constants/Colors';
 import AddRiderData from './components/rider/AddRiderData';
 import RiderTabsStack from './components/rider/ridernavigation/RiderTabsStack';
 import UserTabsStack from './navigation/UserTabsStack';
+import SellerTabsStack from './components/seller/sellernavigation/SellerTabsStack';
 
 const App = () => {
 
@@ -51,7 +51,7 @@ const App = () => {
               <stack.Screen name='AddRiderData' component={AddRiderData} options={{ headerShown: false }} />
               <stack.Screen name='ShopLocation' component={ShopLocation} options={{ headerShown: false }} />
               <stack.Screen name='Tab' component={UserTabsStack} options={{ headerShown: false, gestureEnabled: false }} />
-              <stack.Screen name='SellerTab' component={SellerTabs} options={{ headerShown: false, gestureEnabled: false }} />
+              <stack.Screen name='SellerTab' component={SellerTabsStack} options={{ headerShown: false, gestureEnabled: false }} />
               <stack.Screen name='RiderTab' component={RiderTabsStack} options={{ headerShown: false, gestureEnabled: false }} />
             </stack.Navigator>
           </NavigationContainer>

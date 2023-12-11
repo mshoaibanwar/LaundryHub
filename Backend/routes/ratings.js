@@ -19,6 +19,26 @@ router.route('/count/').get((req, res) => {
         .catch(err => res.status(404).send("Error: " + err));
 });
 
+router.route('/shop/countAvg/:uid').get(async(req, res) => {
+        let counts = {};
+        try {
+                const ratingCount = await Rating.countDocuments({ shopid: req.params.uid });
+                counts.ratings = ratingCount;
+                const ratings = await Rating.find({ shopid: req.params.id });
+                if (ratings.length === 0) {
+                        counts.avg = 0;
+                } else {
+                        const totalRating = ratings.reduce((sum, rating) => sum + rating.rating, 0);
+                        const averageRating = totalRating / ratings.length;
+                        counts.avg = averageRating;
+                }
+                res.json(counts);
+        } catch (error) {
+                console.error('Error retrieving ratings:', error);
+                res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
 router.route('/user/count/:uid').get((req, res) => {
         Rating.countDocuments({ shopid: req.params.uid})
         .then((count)=> res.json({"Count": count}))
