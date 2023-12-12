@@ -31,6 +31,7 @@ const Menu = ({ setModal, modalVisible, navigation }: propsTypes) => {
             duration: 2000,
             animationType: "slide-in",
         });
+
         navigation.navigate("Login");
 
         setModal(false);

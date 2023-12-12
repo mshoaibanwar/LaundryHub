@@ -14,7 +14,6 @@ import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { Banknote, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Phone } from 'lucide-react-native';
-// import MapViewDirections from 'react-native-maps-directions';
 import { useRef } from "react";
 import RideDetails from './RideDetails';
 import ActionSheet from 'react-native-actionsheet'
@@ -22,7 +21,6 @@ import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import { useDistance } from '../../helpers/DistanceCalculator';
 import socket from '../../helpers/Socket';
 import { emptyMsg } from '../../reduxStore/reducers/MessagesReducer';
-import { on } from 'events';
 
 let locationUpdateInterval: NodeJS.Timeout;
 
@@ -32,8 +30,8 @@ const CurrentRide = (props: any) => {
     const actionSheetRef = useRef<any>(null);
     const texts = ['Set Arrived', 'Set Pickedup', 'Set Droppedoff', 'Set Completed', 'Completed']
     const [btnPressCount, setBtnPressCount] = useState(0);
-    const [origin, setOrigin] = useState({ latitude: Number(props?.route?.params?.ride?.pCord?.lati), longitude: Number(props?.route?.params?.ride?.pCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 });
-    const [destination, setDestination] = useState({ latitude: Number(props?.route?.params?.ride?.dCord?.lati), longitude: Number(props?.route?.params?.ride?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 });
+    const [origin, setOrigin] = useState({ latitude: Number(props?.route?.params?.ride?.pCord?.lati ? props?.route?.params?.ride?.pCord?.lati : 0), longitude: Number(props?.route?.params?.ride?.pCord?.longi ? props?.route?.params?.ride?.pCord?.longi : 0), latitudeDelta: 0.025, longitudeDelta: 0.0121 });
+    const [destination, setDestination] = useState({ latitude: Number(props?.route?.params?.ride?.dCord?.lati ? props?.route?.params?.ride?.dCord?.lati : 0), longitude: Number(props?.route?.params?.ride?.dCord?.longi ? props?.route?.params?.ride?.dCord?.longi : 0), latitudeDelta: 0.025, longitudeDelta: 0.0121 });
     const [shop, setShop] = useState<any>(props?.route?.params?.shop);
     const [modalVisible, setModalVisible] = useState(false);
     const [isPicked, setIsPicked] = useState(false);

@@ -97,6 +97,20 @@ router.route('/changepass').post(async (req, res) => {
 
 });
 
+router.post('/verifyToken', async (req, res) => {
+    try {
+        const token = req.body.token;
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ _id: decoded._id });
+        if (!user)
+            return res.status(401).send({ message: 'Please Login to Continue!' });
+
+        res.status(200).send({ userData: user, message: 'Logged in Successfully.' });
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+});
+
 router.route('/login').post((req, res) => {
     User.findOne({ email: req.body.email })
         .then(async (user) => {

@@ -33,8 +33,8 @@ const RideReqCard = ({ navigation, ride }: any) => {
     }, []);
 
     const suser: any = useAppSelector((state) => state.user.value);
-    const distance = useDistance({ from: { latitude: ride.pCord.lati, longitude: ride.pCord.longi }, to: { latitude: ride.dCord.lati, longitude: ride.dCord.longi } });
-    const away = useDistance({ from: { latitude: ride.pCord.lati, longitude: ride.pCord.longi }, to: { latitude: suser?.latitude, longitude: suser?.longitude } });
+    const distance = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: ride?.dCord?.lati, longitude: ride?.dCord?.longi } });
+    const away = useDistance({ from: { latitude: ride?.pCord?.lati, longitude: ride?.pCord?.longi }, to: { latitude: suser?.latitude, longitude: suser?.longitude } });
     let fare = Math.round(80 + distance * 10);
 
     const acceptRide = () => {

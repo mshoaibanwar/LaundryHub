@@ -44,7 +44,7 @@ const App = () => {
             >
               <stack.Screen name='Splash' component={Splash} options={{ headerShown: false }} />
               <stack.Screen name='GetStart' component={GetStart} options={{ headerShown: false }} />
-              <stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
+              <stack.Screen name='Login' component={Login} options={{ headerShown: false, gestureEnabled: false }} />
               <stack.Screen name='Register' component={Register} options={{ headerShown: false }} />
               <stack.Screen name='Forgot' component={ForgotPswrd} options={{ headerShown: false }} />
               <stack.Screen name='AddShopData' component={AddShopData} options={{ headerShown: false }} />

@@ -150,9 +150,7 @@ var server = app.listen(8080, function () {
   // Executed when server receives message from the app
     ws.on("message", async (message) => {
       const received = JSON.parse(message)
-
-      console.log(received)
-
+      
       if(received && received.to) {
         wss.clients.forEach(function each(client) {
           if (client.id && JSON.parse(client.id).userId == received.to) {
@@ -162,8 +160,6 @@ var server = app.listen(8080, function () {
               client.send(JSON.stringify({riderLocation: received.riderLocation}));
             else if(received.rideStatus)
               client.send(JSON.stringify({rideStatus: received.rideStatus}));
-            // else if(received.orderStatus)
-            //   client.send(JSON.stringify({orderStatus: received.orderStatus}));
           }
         });
       }
