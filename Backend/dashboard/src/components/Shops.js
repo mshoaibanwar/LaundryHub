@@ -1,24 +1,29 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./style.css";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Table from "react-bootstrap/Table";
+import {
+  EyeFill,
+  PatchCheckFill,
+  SlashCircleFill,
+  TrashFill,
+} from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 
-function Users() {
-  const [users, setUsers] = useState([]);
-  const [usersUpdated, setUsersUpdated] = useState([]);
+function Shops() {
+  const [shops, setShops] = useState([]);
+  const [shopsUpdated, setShopsUpdated] = useState([]);
   const [filter, setFilter] = useState("All");
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/users/`)
+      .get(`http://localhost:8080/shops/`)
       .then(function (response) {
         // handle success
-        setUsers(response.data);
-        setUsersUpdated(response.data);
+        setShops(response.data);
+        setShopsUpdated(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -28,11 +33,13 @@ function Users() {
 
   const onFilter = (filter) => {
     setFilter(filter);
-    if (filter === "All") setUsersUpdated(users);
+    if (filter === "All") setShopsUpdated(shops);
     else if (filter === "Verified")
-      setUsersUpdated(users.filter((item) => item.confirmed == true));
+      setShopsUpdated(shops.filter((item) => item.status == "Verified"));
     else if (filter === "NotVerified")
-      setUsersUpdated(users.filter((item) => item.confirmed == false));
+      setShopsUpdated(shops.filter((item) => item.status == "Under Review"));
+    else if (filter === "Rejected")
+      setShopsUpdated(shops.filter((item) => item.status == "Rejected"));
   };
 
   const Delete = (itemId) => {
@@ -40,7 +47,7 @@ function Users() {
       .post(`http://localhost:8080/users/delete/${itemId}`)
       .then(function (response) {
         // handle success
-        setUsersUpdated(usersUpdated.filter((item) => item["_id"] !== itemId));
+        setShopsUpdated(shopsUpdated.filter((item) => item["_id"] !== itemId));
       })
       .catch(function (error) {
         // handle error
@@ -48,11 +55,16 @@ function Users() {
       });
   };
 
+  const View = (itemId) => {};
+
+  const Verify = (itemId) => {};
+  const Reject = (itemId) => {};
+
   return (
     <div className="col-lg-10 p-4">
       <div className="bg-white rounded-4 p-3 rightSec">
         <div className="container overflow-y-scroll h-100">
-          <h2>Users</h2>
+          <h2>Shops</h2>
           <div className="d-flex my-3">
             <ButtonGroup className="flex-fill" aria-label="Filters">
               <Button
@@ -68,6 +80,12 @@ function Users() {
                 Not Verified
               </Button>
               <Button
+                onClick={() => onFilter("Rejected")}
+                variant={filter == "Rejected" ? "primary" : "secondary"}
+              >
+                Rejected
+              </Button>
+              <Button
                 onClick={() => onFilter("All")}
                 variant={filter == "All" ? "primary" : "secondary"}
               >
@@ -76,34 +94,54 @@ function Users() {
             </ButtonGroup>
           </div>
           <div>
-            {usersUpdated.length > 0 || users.length > 0 ? (
+            {shopsUpdated.length > 0 || shops.length > 0 ? (
               <>
                 <Table striped bordered hover>
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Phone</th>
+                      <th>Title</th>
+                      <th>Address</th>
+                      <th>Contact</th>
                       <th>Status</th>
-                      <th>Action</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {usersUpdated.map((item, index) => (
+                    {shopsUpdated.map((item, index) => (
                       <>
                         <tr className="">
                           <td>{index + 1}</td>
-                          <td>{item.name}</td>
-                          <td>{item.email}</td>
-                          <td>+92 {item.phone}</td>
-                          <td>{item.confirmed ? "Verified" : "Pending"}</td>
-                          <td>
+                          <td>{item.title}</td>
+                          <td>{item.address}</td>
+                          <td>+92 {item.contact}</td>
+                          <td>{item.status}</td>
+                          <td className=" d-flex gap-2 align-items-center justify-content-center">
                             <button
                               onClick={() => Delete(item["_id"])}
                               className="btn btn-danger"
                             >
-                              Delete
+                              <TrashFill></TrashFill>
+                            </button>
+                            <button
+                              onClick={() => Reject(item["_id"])}
+                              className="btn btn-warning"
+                            >
+                              <SlashCircleFill></SlashCircleFill>
+                            </button>
+                            {item.status != "Verified" ? (
+                              <button
+                                onClick={() => Verify(item["_id"])}
+                                className="btn btn-success"
+                              >
+                                <PatchCheckFill></PatchCheckFill>
+                              </button>
+                            ) : null}
+                            <button
+                              onClick={() => View(item["_id"])}
+                              className="btn btn-primary"
+                            >
+                              <EyeFill></EyeFill>
                             </button>
                           </td>
                         </tr>
@@ -125,5 +163,4 @@ function Users() {
     </div>
   );
 }
-
-export default Users;
+export default Shops;

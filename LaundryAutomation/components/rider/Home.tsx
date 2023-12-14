@@ -26,6 +26,8 @@ const Home = ({ navigation }: any) => {
     const [cancelledCount, setCancelledCount] = useState(0);
     const [ratingsCount, setRatingsCount] = useState(0);
     const [avgRating, setAvgRating] = useState(0);
+    const [codEarnings, setCodEarnings] = useState(0);
+    const [totalEarnings, setTotalEarnings] = useState(0);
 
     React.useEffect(
         () => {
@@ -66,13 +68,13 @@ const Home = ({ navigation }: any) => {
             {
                 id: '4',
                 name: 'COD Earnings',
-                count: 9565,
+                count: codEarnings,
                 img: <Banknote size={35} color={BlueColor} fill='green' />
             },
             {
                 id: '5',
                 name: 'Total Earnings',
-                count: 9565,
+                count: totalEarnings,
                 img: <PiggyBank size={35} color={BlueColor} fill='yellow' />
             },
         ];
@@ -110,18 +112,20 @@ const Home = ({ navigation }: any) => {
                 console.log(error.response.data);
             })
 
-        axiosInstance.get('ratings/user/count/' + user.user._id)
+        axiosInstance.get('ratings/shop/countAvg/' + user.user._id)
             .then(function (response: any) {
-                setRatingsCount(response.data.Count);
+                setRatingsCount(response.data.ratings);
+                setAvgRating(response.data.avg);
             })
             .catch(function (error: any) {
                 // handle error
                 console.log(error.response.data);
             })
 
-        axiosInstance.get('ratings/user/avg/' + user.user._id)
+        axiosInstance.get('rides/rider/earnings/' + user.user._id)
             .then(function (response: any) {
-                setAvgRating(response.data);
+                setCodEarnings(response.data.COD);
+                setTotalEarnings(response.data.TotalEarnings);
             })
             .catch(function (error: any) {
                 // handle error

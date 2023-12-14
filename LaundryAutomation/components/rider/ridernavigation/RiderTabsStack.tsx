@@ -7,6 +7,7 @@ import RiderTabs from './RiderTabs';
 import RideCompleted from '../RideCompleted';
 import LocationTracker from '../LocationTracker';
 import Chat from '../../Chat';
+import AboutUs from '../../AboutUs';
 const RiderTabsStack = () => {
     const stack = createStackNavigator();
     return (
@@ -20,6 +21,7 @@ const RiderTabsStack = () => {
                     <stack.Screen name='Chat' component={Chat} options={{ headerShown: false }} />
                     <stack.Screen name='CRide' component={CurrentRide} options={{ headerShown: false, gestureEnabled: false }} />
                     <stack.Screen name='RideComp' component={RideCompleted} options={{ headerShown: false, gestureEnabled: false }} />
+                    <stack.Screen name='AboutUs' component={AboutUs} options={{ headerShown: false }} />
                 </stack.Navigator>
             </LocationTracker>
         </>

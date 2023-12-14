@@ -69,12 +69,12 @@ const MyAddresses = (props: any) => {
                     <Text style={{ fontSize: 18, fontWeight: '400', color: 'black' }}>+ Add</Text>
                 </TouchableOpacity>
             </View>
-            <View style={{ backgroundColor: GreyColor, height: '100%' }}>
+            <View style={{ backgroundColor: GreyColor, height: '100%', paddingVertical: 10 }}>
                 <ScrollView style={{ maxWidth: '100%' }} refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }>
                     {addresses.map((item: any) => (
-                        <View key={item._id} style={{ flexDirection: 'row', marginHorizontal: 20, marginVertical: 5, padding: 10, borderWidth: 0.5, borderRadius: 10, gap: 10, backgroundColor: 'white' }}>
+                        <View key={item._id} style={{ flexDirection: 'row', marginHorizontal: 15, marginVertical: 5, padding: 10, borderWidth: 0.5, borderRadius: 10, gap: 10, backgroundColor: 'white' }}>
                             <View>
                                 {item.type == 'Home' ?
                                     <Home color='black' />
@@ -102,7 +102,7 @@ const MyAddresses = (props: any) => {
                             </View>
                         </View>
                     ))}
-                    <View style={{ height: 160 }}></View>
+                    <View style={{ height: 180 }}></View>
                 </ScrollView>
             </View>
             {addresses.length == 0 ?

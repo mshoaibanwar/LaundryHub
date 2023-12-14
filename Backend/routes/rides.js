@@ -33,6 +33,21 @@ router.route('/user/cancelled/count/:uid').get((req, res) => {
         .catch(err => res.status(404).send("Count Error: " + err));
     });
 
+router.route('/rider/earnings/:riderid').get((req, res) => {
+        Ride.find({ rid: req.params.riderid, status: 'Completed'})
+        .then((rides) => {
+                var total = 0;
+                var cod = 0;
+                rides.forEach(ride => {
+                        if(ride.pMethod == "Cash")
+                                cod += ride.fare;
+                        total += ride.fare;
+                });
+                res.json({"TotalEarnings": total, "COD": cod});
+        })
+        .catch(err => res.status(404).json(`Completed Rides with RiderId: ${req.params.id} not found`));
+});
+
 router.route('/user/:uid').get((req, res) => {
         Ride.find({ uid: req.params.uid, status: { $in: ['Pending', 'Accepted', 'Pickedup', 'Droppedoff'] } })
         .then((Ride) => {

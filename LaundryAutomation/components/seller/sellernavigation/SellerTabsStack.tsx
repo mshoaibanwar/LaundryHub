@@ -5,6 +5,7 @@ import { BackgroundColor } from '../../../constants/Colors';
 import Chat from '../../Chat';
 import SellerTabs from './SellerTabs';
 import Login from '../../Login';
+import AboutUs from '../../AboutUs';
 
 const UserTabsStack = () => {
     const stack = createStackNavigator();
@@ -17,6 +18,7 @@ const UserTabsStack = () => {
                 <stack.Screen name='Tabs' component={SellerTabs} options={{ headerShown: false }} />
                 <stack.Screen name='Chat' component={Chat} options={{ headerShown: false }} />
                 <stack.Screen name='Login' component={Login} options={{ headerShown: false, gestureEnabled: false }} />
+                <stack.Screen name='AboutUs' component={AboutUs} options={{ headerShown: false }} />
             </stack.Navigator>
         </>
     )

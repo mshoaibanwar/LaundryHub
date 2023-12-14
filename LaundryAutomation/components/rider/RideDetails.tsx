@@ -87,55 +87,57 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                         {isAccepted ? null :
                             <View>
                                 <View style={{ marginBottom: 10 }}>
-                                    <MapView
-                                        // ref={mapRef}
-                                        ref={mapRef}
-                                        style={{ width: '100%', height: 200, borderRadius: 10 }}
-                                        initialRegion={{
-                                            latitude: ride ? Number(ride?.pCord?.lati) : 0,
-                                            longitude: ride ? Number(ride?.pCord?.longi) : 0,
-                                            latitudeDelta: 0.0922,
-                                            longitudeDelta: 0.0421,
-                                        }}
-                                        // showsUserLocation={true}
-                                        showsMyLocationButton={true}
-                                    >
-                                        <Marker
-                                            coordinate={{ latitude: ride ? Number(ride?.pCord?.lati) : 0, longitude: ride ? Number(ride?.pCord?.longi) : 0 }}
-                                            title={"Pickup"}
-                                            description={ride?.pLoc}
+                                    {ride?.pCord?.lati ?
+                                        <MapView
+                                            // ref={mapRef}
+                                            ref={mapRef}
+                                            style={{ width: '100%', height: 200, borderRadius: 10 }}
+                                            initialRegion={{
+                                                latitude: ride ? Number(ride?.pCord?.lati) : 0,
+                                                longitude: ride ? Number(ride?.pCord?.longi) : 0,
+                                                latitudeDelta: 0.0922,
+                                                longitudeDelta: 0.0421,
+                                            }}
+                                            // showsUserLocation={true}
+                                            showsMyLocationButton={true}
                                         >
-                                            <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
-                                                <LocateFixed color='white' size={24} />
-                                            </View>
-                                        </Marker>
-                                        <Marker
-                                            coordinate={{ latitude: ride ? Number(ride?.dCord?.lati) : 0, longitude: ride ? Number(ride?.dCord?.longi) : 0 }}
-                                            title={"Destination"}
-                                            description={ride?.dLoc}
-                                        >
-                                            <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
-                                                <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
-                                            </View>
-                                        </Marker>
-                                        <Marker
-                                            coordinate={{ latitude: ride?.riderCords?.lati ? Number(ride?.riderCords?.lati) : 0, longitude: ride?.riderCords?.longi ? Number(ride?.riderCords?.longi) : 0 }}
-                                            title={"Bike"}
-                                            description={"Your Current Location"}
-                                        >
-                                            <View style={{ padding: 7, backgroundColor: 'black', borderRadius: 50 }}>
-                                                <BikeIcon style={{ bottom: 1 }} color='white' size={25} />
-                                            </View>
-                                        </Marker>
+                                            <Marker
+                                                coordinate={{ latitude: ride ? Number(ride?.pCord?.lati) : 0, longitude: ride ? Number(ride?.pCord?.longi) : 0 }}
+                                                title={"Pickup"}
+                                                description={ride?.pLoc}
+                                            >
+                                                <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
+                                                    <LocateFixed color='white' size={24} />
+                                                </View>
+                                            </Marker>
+                                            <Marker
+                                                coordinate={{ latitude: ride ? Number(ride?.dCord?.lati) : 0, longitude: ride ? Number(ride?.dCord?.longi) : 0 }}
+                                                title={"Destination"}
+                                                description={ride?.dLoc}
+                                            >
+                                                <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
+                                                    <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
+                                                </View>
+                                            </Marker>
+                                            <Marker
+                                                coordinate={{ latitude: ride?.riderCords?.lati ? Number(ride?.riderCords?.lati) : 0, longitude: ride?.riderCords?.longi ? Number(ride?.riderCords?.longi) : 0 }}
+                                                title={"Bike"}
+                                                description={"Your Current Location"}
+                                            >
+                                                <View style={{ padding: 7, backgroundColor: 'black', borderRadius: 50 }}>
+                                                    <BikeIcon style={{ bottom: 1 }} color='white' size={25} />
+                                                </View>
+                                            </Marker>
 
-                                        <Polyline
-                                            coordinates={[{ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi) }, { latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi) }]}
-                                            strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-                                            strokeColors={['#7F0000']}
-                                            strokeWidth={4}
-                                        />
+                                            <Polyline
+                                                coordinates={[{ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi) }, { latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi) }]}
+                                                strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                                                strokeColors={['#7F0000']}
+                                                strokeWidth={4}
+                                            />
 
-                                    </MapView>
+                                        </MapView>
+                                        : null}
                                 </View>
                                 <View>
                                     <TouchableOpacity onPress={acceptRide} style={{ alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: 'green', borderRadius: 5, marginBottom: 10 }}>

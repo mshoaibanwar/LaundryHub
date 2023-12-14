@@ -95,6 +95,16 @@ const RideReq = ({ navigation }: any) => {
             })
     }
 
+    const delRide = () => {
+        axiosInstance.get(`rides/delete/${rideData._id}`)
+            .then((res) => {
+                navigation.navigate('ShopsStack', { screen: 'Shops' })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             {rideAccepted ?
@@ -237,7 +247,7 @@ const RideReq = ({ navigation }: any) => {
                             <Text style={{ fontSize: 18, top: -80 }}>Finding Rider...</Text>
                         </View>
                         <View style={{ flexDirection: 'row', gap: 20 }}>
-                            <TouchableOpacity onPress={getRideData} style={{ padding: 10, backgroundColor: 'red', borderRadius: 10 }}>
+                            <TouchableOpacity onPress={delRide} style={{ padding: 10, backgroundColor: 'red', borderRadius: 10 }}>
                                 <Text style={{ fontSize: 18, color: 'white' }}>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={getRideData} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>

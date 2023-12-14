@@ -124,58 +124,60 @@ const CurrentRide = (props: any) => {
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
             <View style={{ height: '62%' }}>
-                <MapView
-                    ref={mapRef} //assign our ref to this MapView
-                    style={{ flex: 1 }}
-                    // showsUserLocation={true}
-                    followsUserLocation={true}
-                    loadingEnabled={true}
-                    region={{
-                        latitude: Number(user?.latitude),
-                        longitude: Number(user?.longitude),
-                        latitudeDelta: 0.105,
-                        longitudeDelta: 0.0321,
-                    }}
-                >
-                    <Marker
-                        coordinate={origin}
-                        title={"Pickup"}
-                        description={"House 2, street 132, G11/4"}
+                {user?.latitude ?
+                    <MapView
+                        ref={mapRef} //assign our ref to this MapView
+                        style={{ flex: 1 }}
+                        // showsUserLocation={true}
+                        followsUserLocation={true}
+                        loadingEnabled={true}
+                        region={{
+                            latitude: Number(user?.latitude),
+                            longitude: Number(user?.longitude),
+                            latitudeDelta: 0.105,
+                            longitudeDelta: 0.0321,
+                        }}
                     >
-                        <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
-                            <LocateFixed color='white' size={24} />
-                        </View>
-                    </Marker>
-                    <Marker
-                        coordinate={destination}
-                        title={"Destination"}
-                        description={"Shop 2, street 132, G11/4"}
-                    >
-                        <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
-                            <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
-                        </View>
-                    </Marker>
-                    <Marker
-                        coordinate={{ latitude: Number(user?.latitude), longitude: Number(user?.longitude) }}
-                        title={"Bike"}
-                        description={"Your Current Location"}
-                    >
-                        <View style={{ padding: 7, backgroundColor: 'black', borderRadius: 50 }}>
-                            <BikeIcon style={{ bottom: 1 }} color='white' size={25} />
-                        </View>
-                    </Marker>
-                    <Polyline
-                        coordinates={[origin, destination]}
-                        strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-                        strokeColors={['#7F0000']}
-                        strokeWidth={4}
-                    />
-                    {/* <MapViewDirections
+                        <Marker
+                            coordinate={origin}
+                            title={"Pickup"}
+                            description={"House 2, street 132, G11/4"}
+                        >
+                            <View style={{ padding: 5, backgroundColor: 'green', borderRadius: 50 }}>
+                                <LocateFixed color='white' size={24} />
+                            </View>
+                        </Marker>
+                        <Marker
+                            coordinate={destination}
+                            title={"Destination"}
+                            description={"Shop 2, street 132, G11/4"}
+                        >
+                            <View style={{ padding: 7, backgroundColor: 'green', borderRadius: 50 }}>
+                                <Navigation style={{ right: 1, top: 1 }} color='white' size={20} />
+                            </View>
+                        </Marker>
+                        <Marker
+                            coordinate={{ latitude: Number(user?.latitude), longitude: Number(user?.longitude) }}
+                            title={"Bike"}
+                            description={"Your Current Location"}
+                        >
+                            <View style={{ padding: 7, backgroundColor: 'black', borderRadius: 50 }}>
+                                <BikeIcon style={{ bottom: 1 }} color='white' size={25} />
+                            </View>
+                        </Marker>
+                        <Polyline
+                            coordinates={[origin, destination]}
+                            strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                            strokeColors={['#7F0000']}
+                            strokeWidth={4}
+                        />
+                        {/* <MapViewDirections
                         origin={origin}
                         destination={destination}
                         apikey={GOOGLE_MAPS_APIKEY}
                     /> */}
-                </MapView>
+                    </MapView>
+                    : null}
 
                 <TouchableOpacity onPress={goToMyLoc}
                     style={{ position: 'absolute', bottom: 35, left: 10, backgroundColor: 'white', padding: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>

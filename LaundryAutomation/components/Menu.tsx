@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../hooks/Hooks';
 import { logout } from '../reduxStore/reducers/UserReducer';
 import Toast from 'react-native-toast-notifications';
 import { emptyShopData } from '../reduxStore/reducers/ShopDataReducer';
-import { CommonActions, StackActions, useNavigation } from '@react-navigation/native';
 
 interface propsTypes {
     setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -125,7 +124,7 @@ const Menu = ({ setModal, modalVisible, navigation }: propsTypes) => {
                             <Text style={styles.btnText}>English</Text>
                         </View>
                     </Pressable>
-                    <Pressable style={styles.btn}>
+                    <Pressable onPress={() => { navigation.navigate("AboutUs"); setModal(false) }} style={styles.btn}>
                         <BadgeInfo color='black' size={22} />
                         <Text style={styles.btnText}>About Us</Text>
                     </Pressable>
