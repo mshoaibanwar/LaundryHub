@@ -1,4 +1,4 @@
-import { Banknote, CheckCheck, CreditCard, LocateFixed, MapPin, Navigation, X } from 'lucide-react-native'
+import { CheckCheck, LocateFixed, Navigation } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { BlueColor, GreyColor, LightGreen } from '../constants/Colors'

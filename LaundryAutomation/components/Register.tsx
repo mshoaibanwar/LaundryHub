@@ -2,18 +2,21 @@ import React, { useState } from 'react'
 import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { DarkPurple, LightPurple, LoginBtn } from '../constants/Colors'
-import { ArrowLeft, Lock, Mail, Smartphone, User } from 'lucide-react-native'
+import { ArrowLeft, Eye, EyeOff, Lock, Mail, Smartphone, User } from 'lucide-react-native'
 import { useToast } from 'react-native-toast-notifications'
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { axiosInstance } from '../helpers/AxiosAPI'
 import LottieView from 'lottie-react-native'
+import { useTogglePasswordVisibility } from '../helpers/useTogglePasswordVisibility'
 
 const Register = (props: any) => {
     const [loading, setLoading] = useState(false);
     const [isUser, setIsUser] = useState(true);
     const [isRider, setIsRider] = useState(false);
+    const { passwordVisibility, rightIcon, handlePasswordVisibility } =
+        useTogglePasswordVisibility();
 
     const schema = yup.object().shape({
         name: yup
@@ -160,16 +163,23 @@ const Register = (props: any) => {
                                     </View>
                                     <View style={{ width: '100%', gap: 5, justifyContent: 'center' }}>
                                         <Text style={{ color: 'white' }}>PASSWORD</Text>
-                                        <Controller
-                                            control={control}
-                                            rules={{
-                                                required: true,
-                                            }}
-                                            render={({ field: { onChange, value } }) => (
-                                                <TextInput value={value} onChangeText={onChange} secureTextEntry={true} autoComplete='password' placeholderTextColor={'grey'} style={{ width: '88%', fontSize: 17, color: 'white', padding: 0 }} placeholder='* * * * * * * *' />
-                                            )}
-                                            name="password"
-                                        />
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 30 }}>
+                                            <Controller
+                                                control={control}
+                                                rules={{
+                                                    required: true,
+                                                }}
+                                                render={({ field: { onChange, value } }) => (
+                                                    <TextInput value={value} onChangeText={onChange} secureTextEntry={passwordVisibility} autoComplete='password' placeholderTextColor={'grey'} style={{ width: '88%', fontSize: 17, color: 'white', padding: 0 }} placeholder='* * * * * * * *' />
+                                                )}
+                                                name="password"
+                                            />
+                                            <TouchableOpacity onPress={handlePasswordVisibility}>
+                                                {rightIcon == 'eye' ?
+                                                    <Eye size={20} color="white" />
+                                                    : <EyeOff size={20} color="white" />}
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 </View>
                                 {errors.password && <Text style={{ color: 'orange', marginLeft: 15 }}>{errors.password.message}</Text>}

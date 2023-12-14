@@ -41,18 +41,16 @@ const OrderPlaced = (props: any) => {
             })
     }
 
-    useEffect(() => {
-        socket.onmessage = (e: any) => {
-            const data = JSON.parse(e.data)
-            console.log(data)
-            if (data?.orderStatus && data?.oid == props?.route?.params?.id) {
-                if (data?.orderStatus == 'Confirmed')
-                    setConfirmed(true)
-                if (data?.orderStatus == 'Cancelled')
-                    setCancelled(true)
-            }
+    socket.onmessage = (e: any) => {
+        const data = JSON.parse(e.data)
+        console.log(data)
+        if (data?.orderStatus && data?.oid == props?.route?.params?.id) {
+            if (data?.orderStatus == 'Confirmed')
+                setConfirmed(true)
+            if (data?.orderStatus == 'Cancelled')
+                setCancelled(true)
         }
-    }, [])
+    }
 
     return (
         <SafeAreaView>

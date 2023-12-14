@@ -6,6 +6,7 @@ import { axiosInstance } from '../../helpers/AxiosAPI';
 import { useAppSelector } from '../../hooks/Hooks';
 import { set } from 'react-hook-form';
 import LottieView from 'lottie-react-native';
+import { GreyColor } from '../../constants/Colors';
 
 const includeExtra = true;
 
@@ -234,71 +235,73 @@ const Manage = (props: any) => {
     }
 
     return (
-        <SafeAreaView style={{ margin: 20 }}>
-            <View style={{ flexDirection: 'row' }}>
+        <SafeAreaView style={{ backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
                     <ArrowLeft color='black' size={25} />
                 </TouchableOpacity>
-                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 20, fontWeight: '700' }}>Manage</Text>
+                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Manage</Text>
             </View>
-            <ScrollView>
-                <View style={{ marginVertical: 10 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Bike Details</Text>
-                    <View style={{ gap: 5, marginVertical: 10 }}>
-                        <TextInput value={bikeName} onChangeText={setBikeName} placeholder='Bike Name' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
-                        <TextInput value={bikeNumber} onChangeText={setBikeNumber} placeholder='Bike Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
-                    </View>
-                    <TouchableOpacity onPress={updateBikeDeatils} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
-                        <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={{ marginVertical: 10 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Personal Details</Text>
-                    <View style={{ gap: 5, marginVertical: 10 }}>
-                        <TextInput value={address} onChangeText={setAddress} placeholder='Your Address' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
-                        <TextInput maxLength={13} value={cnic} onChangeText={setCnic} placeholder='CNIC Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
-                    </View>
-                    <TouchableOpacity onPress={updatePersonalDetails} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
-                        <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>
-                    </TouchableOpacity>
+            <View style={{ backgroundColor: GreyColor }}>
+                <ScrollView style={{ padding: 20 }}>
                     <View style={{ marginVertical: 10 }}>
-                        <Text style={{ color: 'black', fontSize: 16, marginBottom: 10, fontWeight: '500' }}>CNIC Photos</Text>
-                        <View>
-                            <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
-                                <Text style={{ color: 'grey', fontSize: 16, width: '52%' }}>Front Side</Text>
-                                <Text style={{ color: 'grey', fontSize: 16, width: '48%' }}>Back Side</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', maxHeight: 100 }}>
-                                <Pressable onPress={() => cnic1On == null ? ImagePickerAlert(0) : null} style={{ width: '48%' }}>
-                                    <Image style={cnic1On == null ? { width: '100%', height: 100, borderWidth: 1, borderColor: 'red' } : { width: '100%', height: 100 }} source={cnic1 ? cnic1 : cnic1On ? { uri: cnic1On } : require('../../assets/images/idback.png')} resizeMode='cover' />
-                                </Pressable>
-                                <Pressable onPress={() => cnic2On == null ? ImagePickerAlert(1) : null} style={{ width: '48%' }}>
-                                    <Image style={cnic2On == null ? { width: '100%', height: 100, borderWidth: 1, borderColor: 'red' } : { width: '100%', height: 100 }} source={cnic2 ? cnic2 : cnic2On ? { uri: cnic2On } : require('../../assets/images/idfront.png')} resizeMode='cover' />
-                                </Pressable>
-                            </View>
+                        <Text style={{ fontSize: 16, fontWeight: '500' }}>Bike Details</Text>
+                        <View style={{ gap: 5, marginVertical: 10 }}>
+                            <TextInput value={bikeName} onChangeText={setBikeName} placeholder='Bike Name' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
+                            <TextInput value={bikeNumber} onChangeText={setBikeNumber} placeholder='Bike Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
                         </View>
-                    </View>
-                    <View>
-                        <Text style={{ color: 'black', fontSize: 16, marginBottom: 10, fontWeight: '500' }}>Driving License Photo</Text>
-                        <View>
-                            <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
-                                <Text style={{ color: 'grey', fontSize: 16, width: '52%' }}>Front Side</Text>
-                            </View>
-                            <View style={{}}>
-                                <Pressable onPress={() => licOn == null ? ImagePickerAlert(2) : null} style={{}}>
-                                    <Image style={licOn === null ? { width: '100%', height: 205, borderColor: 'red', borderWidth: 1 } : { width: '100%', height: 205 }} source={lic ? lic : licOn ? { uri: licOn } : require('../../assets/images/license.png')} resizeMode='cover' />
-                                </Pressable>
-                            </View>
-                        </View>
-                    </View>
-                    {cnic1On === null || cnic2On === null || licOn === null ?
-                        <TouchableOpacity onPress={updateImages} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5, marginTop: 10 }}>
+                        <TouchableOpacity onPress={updateBikeDeatils} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>
                         </TouchableOpacity>
-                        : null}
-                </View>
-                <View style={{ height: 80 }}></View>
-            </ScrollView>
+                    </View>
+                    <View style={{ marginVertical: 10 }}>
+                        <Text style={{ fontSize: 16, fontWeight: '500' }}>Personal Details</Text>
+                        <View style={{ gap: 5, marginVertical: 10 }}>
+                            <TextInput value={address} onChangeText={setAddress} placeholder='Your Address' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
+                            <TextInput maxLength={13} value={cnic} onChangeText={setCnic} placeholder='CNIC Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
+                        </View>
+                        <TouchableOpacity onPress={updatePersonalDetails} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
+                            <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>
+                        </TouchableOpacity>
+                        <View style={{ marginVertical: 10 }}>
+                            <Text style={{ color: 'black', fontSize: 16, marginBottom: 10, fontWeight: '500' }}>CNIC Photos</Text>
+                            <View>
+                                <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
+                                    <Text style={{ color: 'grey', fontSize: 16, width: '52%' }}>Front Side</Text>
+                                    <Text style={{ color: 'grey', fontSize: 16, width: '48%' }}>Back Side</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', maxHeight: 100 }}>
+                                    <Pressable onPress={() => cnic1On == null ? ImagePickerAlert(0) : null} style={{ width: '48%' }}>
+                                        <Image style={cnic1On == null ? { width: '100%', height: 100, borderWidth: 1, borderColor: 'red' } : { width: '100%', height: 100 }} source={cnic1 ? cnic1 : cnic1On ? { uri: cnic1On } : require('../../assets/images/idback.png')} resizeMode='cover' />
+                                    </Pressable>
+                                    <Pressable onPress={() => cnic2On == null ? ImagePickerAlert(1) : null} style={{ width: '48%' }}>
+                                        <Image style={cnic2On == null ? { width: '100%', height: 100, borderWidth: 1, borderColor: 'red' } : { width: '100%', height: 100 }} source={cnic2 ? cnic2 : cnic2On ? { uri: cnic2On } : require('../../assets/images/idfront.png')} resizeMode='cover' />
+                                    </Pressable>
+                                </View>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={{ color: 'black', fontSize: 16, marginBottom: 10, fontWeight: '500' }}>Driving License Photo</Text>
+                            <View>
+                                <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
+                                    <Text style={{ color: 'grey', fontSize: 16, width: '52%' }}>Front Side</Text>
+                                </View>
+                                <View style={{}}>
+                                    <Pressable onPress={() => licOn == null ? ImagePickerAlert(2) : null} style={{}}>
+                                        <Image style={licOn === null ? { width: '100%', height: 205, borderColor: 'red', borderWidth: 1 } : { width: '100%', height: 205 }} source={lic ? lic : licOn ? { uri: licOn } : require('../../assets/images/license.png')} resizeMode='cover' />
+                                    </Pressable>
+                                </View>
+                            </View>
+                        </View>
+                        {cnic1On === null || cnic2On === null || licOn === null ?
+                            <TouchableOpacity onPress={updateImages} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5, marginTop: 10 }}>
+                                <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>
+                            </TouchableOpacity>
+                            : null}
+                    </View>
+                    <View style={{ height: 220 }}></View>
+                </ScrollView>
+            </View>
             {loading ?
                 <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
                     <LottieView style={{ width: 150, height: 150 }} source={require('../../assets/animated/loading.json')} autoPlay loop />

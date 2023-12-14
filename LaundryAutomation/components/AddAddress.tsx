@@ -1,9 +1,9 @@
 
 import { Bed, Building2, Home, MapPin, X } from 'lucide-react-native'
 import React, { useRef, useState } from 'react'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { BlueColor, FrontColor } from '../constants/Colors'
+import { BlueColor, FrontColor, GreyColor } from '../constants/Colors'
 import MapView from 'react-native-maps'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { useToast } from "react-native-toast-notifications";
@@ -120,79 +120,82 @@ const AddAddress = (props: any) => {
     }
 
     return (
-        <SafeAreaView style={{ padding: 20 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <SafeAreaView style={{ backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => { props.navigation.goBack() }}>
-                    <X color='black' />
+                    <X color='black' width={25} />
                 </TouchableOpacity>
-                <Text style={{ width: '85%', textAlign: 'center', fontSize: 20, fontWeight: '500', color: 'black' }}>Address</Text>
+                <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '600', color: 'black' }}>Address</Text>
+                <View style={{ width: 25 }} />
             </View>
-            <ScrollView>
-                <View style={{ gap: 10, marginVertical: 20 }}>
-                    <View style={{ gap: 10 }}>
-                        <Text style={{ color: 'black' }}>Full Name</Text>
+            <View style={{ backgroundColor: GreyColor, paddingHorizontal: 20, height: '100%' }}>
+                <ScrollView >
+                    <View style={{ gap: 10, marginVertical: 20 }}>
+                        <View style={{ gap: 10 }}>
+                            <Text style={{ color: 'black' }}>Full Name</Text>
+                            <TextInput
+                                style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
+                                onChangeText={text => setName(text)}
+                                value={name}
+                                placeholder="Full Name"
+                            />
+                            <Text style={{ color: 'black' }}>Mobile Number</Text>
+                            <TextInput
+                                style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
+                                onChangeText={text => setNum(text)}
+                                value={num}
+                                placeholder="Mobile Number"
+                                keyboardType='numeric'
+                            />
+                        </View>
+                        <Text style={{ color: 'black' }}>Full Address</Text>
                         <TextInput
                             style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
-                            onChangeText={text => setName(text)}
-                            value={name}
-                            placeholder="Full Name"
-                        />
-                        <Text style={{ color: 'black' }}>Mobile Number</Text>
-                        <TextInput
-                            style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
-                            onChangeText={text => setNum(text)}
-                            value={num}
-                            placeholder="Mobile Number"
-                            keyboardType='numeric'
+                            onChangeText={text => setAdd(text)}
+                            value={add}
+                            placeholder="Full Address"
                         />
                     </View>
-                    <Text style={{ color: 'black' }}>Full Address</Text>
-                    <TextInput
-                        style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
-                        onChangeText={text => setAdd(text)}
-                        value={add}
-                        placeholder="Full Address"
-                    />
-                </View>
-                <View style={{ marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Pressable onPress={OnHome} style={home ? styles.sbtnsActive : styles.sbtns}>
-                        <Home color='black' size={23} />
-                        <Text style={{ fontSize: 17, fontWeight: '500', color: 'black' }}>Home</Text>
-                    </Pressable>
-                    <Pressable onPress={OnHotel} style={hotel ? styles.sbtnsActive : styles.sbtns}>
-                        <Bed color='black' size={23} />
-                        <Text style={{ fontSize: 17, fontWeight: '500', color: 'black' }}>Hotel</Text>
-                    </Pressable>
-                    <Pressable onPress={OnWork} style={work ? styles.sbtnsActive : styles.sbtns}>
-                        <Building2 color='black' size={23} />
-                        <Text style={{ fontSize: 17, fontWeight: '500', color: 'black' }}>Work</Text>
-                    </Pressable>
-                </View>
-                <View>
-                    <MapView //provider='google'
-                        ref={mapRef}
-                        style={{ width: '100%', height: 250, borderRadius: 15, borderWidth: 0.5 }}
-                        initialRegion={state.region}
-                        showsUserLocation={true}
-                        showsMyLocationButton={true}
-                        //followsUserLocation={true}
-                        showsCompass={true}
-                        scrollEnabled={true}
-                        zoomEnabled={true}
-                        pitchEnabled={true}
-                        rotateEnabled={true}
-                        onRegionChangeComplete={onRegionChange}>
-                    </MapView>
-                    <View style={{ position: 'absolute', top: '40%', left: '45.7%' }}>
-                        <MapPin size={30} color='black' />
+                    <View style={{ marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Pressable onPress={OnHome} style={home ? styles.sbtnsActive : styles.sbtns}>
+                            <Home color='black' size={23} />
+                            <Text style={{ fontSize: 17, fontWeight: '500', color: 'black' }}>Home</Text>
+                        </Pressable>
+                        <Pressable onPress={OnHotel} style={hotel ? styles.sbtnsActive : styles.sbtns}>
+                            <Bed color='black' size={23} />
+                            <Text style={{ fontSize: 17, fontWeight: '500', color: 'black' }}>Hotel</Text>
+                        </Pressable>
+                        <Pressable onPress={OnWork} style={work ? styles.sbtnsActive : styles.sbtns}>
+                            <Building2 color='black' size={23} />
+                            <Text style={{ fontSize: 17, fontWeight: '500', color: 'black' }}>Work</Text>
+                        </Pressable>
                     </View>
-                </View>
-                <TouchableOpacity onPress={AddAddress} style={{ marginTop: 10, padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
-                    <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>{isUpdating ? 'Update' : 'Add'}</Text>
-                </TouchableOpacity>
-                <View style={{ height: 100 }}>
-                </View>
-            </ScrollView>
+                    <View style={[{ borderRadius: 15, borderWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { overflow: 'hidden', elevation: 1 } : null]}>
+                        <MapView //provider='google'
+                            ref={mapRef}
+                            style={{ width: '100%', height: 250, borderRadius: 15 }}
+                            initialRegion={state.region}
+                            showsUserLocation={true}
+                            showsMyLocationButton={true}
+                            //followsUserLocation={true}
+                            showsCompass={true}
+                            scrollEnabled={true}
+                            zoomEnabled={true}
+                            pitchEnabled={true}
+                            rotateEnabled={true}
+                            onRegionChangeComplete={onRegionChange}>
+                        </MapView>
+                        <View style={{ position: 'absolute', top: '40%', left: '45.7%' }}>
+                            <MapPin size={30} color='black' />
+                        </View>
+                    </View>
+                    <TouchableOpacity onPress={AddAddress} style={{ marginTop: 10, padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
+                        <Text style={{ textAlign: 'center', color: 'white', fontSize: 18, fontWeight: '500' }}>{isUpdating ? 'Update' : 'Add'}</Text>
+                    </TouchableOpacity>
+                    <View style={{ height: 100 }}>
+                    </View>
+                </ScrollView>
+            </View>
         </SafeAreaView>
     )
 }

@@ -1,7 +1,7 @@
 import { ArrowLeft, MessageSquare, Phone, TimerReset, X } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { FlatList, Image, Modal, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { BlueColor, DarkGrey } from '../constants/Colors'
+import { FlatList, Image, Modal, Platform, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { BlueColor, DarkGrey, GreyColor } from '../constants/Colors'
 import StarRating from 'react-native-star-rating-widget';
 import { axiosInstance } from '../helpers/AxiosAPI'
 import { useToast } from 'react-native-toast-notifications'
@@ -319,14 +319,14 @@ const OrderDetail = (props: any) => {
     }
 
     return (
-        <SafeAreaView>
-            <View style={{ padding: 20 }}>
-                <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                        <ArrowLeft color='black' size={25} />
-                    </TouchableOpacity>
-                    <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 20, fontWeight: '700' }}>Order Details</Text>
-                </View>
+        <SafeAreaView style={{ backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', paddingBottom: 10, paddingHorizontal: 20, borderBottomWidth: 0.5, borderBottomColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15, borderBottomWidth: 0.8 } : null]}>
+                <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                    <ArrowLeft color='black' size={25} />
+                </TouchableOpacity>
+                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Order Details</Text>
+            </View>
+            <View style={{ backgroundColor: GreyColor, padding: 20, paddingTop: 0 }}>
                 <ScrollView refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }>
@@ -443,10 +443,10 @@ const OrderDetail = (props: any) => {
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: DarkGrey }}>Subtotal</Text>
-                                <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.tprice - props?.route?.params?.delFee}</Text>
+                                <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.tprice - (props?.route?.params?.delFee * 2)}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ color: DarkGrey }}>Delivery Fee</Text>
+                                <Text style={{ color: DarkGrey }}>Delivery Fee (x2)</Text>
                                 <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.delFee}</Text>
                             </View>
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>

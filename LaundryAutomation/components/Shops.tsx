@@ -185,7 +185,7 @@ function Shops(props: any) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }>
                     {ShopsData.map((item: any, index: any) => (<ShopCard shopsData={ShopsData} id={item._id} key={index} prop={props} itemsdet={item} bprice={item?.bp ? item.bp : pricelist[index]} plist={item?.allPriceList ? item.allPriceList : allShopsPriceList[index]} dist={item?.dist ? item.dist : Distances[index]} bilength={basketItems.length} />))}
-                    <View style={{ height: 100 }}></View>
+                    <View style={{ height: 115 }}></View>
                 </ScrollView>
                 : null}
         </SafeAreaView>

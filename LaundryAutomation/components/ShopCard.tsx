@@ -37,7 +37,7 @@ const ShopCard = (props: any) => {
     const newProps = { ...props, ratings: ratings, avgRating: avgRating }
 
     return (
-        <TouchableOpacity onPress={() => { props.prop.navigation.navigate('SingleShop', newProps) }} style={{ padding: 5, backgroundColor: 'white', borderRadius: 20, marginHorizontal: 20, marginTop: 10, shadowOpacity: 0.3, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6 }}>
+        <TouchableOpacity onPress={() => { props.prop.navigation.navigate('SingleShop', newProps) }} style={{ padding: 5, backgroundColor: 'white', borderRadius: 20, marginHorizontal: 20, marginTop: 10, shadowOpacity: 0.3, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 5, borderWidth: 0.5, borderColor: 'grey' }}>
             <View>
                 <View style={{ position: 'relative' }}>
                     <Image

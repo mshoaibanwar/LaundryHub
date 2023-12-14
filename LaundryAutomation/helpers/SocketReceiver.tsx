@@ -9,15 +9,14 @@ interface SocketReceiverProps {
 
 const SocketReceiver: React.FC<SocketReceiverProps> = ({ children }) => {
     const dispatch = useAppDispatch();
-    useEffect(() => {
-        socket.onmessage = (e) => {
-            const message = JSON.parse(e.data);
-            if (message.msg) {
-                const nMsg: any = { from: 'other', msg: message.msg };
-                dispatch(addMsg(nMsg))
-            }
+
+    socket.onmessage = (e) => {
+        const message = JSON.parse(e.data);
+        if (message.msg) {
+            const nMsg: any = { from: 'other', msg: message.msg };
+            dispatch(addMsg(nMsg))
         }
-    }, []);
+    }
 
     return (
         <>

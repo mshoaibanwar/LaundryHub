@@ -132,8 +132,6 @@ const Splash = (props: any) => {
                     }
                 })
                 .catch(function (error) {
-                    // console.log(error);
-                    // // handle error
                     // toast.show(error?.response?.data?.message, {
                     //     type: "danger",
                     //     placement: "top",

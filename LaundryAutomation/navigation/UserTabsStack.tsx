@@ -9,6 +9,7 @@ import SocketReceiver from '../helpers/SocketReceiver';
 import RideCompleted from '../components/RideCompleted';
 import OrderPlaced from '../components/OrderPlaced';
 import Login from '../components/Login';
+import RideCancelled from '../components/RideCancelled';
 
 const UserTabsStack = () => {
     const stack = createStackNavigator();
@@ -24,6 +25,7 @@ const UserTabsStack = () => {
                     <stack.Screen name='OrderPlaced' component={OrderPlaced} options={{ headerShown: false, gestureEnabled: false }} />
                     <stack.Screen name='RideReq' component={RideReq} options={{ headerShown: false, gestureEnabled: false }} />
                     <stack.Screen name='RideComp' component={RideCompleted} options={{ headerShown: false, gestureEnabled: false }} />
+                    <stack.Screen name='RideCancelled' component={RideCancelled} options={{ headerShown: false, gestureEnabled: false }} />
                     <stack.Screen name='Login' component={Login} options={{ headerShown: false, gestureEnabled: false }} />
                 </stack.Navigator>
             </SocketReceiver>

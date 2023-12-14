@@ -78,8 +78,8 @@ const ShopsMap = ({ route, navigation }: any) => {
                 ref={mapRef}
                 style={{ width: "100%", height: '100%' }}
                 region={{
-                    latitude: route?.params ? route?.params?.prop ? route?.params?.prop?.lati : route?.params?.prop1?.lati : 33.70395347266037,
-                    longitude: route?.params ? route?.params?.prop ? route?.params?.prop?.longi : route?.params?.prop1?.longi : 73.04128451925754,
+                    latitude: route?.params ? route?.params?.prop ? Number(route?.params?.prop?.lati) : Number(route?.params?.prop1?.lati) : 33.70395347266037,
+                    longitude: route?.params ? route?.params?.prop ? Number(route?.params?.prop?.longi) : Number(route?.params?.prop1?.longi) : 73.04128451925754,
                     latitudeDelta: route?.params ? 0.0239 : 0.2239,
                     longitudeDelta: route?.params ? 0.0112 : 0.1412,
                 }}

@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     Dimensions,
     RefreshControl,
+    Platform,
 } from 'react-native';
 
 import ServiceCard from './ServiceCard';
@@ -121,14 +122,12 @@ const Home = ({ navigation }: any) => {
         getNotiCount();
     }, [refreshing, navigation])
 
-    useEffect(() => {
-        socket.onmessage = (event: any) => {
-            const data = JSON.parse(event.data);
-            if (data?.userId === user.user._id) {
-                getNotiCount();
-            }
+    socket.onmessage = (event: any) => {
+        const data = JSON.parse(event.data);
+        if (data?.userId === user.user._id) {
+            getNotiCount();
         }
-    }, [])
+    }
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -177,10 +176,11 @@ const Home = ({ navigation }: any) => {
                             : null
                         }
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconimg}>
+                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.icon}>
                         <Image
                             style={styles.iconimg}
-                            source={require('../assets/icons/user.png')}
+                            defaultSource={require('../assets/icons/user.png')}
+                            source={user?.user?.profile ? { uri: user?.user?.profile } : require('../assets/icons/user.png')}
                         />
                     </TouchableOpacity>
                 </View>
@@ -202,7 +202,7 @@ const Home = ({ navigation }: any) => {
                     ListHeaderComponent={
                         <>
                             <View style={{}}>
-                                <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4 }}>
+                                <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 }}>
                                     <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>Lets begin your order!</Text>
                                     <TouchableOpacity onPress={() => { navigation.navigate("BasketStack", { screen: 'Basket' }) }} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
                                         <Text style={{ color: 'white', fontSize: 18, fontWeight: '300', textAlign: 'center' }}>Add Items in the Basket</Text>
@@ -210,9 +210,9 @@ const Home = ({ navigation }: any) => {
                                 </View>
                             </View>
                             <View style={{}}>
-                                <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4 }}>
+                                <View style={{ padding: 15, borderWidth: 0.5, borderColor: 'grey', borderRadius: 15, gap: 8, marginBottom: 8, backgroundColor: 'white', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 }}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: 'black' }}>View, reschedule, and book riders for your orders effortlessly by viewing orders.</Text>
-                                    <TouchableOpacity onPress={() => { navigation.navigate('OrderPlaced') }} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('MyOrders') }} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
                                         <Text style={{ color: 'white', fontSize: 18, fontWeight: '300', textAlign: 'center' }}>View My Orders</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -240,10 +240,10 @@ const Home = ({ navigation }: any) => {
 
                             <Text style={{ fontSize: 18, fontWeight: '600', color: 'black' }}>Laundry Shops Near You</Text>
 
-                            <TouchableOpacity onPress={() => { navigation.navigate("MapStack") }} style={{ borderRadius: 15, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 5 }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate("MapStack") }} style={[{ borderRadius: 15, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 4, marginVertical: 15, borderWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { overflow: 'hidden' } : null]}>
                                 <MapView
                                     ref={mapRef}
-                                    style={{ width: "100%", height: 250, marginVertical: 15, borderRadius: 15 }}
+                                    style={{ width: "100%", height: 250, borderRadius: 15 }}
                                     initialRegion={{
                                         latitude: 33.70395347266037,
                                         longitude: 73.04128451925754,
@@ -315,7 +315,8 @@ const styles = StyleSheet.create({
             height: 1,
         },
         shadowRadius: 5,
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.2,
+        elevation: 5
     },
     notiIcon:
     {
@@ -333,12 +334,13 @@ const styles = StyleSheet.create({
     {
         width: 55,
         height: 55,
+        borderRadius: 20,
         shadowOffset: {
             width: 1,
             height: 1,
         },
         shadowRadius: 5,
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.3
     }
 });
 

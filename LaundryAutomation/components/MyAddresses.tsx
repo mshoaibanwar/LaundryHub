@@ -1,7 +1,7 @@
 import { ArrowLeft, Bed, Building2, FileEdit, Home, Trash2 } from 'lucide-react-native'
 import React, { useEffect } from 'react'
-import { Pressable, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import { BlueColor } from '../constants/Colors'
+import { Platform, Pressable, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { BlueColor, GreyColor } from '../constants/Colors'
 import { useAppSelector } from '../hooks/Hooks'
 import { ScrollView } from 'react-native-gesture-handler'
 import { axiosInstance } from '../helpers/AxiosAPI'
@@ -59,55 +59,57 @@ const MyAddresses = (props: any) => {
     }, [refreshing, props?.route?.params, loading]);
 
     return (
-        <SafeAreaView style={{ height: '100%' }}>
-            <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between', alignItems: 'center' }}>
+        <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey', justifyContent: 'space-between', alignItems: 'center' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
                     <ArrowLeft color='black' size={25} />
                 </TouchableOpacity>
-                <Text style={{ textAlign: 'center', position: 'relative', left: 10, color: 'black', fontSize: 20, fontWeight: '700' }}>My Addresses</Text>
+                <Text style={{ textAlign: 'center', position: 'relative', left: 10, color: 'black', fontSize: 18, fontWeight: '600' }}>My Addresses</Text>
                 <TouchableOpacity onPress={() => props.navigation.navigate("HomeStack", { screen: 'AddAddress' })}>
-                    <Text style={{ fontSize: 19, fontWeight: '400', color: 'black' }}>+ Add</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '400', color: 'black' }}>+ Add</Text>
                 </TouchableOpacity>
             </View>
-            <ScrollView style={{ maxWidth: '100%' }} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }>
-                {addresses.length == 0 ?
-                    <View style={{ alignItems: 'center', justifyContent: 'center', height: 520 }}>
-                        <Text style={{ fontSize: 18, fontWeight: '400', color: 'black' }}>No Addresses Found!</Text>
-                    </View>
-                    : null}
-                {addresses.map((item: any) => (
-                    <View key={item._id} style={{ flexDirection: 'row', marginHorizontal: 20, marginVertical: 5, padding: 10, borderWidth: 0.5, borderRadius: 10, gap: 10, backgroundColor: 'white' }}>
-                        <View>
-                            {item.type == 'Home' ?
-                                <Home color='black' />
-                                : item.type == 'Hotel' ?
-                                    <Bed color='black' />
-                                    : item.type == 'Work' ?
-                                        <Building2 color='black' /> : null}
-                        </View>
-                        <View style={{ gap: 5, width: '85%' }}>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>{item.type}</Text>
-                            <Text style={{ color: 'black' }}>{item.add}</Text>
-                            <View style={{ gap: 2, marginBottom: 20 }}>
-                                <Text style={{ color: BlueColor }}>{item.name}</Text>
-                                <Text style={{ color: BlueColor }}>{item.num}</Text>
+            <View style={{ backgroundColor: GreyColor, height: '100%' }}>
+                <ScrollView style={{ maxWidth: '100%' }} refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }>
+                    {addresses.map((item: any) => (
+                        <View key={item._id} style={{ flexDirection: 'row', marginHorizontal: 20, marginVertical: 5, padding: 10, borderWidth: 0.5, borderRadius: 10, gap: 10, backgroundColor: 'white' }}>
+                            <View>
+                                {item.type == 'Home' ?
+                                    <Home color='black' />
+                                    : item.type == 'Hotel' ?
+                                        <Bed color='black' />
+                                        : item.type == 'Work' ?
+                                            <Building2 color='black' /> : null}
                             </View>
-                            <View style={{ flexDirection: 'row', gap: 30, position: 'absolute', bottom: 0, right: 0 }}>
-                                <Pressable onPress={() => props.navigation.navigate("HomeStack", { screen: 'AddAddress', params: item })}>
-                                    {/* <Text style={{ textDecorationLine: 'underline', fontSize: 15 }}>Edit</Text> */}
-                                    <FileEdit color='green' size={22} />
-                                </Pressable>
-                                <TouchableOpacity onPress={() => deleteAddress(item._id)}>
-                                    <Trash2 color='red' size={22} />
-                                </TouchableOpacity>
+                            <View style={{ gap: 5, width: '85%' }}>
+                                <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>{item.type}</Text>
+                                <Text style={{ color: 'black' }}>{item.add}</Text>
+                                <View style={{ gap: 2, marginBottom: 20 }}>
+                                    <Text style={{ color: BlueColor }}>{item.name}</Text>
+                                    <Text style={{ color: BlueColor }}>{item.num}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', gap: 30, position: 'absolute', bottom: 0, right: 0 }}>
+                                    <Pressable onPress={() => props.navigation.navigate("HomeStack", { screen: 'AddAddress', params: item })}>
+                                        {/* <Text style={{ textDecorationLine: 'underline', fontSize: 15 }}>Edit</Text> */}
+                                        <FileEdit color='green' size={22} />
+                                    </Pressable>
+                                    <TouchableOpacity onPress={() => deleteAddress(item._id)}>
+                                        <Trash2 color='red' size={22} />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                ))}
-                <View style={{ height: 160 }}></View>
-            </ScrollView>
+                    ))}
+                    <View style={{ height: 160 }}></View>
+                </ScrollView>
+            </View>
+            {addresses.length == 0 ?
+                <View style={{ alignItems: 'center', justifyContent: 'center', position: 'absolute', marginTop: 100, top: 0, bottom: 100, right: 0, left: 0 }}>
+                    <Text style={{ fontSize: 18, fontWeight: '400', color: 'black' }}>No Addresses Found!</Text>
+                </View>
+                : null}
         </SafeAreaView>
     )
 }

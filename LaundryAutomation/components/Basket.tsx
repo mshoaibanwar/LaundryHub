@@ -21,7 +21,7 @@ import { addItem } from '../reduxStore/reducers/BasketReducer';
 import { useAppSelector, useAppDispatch } from '../hooks/Hooks'
 import { useToast } from "react-native-toast-notifications";
 import Toast from "react-native-toast-notifications";
-import { BackgroundColor, BlueColor, FrontColor } from '../constants/Colors';
+import { BackgroundColor, BlueColor } from '../constants/Colors';
 
 
 const includeExtra = true;
@@ -30,19 +30,27 @@ const Basket = (props: any) => {
     const DATA = [
         {
             title: 'Traditional',
-            data: [{ id: 1, value: 'Kurta' }, { id: 2, value: 'Abaya' }, { id: 3, value: 'Hijab' }, { id: 4, value: 'Punjabi' }],
+            data: [{ id: 1, value: 'Kurta' }, { id: 2, value: 'Shalwar' }, { id: 3, value: 'Shalwar Kameez' }, { id: 4, value: 'Shawl' }],
         },
         {
             title: 'Tops',
-            data: [{ id: 5, value: 'Shirt' }, { id: 6, value: 'Vest' }, { id: 7, value: 'T-Shirt' }],
+            data: [{ id: 5, value: 'Shirt' }, { id: 6, value: 'Coat' }, { id: 7, value: 'Sweater' }, { id: 8, value: 'Hoodie' }],
         },
         {
             title: 'Bottoms',
-            data: [{ id: 8, value: 'Pants' }, { id: 9, value: 'Jeans' }, { id: 10, value: 'Shorts' }],
+            data: [{ id: 9, value: 'Pants' }, { id: 10, value: 'Jeans' }, { id: 11, value: 'Trousers' }, { id: 12, value: 'Shorts' }],
+        },
+        {
+            title: 'Accessories',
+            data: [{ id: 13, value: 'Tie' }, { id: 14, value: 'Socks' }, { id: 15, value: 'Gloves' }, { id: 16, value: 'Scarf' }, { id: 17, value: 'Cap' }, { id: 18, value: 'Under Garments' }],
         },
         {
             title: 'Outdoors',
-            data: [{ id: 11, value: 'Track Suit' }, { id: 12, value: 'Jacket' }],
+            data: [{ id: 19, value: 'Track Suit' }, { id: 20, value: 'Jacket' }],
+        },
+        {
+            title: 'Bed Room',
+            data: [{ id: 21, value: 'Single Blanket' }, { id: 22, value: 'Double Blanket' }, { id: 23, value: 'Bed Sheet' }, { id: 24, value: 'Pillow Cover' }, { id: 25, value: 'Curtains' }, { id: 26, value: 'Towel' }, { id: 27, value: 'Metress Cover' }],
         },
     ];
 
@@ -114,7 +122,7 @@ const Basket = (props: any) => {
     const FlatListItemSeparator = () => {
         return (
             //Item Separator
-            <View style={{ width: '100%', backgroundColor: 'black', borderTopWidth: 1, opacity: 0.25 }} />
+            <View style={{ width: '100%', backgroundColor: 'grey', height: 1, opacity: 0.25 }} />
         );
     };
 
@@ -181,7 +189,7 @@ const Basket = (props: any) => {
 
     return (
         <SafeAreaView>
-            <View style={{ padding: 20, height: Platform.OS == 'android' ? '90%' : '88%' }}>
+            <View style={{ padding: 20, paddingTop: 0, height: Platform.OS == 'android' ? '90%' : '88%' }}>
                 <Text style={{ fontSize: 35, fontWeight: 'bold', marginVertical: 10, color: 'black' }}>
                     Create Laundry Basket
                 </Text>

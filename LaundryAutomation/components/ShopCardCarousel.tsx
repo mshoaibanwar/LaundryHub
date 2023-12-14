@@ -40,7 +40,7 @@ const ShopCardCarousel = (props: ShopProps) => {
 
     const newProps = { ...props, ratings: ratings, avgRating: avgRating }
     return (
-        <View style={{ marginVertical: 10, borderWidth: 0.6, borderColor: 'grey', borderRadius: 15, backgroundColor: 'white', shadowOffset: { width: 0, height: 0 }, shadowRadius: 3, shadowOpacity: 0.2 }}>
+        <View style={{ marginVertical: 10, borderWidth: 0.6, borderColor: 'grey', borderRadius: 15, backgroundColor: 'white', shadowOffset: { width: 0, height: 0 }, shadowRadius: 3, shadowOpacity: 0.2, elevation: 3 }}>
             <Image source={require('../assets/images/bgimage.jpeg')} style={{ width: 'auto', height: 100, borderTopLeftRadius: 15, borderTopRightRadius: 15 }} />
             <View style={{ alignItems: 'center', padding: 10, gap: 8 }}>
                 <Text style={{ color: 'black', fontSize: 16 }} numberOfLines={1}>{props.itemsdet?.title} (Rs. {props.bprice})</Text>

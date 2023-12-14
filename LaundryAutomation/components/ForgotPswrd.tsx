@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { Keyboard, SafeAreaView, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { DarkPurple, LightPurple, LoginBtn } from '../constants/Colors'
-import { ArrowLeft, Hash, Lock, Mail } from 'lucide-react-native'
+import { ArrowLeft, Eye, EyeOff, Hash, Lock, Mail } from 'lucide-react-native'
 import { useToast } from 'react-native-toast-notifications'
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getRandomValues } from 'crypto'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
 import { addUser, logout } from '../reduxStore/reducers/UserReducer'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import LottieView from 'lottie-react-native'
+import { useTogglePasswordVisibility } from '../helpers/useTogglePasswordVisibility'
 
 const ForgotPswrd = (props: any) => {
     const [validated, setValidated] = useState(false);
@@ -19,6 +19,8 @@ const ForgotPswrd = (props: any) => {
     const [pass, setPass] = useState('');
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
+    const { passwordVisibility, rightIcon, handlePasswordVisibility } =
+        useTogglePasswordVisibility();
 
     const schema = yup.object().shape({
         email: yup
@@ -57,6 +59,7 @@ const ForgotPswrd = (props: any) => {
 
 
     const onPressSend = (formData: any) => {
+        formData.email = formData.email.toLowerCase();
         // Perform actions with the validated form data
         setLoading(true);
 
@@ -197,7 +200,14 @@ const ForgotPswrd = (props: any) => {
                                             </View>
                                             <View style={{ width: '100%', gap: 5, justifyContent: 'center' }}>
                                                 <Text style={{ color: 'white' }}>PASSWORD</Text>
-                                                <TextInput value={pass} onChangeText={setPass} secureTextEntry={true} autoComplete='password' placeholderTextColor={'grey'} style={{ width: '88%', fontSize: 17, color: 'white', padding: 0 }} placeholder='* * * * * * * *' />
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 30 }}>
+                                                    <TextInput value={pass} onChangeText={setPass} secureTextEntry={passwordVisibility} autoComplete='password' placeholderTextColor={'grey'} style={{ width: '88%', fontSize: 17, color: 'white', padding: 0 }} placeholder='* * * * * * * *' />
+                                                    <TouchableOpacity onPress={handlePasswordVisibility}>
+                                                        {rightIcon == 'eye' ?
+                                                            <Eye size={20} color="white" />
+                                                            : <EyeOff size={20} color="white" />}
+                                                    </TouchableOpacity>
+                                                </View>
                                             </View>
                                         </View>
                                         <Text style={{ color: 'orange', marginLeft: 15 }}>{ }</Text>

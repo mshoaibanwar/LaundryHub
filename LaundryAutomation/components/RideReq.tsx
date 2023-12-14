@@ -2,11 +2,12 @@ import { Banknote, Bike, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigatio
 import React, { useEffect, useRef, useState } from 'react'
 import { Image, Platform, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import MapView, { Marker, Polyline } from 'react-native-maps'
-import { DarkGrey, LightGreen } from '../constants/Colors'
+import { BlueColor, DarkGrey, LightGreen } from '../constants/Colors'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
 import { useDistance } from '../helpers/DistanceCalculator'
 import socket from '../helpers/Socket'
+import { emptyMsg } from '../reduxStore/reducers/MessagesReducer'
 
 const RideReq = ({ navigation }: any) => {
     const [rideAccepted, setRideAccepted] = React.useState(false)
@@ -35,12 +36,12 @@ const RideReq = ({ navigation }: any) => {
         mapRef?.current?.animateToRegion({ latitude: Number(rideData?.dCord?.lati), longitude: Number(rideData?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
-    useEffect(() => {
+    const getRideData = () => {
         axiosInstance.get(`rides/user/${user.user._id}`)
             .then((res) => {
                 // console.log(res.data[0])
                 setRideData(res.data[0])
-                setRideAccepted(res.data[0].status !== 'Pending')
+                setRideAccepted(res.data[0].status != 'Pending' && res.data[0].status != 'Cancelled' && res.data[0].status != 'Completed')
 
                 axiosInstance.get(`users/getUser/${res.data[0].rid}`)
                     .then((res) => {
@@ -53,34 +54,45 @@ const RideReq = ({ navigation }: any) => {
             .catch((err) => {
                 console.log(err)
             })
-    }, [rideAccepted]);
+    }
 
     useEffect(() => {
-        socket.onmessage = (e) => {
-            const message = JSON.parse(e.data);
-            if (message.riderLocation) {
-                setRiderLocation(message.riderLocation);
+        getRideData();
+    }, []);
+
+
+    socket.onmessage = (e) => {
+        const message = JSON.parse(e.data);
+        if (message.riderLocation) {
+            setRiderLocation(message.riderLocation);
+        }
+        if (message.rideStatus) {
+            if (message.rideStatus == 'Accepted') {
+                getRideData();
+                setRideAccepted(true);
             }
-            if (message.rideStatus) {
-                if (message.rideStatus == 'Accepted') {
-                    setRideAccepted(true);
-                }
-                if (message.rideStatus == 'Set Arrived') {
-                    setDisableBtn(true);
-                }
-                if (message.rideStatus == 'Set Completed') {
-                    navigation.navigate('RideComp', { ride: rideData });
-                }
+            if (message.rideStatus == 'Set Arrived') {
+                setDisableBtn(true);
+            }
+            if (message.rideStatus == 'Set Completed') {
+                navigation.navigate('RideComp', { ride: rideData });
+            }
+            if (message.rideStatus == 'Cancelled') {
+                navigation.navigate('RideCancelled', { ride: rideData });
             }
         }
-    }, [])
+    }
 
     const dispatch = useAppDispatch();
     const cancelRide = () => {
-        // dispatch(emptyMsg([]));
-        // navigation.goBack();
-
-        navigation.navigate('RideComp', { ride: rideData });
+        axiosInstance.get(`rides/cancelRide/${rideData._id}`)
+            .then((res) => {
+                dispatch(emptyMsg());
+                navigation.navigate('RideCancelled', { ride: rideData });
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     return (
@@ -224,9 +236,14 @@ const RideReq = ({ navigation }: any) => {
                         <View>
                             <Text style={{ fontSize: 18, top: -80 }}>Finding Rider...</Text>
                         </View>
-                        {/* <Pressable onPress={goToDest} style={{ padding: 5, backgroundColor: 'red' }}>
-                            <Text style={{ fontSize: 18 }}>Update Ride</Text>
-                        </Pressable> */}
+                        <View style={{ flexDirection: 'row', gap: 20 }}>
+                            <TouchableOpacity onPress={getRideData} style={{ padding: 10, backgroundColor: 'red', borderRadius: 10 }}>
+                                <Text style={{ fontSize: 18, color: 'white' }}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={getRideData} style={{ padding: 10, backgroundColor: BlueColor, borderRadius: 10 }}>
+                                <Text style={{ fontSize: 18, color: 'white' }}>Retry</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             }

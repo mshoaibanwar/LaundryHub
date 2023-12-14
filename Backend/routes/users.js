@@ -146,6 +146,14 @@ router.route('/update').post((req, res) => {
         .catch(err => res.status(404).send('User not found!'));
 });
 
+router.route('/update/profile').post((req, res) => {
+    User.findOneAndUpdate({ email: req.body.email }, { profile: req.body.profile })
+        .then((user) => {
+            res.json("Profile Image Updated");
+        })
+        .catch(err => res.status(404).send('User not found!'));
+});
+
 router.route('/updateToken').post((req, res) => {
     User.findOneAndUpdate({ email: req.body.email }, { token: req.body.token })
         .then((user) => {

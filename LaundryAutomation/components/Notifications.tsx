@@ -1,10 +1,10 @@
 import { ArrowLeft, Paintbrush } from 'lucide-react-native'
 import React, { useEffect, useState } from 'react'
-import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Platform, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import { useAppSelector } from '../hooks/Hooks'
 import LottieView from 'lottie-react-native'
-import { DarkGrey } from '../constants/Colors'
+import { DarkGrey, GreyColor } from '../constants/Colors'
 import socket from '../helpers/Socket'
 
 const Notifications = (props: any) => {
@@ -33,14 +33,12 @@ const Notifications = (props: any) => {
         fetchNotifications();
     }, [refreshing])
 
-    useEffect(() => {
-        socket.onmessage = (e: any) => {
-            const data = JSON.parse(e.data)
-            if (data?.notification) {
-                fetchNotifications();
-            }
+    socket.onmessage = (e: any) => {
+        const data = JSON.parse(e.data)
+        if (data?.notification) {
+            fetchNotifications();
         }
-    }, [])
+    }
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -63,20 +61,24 @@ const Notifications = (props: any) => {
 
     notifications.reverse();
     return (
-        <SafeAreaView style={{ margin: 20 }}>
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                    <ArrowLeft color='black' size={25} />
-                </TouchableOpacity>
-                <Text style={{ textAlign: 'center', color: 'black', width: '86%', fontSize: 20, fontWeight: '700' }}>Notifications</Text>
+        <SafeAreaView style={{ backgroundColor: 'white' }}>
+            <View style={[{ paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
+                    <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                        <ArrowLeft color='black' size={25} />
+                    </TouchableOpacity>
+                    <Text style={{ textAlign: 'center', color: 'black', fontSize: 18, fontWeight: '600' }}>Notifications</Text>
+                    <View style={{ width: 25 }}></View>
+                </View>
+                <View style={{ alignItems: 'center' }}>
+                    <TouchableOpacity onPress={markAsRead} style={{ marginTop: 5, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                        <Paintbrush color='grey' size={20} />
+                        <Text style={{}}>Mark all as read</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-            <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity onPress={markAsRead} style={{ marginTop: 5, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                    <Paintbrush color='grey' size={20} />
-                    <Text style={{}}>Mark all as read</Text>
-                </TouchableOpacity>
-            </View>
-            <ScrollView style={{ marginVertical: 5, minHeight: 650 }} refreshControl={
+
+            <ScrollView style={{ paddingVertical: 10, backgroundColor: GreyColor, paddingHorizontal: 15 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }>
                 {notifications.map((noti: any, key: any) => (
@@ -91,7 +93,7 @@ const Notifications = (props: any) => {
                         <Text style={{ fontSize: 14, fontWeight: '400', color: 'black' }}>{noti?.body}</Text>
                     </View>
                 ))}
-                <View style={{ height: 120 }}></View>
+                <View style={{ height: 220 }}></View>
             </ScrollView>
             {refreshing || loading ?
                 <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>

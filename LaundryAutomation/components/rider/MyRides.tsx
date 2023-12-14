@@ -13,22 +13,20 @@ const MyRides = (props: any) => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [rides, setRides] = useState([]);
     const user: any = useAppSelector((state) => state.user.value);
-    const [ridesfilt, setRidesFilt] = useState(rides.filter((item: any) => (item.status != 'Delivered')));
+    const [ridesfilt, setRidesFilt] = useState(rides.filter((item: any) => (item.status == 'Completed')));
 
     useEffect(() => {
-        axiosInstance.get(`rides/`)
+        axiosInstance.get(`rides/rider/completed/${user.user._id}`)
             .then(function (response: any) {
                 setRides(response.data);
-                setRidesFilt(response.data.filter((item: any) => (item.status != 'Delivered')));
+                setRidesFilt(response.data.filter((item: any) => (item.status == 'Completed')));
                 setLoading(false);
             })
             .catch(function (error) {
                 // handle error
+                console.log(error.response.data);
                 setLoading(false);
             })
-            .then(function () {
-                // always executed
-            });
     }, [refreshing])
 
     const onRefresh = React.useCallback(() => {
@@ -41,11 +39,11 @@ const MyRides = (props: any) => {
     const changeTab = (name: any) => {
         if (name === 'Cancelled') {
             setTab('Cancelled');
-            setRidesFilt(rides.filter((item: any) => (item.status == 'Completed')));
+            setRidesFilt(rides.filter((item: any) => (item.status == 'Cancelled')));
         }
         else if (name === 'Completed') {
             setTab('Completed');
-            setRidesFilt(rides.filter((item: any) => (item.status != 'Cancelled')));
+            setRidesFilt(rides.filter((item: any) => (item.status == 'Completed')));
         }
     }
     return (
@@ -113,6 +111,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 16,
+        fontWeight: '600'
     },
     ordertxtLeft: {
         fontSize: 15,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowLeft, ChevronRight, Trash2 } from 'lucide-react-native'
 import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { BlueColor } from '../constants/Colors'
+import { BlueColor, GreyColor, LightGreen } from '../constants/Colors'
 import { useAppSelector } from '../hooks/Hooks'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import LottieView from 'lottie-react-native'
@@ -50,14 +50,14 @@ const MyOrders = (props: any) => {
         }
     }
     return (
-        <SafeAreaView style={{ height: '100%' }}>
-            <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between', alignItems: 'center' }}>
+        <SafeAreaView style={{ height: '100%', margin: 20 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
                     <ArrowLeft color='black' size={25} />
                 </TouchableOpacity>
                 <Text style={{ width: '85%', right: 27, textAlign: 'center', position: 'relative', color: 'black', fontSize: 20, fontWeight: '700' }}>My Orders</Text>
             </View>
-            <View style={{ paddingHorizontal: 20, flexDirection: 'row', minWidth: '100%' }}>
+            <View style={{ marginBottom: 5, marginTop: 15, flexDirection: 'row', minWidth: '100%' }}>
                 <TouchableOpacity onPress={() => changeTab('Pending')} style={tab == 'Pending' ? [styles.btnLeft, styles.btnActive] : styles.btnLeft}>
                     <Text style={tab == 'Pending' ? styles.btntextact : styles.btntxt}>Processing</Text>
                 </TouchableOpacity>
@@ -65,44 +65,48 @@ const MyOrders = (props: any) => {
                     <Text style={tab == 'Delivered' ? styles.btntextact : styles.btntxt}>Delivered</Text>
                 </TouchableOpacity>
             </View>
-            <ScrollView style={{ marginTop: 10 }} refreshControl={
+            <ScrollView refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }>
                 {ordersfilt.map((item: any) => (
-                    <TouchableOpacity onPress={() => props?.navigation?.navigate('HomeStack', { screen: 'OrderDetail', params: item })} key={item._id} style={{ marginHorizontal: 20, marginTop: 10, borderWidth: 0.5, borderRadius: 10, padding: 20, borderColor: 'black', backgroundColor: 'white' }}>
-                        <View style={styles.orderView}>
+                    <TouchableOpacity onPress={() => props?.navigation?.navigate('HomeStack', { screen: 'OrderDetail', params: item })} key={item._id} style={{ marginTop: 10, borderWidth: 0.5, borderRadius: 10, borderColor: 'black', backgroundColor: 'white' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderColor: 'grey', padding: 10, backgroundColor: LightGreen, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
                             <Text style={styles.ordertxtLeft}>Order #{item._id.slice(item._id.length - 5, item._id.length)}</Text>
                             <ChevronRight color='black' size={25} />
                         </View>
-                        <View style={styles.orderView}>
-                            <Text style={styles.ordertxtLeft}>Pickup On:</Text>
-                            <Text style={styles.ordertxtRight}>{item.orderDate}</Text>
-                        </View>
-                        <View style={styles.orderView}>
-                            <Text style={styles.ordertxtLeft}>{tab === 'Pending' ? 'Delivery On:' : 'Delivered On'}</Text>
-                            <Text style={styles.ordertxtRight}>{item.delivery.date}</Text>
-                        </View>
-                        <View style={styles.orderView}>
-                            <Text style={styles.ordertxtLeft}>Items:</Text>
-                            <Text style={styles.ordertxtRight}>x{item.items.length}</Text>
-                        </View>
-                        <View style={styles.orderView}>
-                            <Text style={styles.ordertxtLeft}>Total Amount:</Text>
-                            <Text style={styles.ordertxtRight}>Rs. {item.tprice}</Text>
-                        </View>
-                        <View style={styles.orderView}>
-                            <Text style={styles.ordertxtLeft}>Status:</Text>
-                            <Text style={styles.ordertxtRight}>{item.status}</Text>
+                        <View style={{ padding: 10 }}>
+                            <View style={styles.orderView}>
+                                <Text style={styles.ordertxtLeft}>Pickup On:</Text>
+                                <Text style={styles.ordertxtRight}>{item.orderDate}</Text>
+                            </View>
+                            <View style={styles.orderView}>
+                                <Text style={styles.ordertxtLeft}>{tab === 'Pending' ? 'Delivery On:' : 'Delivered On'}</Text>
+                                <Text style={styles.ordertxtRight}>{item.delivery.date}</Text>
+                            </View>
+                            <View style={styles.orderView}>
+                                <Text style={styles.ordertxtLeft}>Items:</Text>
+                                <Text style={styles.ordertxtRight}>x{item.items.length}</Text>
+                            </View>
+                            <View style={styles.orderView}>
+                                <Text style={styles.ordertxtLeft}>Total Amount:</Text>
+                                <Text style={styles.ordertxtRight}>Rs. {item.tprice}</Text>
+                            </View>
+                            <View style={styles.orderView}>
+                                <Text style={styles.ordertxtLeft}>Status:</Text>
+                                <Text style={styles.ordertxtRight}>{item.status}</Text>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 ))}
                 <View style={{ height: 120 }}></View>
             </ScrollView>
-            {loading ?
-                <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
-                    <LottieView style={{ width: 150, height: 150 }} source={require('../assets/animated/loading.json')} autoPlay loop />
-                </View>
-                : null}
+            {
+                loading ?
+                    <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
+                        <LottieView style={{ width: 150, height: 150 }} source={require('../assets/animated/loading.json')} autoPlay loop />
+                    </View>
+                    : null
+            }
         </SafeAreaView >
     )
 }
@@ -139,6 +143,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 16,
+        fontWeight: '700'
     },
     ordertxtLeft: {
         fontSize: 15,
@@ -153,7 +158,7 @@ const styles = StyleSheet.create({
     {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginVertical: 3,
+        marginVertical: 1,
         alignItems: 'center'
     }
 })

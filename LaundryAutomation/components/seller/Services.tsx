@@ -2,7 +2,7 @@ import { ArrowLeft, FileEdit, Plus, Trash2, X } from 'lucide-react-native'
 import React, { useEffect, useState } from 'react'
 import { Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
-import { BlueColor, DarkGrey } from '../../constants/Colors';
+import { BlueColor, DarkGrey, GreyColor } from '../../constants/Colors';
 import { axiosInstance } from '../../helpers/AxiosAPI';
 import LottieView from 'lottie-react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -28,7 +28,11 @@ const Services = (props: any) => {
         { label: 'Shalwar', value: 'Shalwar' },
         { label: 'Shalwar Kameez', value: 'Shalwar Kameez' },
         { label: 'Shirt', value: 'Shirt' },
-        { label: 'Pant', value: 'Pant' },
+        { label: 'Pants', value: 'Pants' },
+        { label: 'Jeans', value: 'Jeans' },
+        { label: 'Trousers', value: 'Trousers' },
+        { label: 'Shorts', value: 'Shorts' },
+        { label: 'Track Suit', value: 'Track Suit' },
         { label: 'Tie', value: 'Tie' },
         { label: 'Coat', value: 'Coat' },
         { label: 'Sweater', value: 'Sweater' },
@@ -39,12 +43,14 @@ const Services = (props: any) => {
         { label: 'Double Blanket', value: 'Double Blanket' },
         { label: 'Bed Sheet', value: 'Bed Sheet' },
         { label: 'Pillow Cover', value: 'Pillow Cover' },
-        { label: 'Curtain', value: 'Curtain' },
+        { label: 'Curtains', value: 'Curtains' },
         { label: 'Towel', value: 'Towel' },
         { label: 'Socks', value: 'Socks' },
+        { label: 'Gloves', value: 'Gloves' },
+        { label: 'Scarf', value: 'Scarf' },
+        { label: 'Cap', value: 'Cap' },
         { label: 'Under Garments', value: 'Under Garments' },
-        { label: 'Metress Cover', value: 'Metress Cover' },
-        { label: 'Others', value: 'Others' },
+        { label: 'Metress Cover', value: 'Metress Cover' }
     ]);
 
     const toast = useToast();
@@ -214,117 +220,118 @@ const Services = (props: any) => {
 
 
     return (
-        <SafeAreaView style={{ margin: 20, height: '100%' }}>
-            <View style={{ flexDirection: 'row' }}>
+        <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
                     <ArrowLeft color='black' size={25} />
                 </TouchableOpacity>
-                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 20, fontWeight: '700' }}>Services</Text>
+                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Services</Text>
             </View>
+            <View style={{ backgroundColor: GreyColor, padding: 20, paddingTop: 10 }}>
+                <View style={{ padding: 10, borderWidth: 0.5, borderRadius: 10, marginVertical: 10, position: 'relative', zIndex: 2, backgroundColor: 'white' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 3 }}>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>Select Item:</Text>
+                        <DropDownPicker
+                            containerStyle={{ width: '50%' }}
+                            style={isUpdating ? { backgroundColor: DarkGrey, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 } : { backgroundColor: BlueColor, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 }}
+                            textStyle={{ color: 'white', fontSize: 16, fontWeight: '500' }}
+                            placeholder={itemsValue}
+                            dropDownContainerStyle={{ backgroundColor: BlueColor, borderRadius: 10, borderTopColor: 'grey' }}
+                            open={openitemSelc}
+                            theme='DARK'
+                            value={itemsValue}
+                            items={items}
+                            setOpen={setOpenItemSelc}
+                            setValue={setItemsValue}
+                            setItems={setItems}
+                            autoScroll={true}
+                            disabled={isUpdating}
+                            searchable={true}
+                        />
+                    </View>
 
-            <View style={{ padding: 10, borderWidth: 0.5, borderRadius: 10, marginVertical: 10, position: 'relative', zIndex: 2, backgroundColor: 'white' }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 3 }}>
-                    <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>Select Item:</Text>
-                    <DropDownPicker
-                        containerStyle={{ width: '50%' }}
-                        style={isUpdating ? { backgroundColor: DarkGrey, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 } : { backgroundColor: BlueColor, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 }}
-                        textStyle={{ color: 'white', fontSize: 16, fontWeight: '500' }}
-                        placeholder={itemsValue}
-                        dropDownContainerStyle={{ backgroundColor: BlueColor, borderRadius: 10, borderTopColor: 'grey' }}
-                        open={openitemSelc}
-                        theme='DARK'
-                        value={itemsValue}
-                        items={items}
-                        setOpen={setOpenItemSelc}
-                        setValue={setItemsValue}
-                        setItems={setItems}
-                        autoScroll={true}
-                        disabled={isUpdating}
-                        searchable={true}
-                    />
+                    <View style={{ borderWidth: 0.5, gap: 5, borderRadius: 10, padding: 10, marginTop: 10, justifyContent: 'center' }}>
+                        {servicesList?.map((item: any, index: any) => (
+                            <View key={index}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Text style={{ color: 'black', fontSize: 16, fontWeight: '500', width: '30%' }}>{item.serv}</Text>
+                                    <View style={{ width: '40%', flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text style={{ color: 'black', fontSize: 16 }}>Rs. </Text>
+                                        <TextInput editable={isUpdating} value={item.pri.toString()} onChangeText={(nv) => onUpdateServiceInfo(item.serv, nv)} style={[{ padding: 2, color: 'black', fontSize: 18, fontWeight: '500', borderWidth: 0.5, borderRadius: 5, textAlign: 'center', width: '80%' }, Platform.OS === 'android' ? { padding: 0 } : {}]}></TextInput>
+                                    </View>
+                                    <TouchableOpacity style={{}} onPress={() => onServRemove(item)}>
+                                        <Trash2 color='red' size={20} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, position: 'relative', zIndex: 2 }}>
+                        <DropDownPicker
+                            containerStyle={{ width: '40%' }}
+                            style={{ backgroundColor: BlueColor, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 }}
+                            textStyle={{ color: 'white', fontSize: 16, fontWeight: '500' }}
+                            placeholder='Wash'
+                            dropDownContainerStyle={{ backgroundColor: BlueColor, borderRadius: 10, borderTopColor: 'grey' }}
+                            open={openServSelc}
+                            theme='DARK'
+                            value={servicesValue}
+                            items={services}
+                            setOpen={setOpenServSelc}
+                            setValue={setServicesValue}
+                            setItems={setServices}
+                        />
+
+                        <TextInput value={price} onChangeText={setPrice} style={[{ borderWidth: 1, borderColor: 'black', width: '30%', borderRadius: 10, textAlign: 'center', fontSize: 18 }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholder='Price' />
+
+                        <TouchableOpacity onPress={onServAdd} style={{ backgroundColor: BlueColor, padding: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                            <Plus color='white' size={20} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity onPress={onAddItem} style={{ backgroundColor: BlueColor, padding: 8, borderRadius: 10, marginTop: 10 }}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '500' }}>{isUpdating ? 'Update Item' : 'Add Item'}</Text>
+                    </TouchableOpacity>
+                    {isUpdating ?
+                        <TouchableOpacity onPress={onCancelUpdate} style={{ backgroundColor: 'red', padding: 8, borderRadius: 10, marginTop: 5 }}>
+                            <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
+                        </TouchableOpacity>
+                        : null
+                    }
+
                 </View>
 
-                <View style={{ borderWidth: 0.5, gap: 5, borderRadius: 10, padding: 10, marginTop: 10, justifyContent: 'center' }}>
-                    {servicesList?.map((item: any, index: any) => (
-                        <View key={index}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ color: 'black', fontSize: 16, fontWeight: '500', width: '30%' }}>{item.serv}</Text>
-                                <View style={{ width: '40%', flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={{ color: 'black', fontSize: 16 }}>Rs. </Text>
-                                    <TextInput editable={isUpdating} value={item.pri.toString()} onChangeText={(nv) => onUpdateServiceInfo(item.serv, nv)} style={[{ padding: 2, color: 'black', fontSize: 18, fontWeight: '500', borderWidth: 0.5, borderRadius: 5, textAlign: 'center', width: '80%' }, Platform.OS === 'android' ? { padding: 0 } : {}]}></TextInput>
+                <Text style={{ fontSize: 18, fontWeight: '500', color: 'black', marginBottom: 5 }}>Added Items</Text>
+                <ScrollView>
+                    {itemsList?.map((item: any, index: any) => (
+                        <View key={index} style={{ borderWidth: 0.5, padding: 5, marginVertical: 2, borderRadius: 5, backgroundColor: 'white' }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '500', width: '30%' }}>{item.title}</Text>
+                                <View style={{ gap: 2, width: '50%' }}>
+                                    {item?.services?.map((service: any, index: any) => (
+                                        <View key={index}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <Text style={{ color: 'black', fontSize: 15, fontWeight: '500', width: '50%' }}>{service.serv}</Text>
+                                                <Text style={{ color: 'black', fontSize: 15, fontWeight: '500', width: '40%' }}>Rs. {service.pri}</Text>
+                                            </View>
+                                        </View>
+                                    ))}
                                 </View>
-                                <TouchableOpacity style={{}} onPress={() => onServRemove(item)}>
-                                    <Trash2 color='red' size={20} />
-                                </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', width: '18%', justifyContent: 'space-between', marginHorizontal: 4 }}>
+                                    <TouchableOpacity style={{ alignItems: 'flex-end' }} onPress={() => onUpdateItem(item)}>
+                                        <FileEdit color='green' size={20} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={{ alignItems: 'flex-end' }} onPress={() => onItemRemove(item)}>
+                                        <Trash2 color='red' size={20} />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     ))}
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, position: 'relative', zIndex: 2 }}>
-                    <DropDownPicker
-                        containerStyle={{ width: '40%' }}
-                        style={{ backgroundColor: BlueColor, borderRadius: 10, paddingHorizontal: 10, minHeight: 40 }}
-                        textStyle={{ color: 'white', fontSize: 16, fontWeight: '500' }}
-                        placeholder='Wash'
-                        dropDownContainerStyle={{ backgroundColor: BlueColor, borderRadius: 10, borderTopColor: 'grey' }}
-                        open={openServSelc}
-                        theme='DARK'
-                        value={servicesValue}
-                        items={services}
-                        setOpen={setOpenServSelc}
-                        setValue={setServicesValue}
-                        setItems={setServices}
-                    />
-
-                    <TextInput value={price} onChangeText={setPrice} style={[{ borderWidth: 1, borderColor: 'black', width: '30%', borderRadius: 10, textAlign: 'center', fontSize: 18 }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholder='Price' />
-
-                    <TouchableOpacity onPress={onServAdd} style={{ backgroundColor: BlueColor, padding: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
-                        <Plus color='white' size={20} />
-                    </TouchableOpacity>
-                </View>
-
-                <TouchableOpacity onPress={onAddItem} style={{ backgroundColor: BlueColor, padding: 8, borderRadius: 10, marginTop: 10 }}>
-                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '500' }}>{isUpdating ? 'Update Item' : 'Add Item'}</Text>
-                </TouchableOpacity>
-                {isUpdating ?
-                    <TouchableOpacity onPress={onCancelUpdate} style={{ backgroundColor: 'red', padding: 8, borderRadius: 10, marginTop: 5 }}>
-                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
-                    </TouchableOpacity>
-                    : null
-                }
-
+                    <View style={{ height: 370 }}></View>
+                </ScrollView>
             </View>
-
-            <Text style={{ fontSize: 18, fontWeight: '500', color: 'black', marginBottom: 5 }}>Added Items</Text>
-            <ScrollView>
-                {itemsList?.map((item: any, index: any) => (
-                    <View key={index} style={{ borderWidth: 0.5, padding: 5, marginVertical: 2, borderRadius: 5, backgroundColor: 'white' }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500', width: '30%' }}>{item.title}</Text>
-                            <View style={{ gap: 2, width: '50%' }}>
-                                {item?.services?.map((service: any, index: any) => (
-                                    <View key={index}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <Text style={{ color: 'black', fontSize: 15, fontWeight: '500', width: '50%' }}>{service.serv}</Text>
-                                            <Text style={{ color: 'black', fontSize: 15, fontWeight: '500', width: '40%' }}>Rs. {service.pri}</Text>
-                                        </View>
-                                    </View>
-                                ))}
-                            </View>
-                            <View style={{ flexDirection: 'row', width: '18%', justifyContent: 'space-between', marginHorizontal: 4 }}>
-                                <TouchableOpacity style={{ alignItems: 'flex-end' }} onPress={() => onUpdateItem(item)}>
-                                    <FileEdit color='green' size={20} />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={{ alignItems: 'flex-end' }} onPress={() => onItemRemove(item)}>
-                                    <Trash2 color='red' size={20} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                ))}
-                <View style={{ height: 120 }}></View>
-            </ScrollView>
 
             {refreshing ?
                 <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>

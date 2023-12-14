@@ -114,6 +114,13 @@ const CurrentRide = (props: any) => {
             })
     }
 
+    socket.onmessage = (e) => {
+        const message = JSON.parse(e.data);
+        if (message?.rideStatus == "Cancelled") {
+            props.navigation.navigate('RideComp', { ride, cancelled: true });
+        }
+    }
+
     return (
         <View style={{ height: '100%', backgroundColor: 'white' }}>
             <View style={{ height: '62%' }}>

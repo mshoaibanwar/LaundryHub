@@ -41,6 +41,14 @@ router.route('/user/:uid').get((req, res) => {
         .catch(err => res.status(404).json(`Ride with id: ${req.params.id} not found`));
 });
 
+router.route('/rider/completed/:riderid').get((req, res) => {
+        Ride.find({ rid: req.params.riderid, status: { $in: ['Completed', 'Cancelled'] } })
+        .then((rides) => {
+                res.json(rides);
+        })
+        .catch(err => res.status(404).json(`Completed/Cancelled Rides with RiderId: ${req.params.id} not found`));
+});
+
 router.route('/requests/').get((req, res) => {
     Ride.find({status : 'Pending'})
         .then((rides) => {
@@ -74,11 +82,36 @@ router.route('/updateStatus/:id').post((req, res) => {
                         const wss = req.app.get("wss")
                         wss.clients.forEach((client) => {
                                 wss.clients.forEach(function each(client) {
-                                        if(client.id && JSON.parse(client.id).userId == ride.uid)
-                                                client.send(JSON.stringify({rideStatus: req.body.status}));
+                                        if(ride.bkdBy == "Shop")
+                                        {
+                                                if(client.id && JSON.parse(client.id).userId == ride.sid)
+                                                        client.send(JSON.stringify({rideStatus: req.body.status, rideId: ride._id}));
+                                        }
+                                        else
+                                        {
+                                                if(client.id && JSON.parse(client.id).userId == ride.uid)
+                                                        client.send(JSON.stringify({rideStatus: req.body.status, rideId: ride._id}));
+                                        }
                                       });
                               })
                         res.json('Ride Status Updated!');
+                })
+                .catch(err => res.status(404).send(err));
+});
+
+router.route('/cancelRide/:id').post((req, res) => {
+        Ride.findByIdAndUpdate(req.params.id,
+                {status: req.body.status})
+                .then((ride) => 
+                {
+                        const wss = req.app.get("wss")
+                        wss.clients.forEach((client) => {
+                                wss.clients.forEach(function each(client) {
+                                        if(client.id && JSON.parse(client.id).userId == ride.rid )
+                                                client.send(JSON.stringify({rideStatus: req.body.status, rideId: ride._id}));
+                                      });
+                              })
+                        res.json('Ride Cancelled!');
                 })
                 .catch(err => res.status(404).send(err));
 });
@@ -87,13 +120,27 @@ router.route('/acceptRide/:id').post((req, res) => {
     Ride.findByIdAndUpdate(req.params.id,
             {rid: req.body.rid, status: req.body.status})
             .then((ride) => {
-                const wss = req.app.get("wss")
+                Rider.find({}, 'uid') // Assuming 'uid' is the field you want to retrieve
+                .then((riders) => {
+                        const riderIds = riders.map(rider => rider.uid.toString());
+                        // Assuming you have access to the object you want to send to riders
+                        const wss = req.app.get("wss")
+                        // Iterate over WebSocket clients and send the message to riders
                         wss.clients.forEach((client) => {
-                                wss.clients.forEach(function each(client) {
-                                        if(client.id && JSON.parse(client.id).userId == ride.uid)
-                                                client.send(JSON.stringify({rideStatus: req.body.status}));
-                                      });
-                              })
+                        if (client.id && riderIds.includes(JSON.parse(client.id).userId)) {
+                                client.send(JSON.stringify({rideStatus: req.body.status, rideId: ride._id}));
+                        }
+                        if (client.id && JSON.parse(client.id).userId == ride.uid) {
+                                client.send(JSON.stringify({rideStatus: req.body.status, rideId: ride._id}));
+                        }
+                        else if (client.id && JSON.parse(client.id).userId == ride.sid) {
+                                client.send(JSON.stringify({rideStatus: req.body.status, rideId: ride._id}));
+                        }
+                        });
+                })
+                .catch((error) => {
+                        console.error('Error fetching riders:', error);
+                });
                 res.json('Ride Accepted!')
             })
             .catch(err => res.status(404).send(err));
@@ -152,7 +199,25 @@ router.route('/add').post((req, res) => {
 router.route('/delete/:id').post((req, res) => {
             
     Ride.findByIdAndDelete(req.params.id)
-        .then(() => res.json('Ride Deleted!'))
+        .then(() => 
+        {
+                Rider.find({}, 'uid') // Assuming 'uid' is the field you want to retrieve
+                .then((riders) => {
+                        const riderIds = riders.map(rider => rider.uid.toString());
+                        // Assuming you have access to the object you want to send to riders
+                        const wss = req.app.get("wss")
+                        // Iterate over WebSocket clients and send the message to riders
+                        wss.clients.forEach((client) => {
+                        if (client.id && riderIds.includes(JSON.parse(client.id).userId)) {
+                                client.send(JSON.stringify({delRide: "Ride Deleted!", rideId: req.params.id}));
+                        }
+                        });
+                })
+                .catch((error) => {
+                        console.error('Error fetching riders:', error);
+                });
+                res.json('Ride Deleted!')
+        })
         .catch(err => res.status(404).json(err));
 
 });

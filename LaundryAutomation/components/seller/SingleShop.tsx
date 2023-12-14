@@ -163,7 +163,7 @@ const SingleShop = (props: any) => {
                         </View>
                         <View style={{ alignItems: 'center', flexDirection: 'row', gap: 5 }}>
                             <MapPin size={20} color='#0E1446' />
-                            <TextInput editable={editable} style={[{ color: 'black' }, editable ? { borderBottomWidth: 1 } : {}, Platform.OS === 'android' ? { padding: 0 } : {}]} value={address} onChangeText={setAddress} />
+                            <TextInput editable={editable} style={[{ color: 'black' }, editable ? { borderBottomWidth: 1 } : {}, Platform.OS === 'android' ? { padding: 2 } : {}]} value={address} onChangeText={setAddress} />
                         </View>
                         <View style={{ alignItems: 'center', flexDirection: 'row', gap: 5, marginTop: 10 }}>
                             <Clock9 size={20} color='#0E1446' />

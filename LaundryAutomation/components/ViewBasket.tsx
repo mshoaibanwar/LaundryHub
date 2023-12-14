@@ -13,7 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import ViewBasketItem from './ViewBasketItem';
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks';
 import { emptyBasket } from '../reduxStore/reducers/BasketReducer';
-import { BlueColor } from '../constants/Colors';
+import { BlueColor, GreyColor } from '../constants/Colors';
 
 const FlatListItemSeparator = () => {
     return (
@@ -33,7 +33,7 @@ const ViewBasket = (props: any) => {
 
     return (
         <SafeAreaView>
-            <View style={{ height: Platform.OS == 'android' ? '95%' : '93.5%', padding: 20, justifyContent: 'space-between' }}>
+            <View style={[{ height: Platform.OS == 'android' ? '95%' : '93.5%', paddingHorizontal: 20, paddingBottom: 10, justifyContent: 'space-between' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
                         <Pressable onPress={() => { props.navigation.goBack() }} style={{ width: '21%' }}>
@@ -46,7 +46,7 @@ const ViewBasket = (props: any) => {
                     </View>
 
                     <FlatList
-                        style={{ maxHeight: '93.5%', backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 10 }}
+                        style={{ maxHeight: '93.5%', backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 10, borderWidth: 0.5, borderColor: 'grey' }}
                         data={basketItems}
                         renderItem={({ item, index }: any) => (
                             <ViewBasketItem key={index} name={item.item} type={item.serType} img={item.images[0]} id={item.id} />

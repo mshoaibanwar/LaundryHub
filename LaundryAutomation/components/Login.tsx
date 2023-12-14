@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { DarkPurple, LightPurple, LoginBtn } from '../constants/Colors'
-import { Lock, Mail } from 'lucide-react-native'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native'
 import { useToast } from 'react-native-toast-notifications'
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
@@ -14,11 +14,14 @@ import { addUser } from '../reduxStore/reducers/UserReducer'
 import messaging from '@react-native-firebase/messaging';
 import { addShopData } from '../reduxStore/reducers/ShopDataReducer'
 import socket from '../helpers/Socket'
+import { useTogglePasswordVisibility } from '../helpers/useTogglePasswordVisibility';
 
 const Login = (props: any) => {
     const [loading, setLoading] = useState(false);
     const [isUser, setIsUser] = useState(true);
     const [isRider, setIsRider] = useState(false);
+    const { passwordVisibility, rightIcon, handlePasswordVisibility } =
+        useTogglePasswordVisibility();
 
     const schema = yup.object().shape({
         email: yup
@@ -135,9 +138,6 @@ const Login = (props: any) => {
                     animationType: "slide-in",
                 });
             })
-            .then(function () {
-                // always executed
-            });
     };
     return (
         <SafeAreaView style={{ justifyContent: 'space-between', alignItems: 'center', height: '100%', backgroundColor: DarkPurple }}>
@@ -188,16 +188,23 @@ const Login = (props: any) => {
                                     </View>
                                     <View style={{ width: '100%', gap: 5, justifyContent: 'center' }}>
                                         <Text style={{ color: 'white' }}>PASSWORD</Text>
-                                        <Controller
-                                            control={control}
-                                            rules={{
-                                                required: true,
-                                            }}
-                                            render={({ field: { onChange, value } }) => (
-                                                <TextInput value={value} onChangeText={onChange} secureTextEntry={true} autoComplete='password' placeholderTextColor={'grey'} style={{ width: '88%', fontSize: 17, color: 'white', padding: 0 }} placeholder='* * * * * * * *' />
-                                            )}
-                                            name="password"
-                                        />
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 30 }}>
+                                            <Controller
+                                                control={control}
+                                                rules={{
+                                                    required: true,
+                                                }}
+                                                render={({ field: { onChange, value } }) => (
+                                                    <TextInput value={value} onChangeText={onChange} secureTextEntry={passwordVisibility} autoComplete='password' placeholderTextColor={'grey'} style={{ width: '88%', fontSize: 17, color: 'white', padding: 0 }} placeholder='* * * * * * * *' />
+                                                )}
+                                                name="password"
+                                            />
+                                            <TouchableOpacity onPress={handlePasswordVisibility}>
+                                                {rightIcon == 'eye' ?
+                                                    <Eye size={20} color="white" />
+                                                    : <EyeOff size={20} color="white" />}
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 </View>
                                 {errors.password && <Text style={{ color: 'orange', marginLeft: 15 }}>{errors.password.message}</Text>}

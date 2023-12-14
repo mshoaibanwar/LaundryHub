@@ -10,6 +10,7 @@ import {
     Pressable,
     Dimensions,
     Platform,
+    Linking,
 } from 'react-native';
 
 import { ChevronLeft, Star, MapPin, Clock9, Phone, Navigation, X, CornerLeftUp } from 'lucide-react-native';
@@ -209,7 +210,7 @@ const SingleShop = (props: any) => {
                     <Text style={shopStatus == 'Closed' ? { color: 'red', fontSize: 16, fontWeight: '600' } : { color: 'green', fontSize: 16, fontWeight: '600' }}>{shopStatus}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 20, marginTop: 20 }}>
-                    <TouchableOpacity onPress={() => props.navigation.navigate('ShopsStack', { screen: 'RideReq' })} style={{ borderColor: 'red', borderWidth: 1, borderRadius: 20, paddingHorizontal: 20, justifyContent: 'center', padding: 5 }}>
+                    <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${props.route.params?.itemsdet ? props.route.params?.itemsdet?.address?.num : props.route.params?.itemdet?.address?.num}`)} style={{ borderColor: 'red', borderWidth: 1, borderRadius: 20, paddingHorizontal: 20, justifyContent: 'center', padding: 5 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <Phone color='red' size={20} />
                             <Text style={{ color: 'red' }}>Call</Text>
@@ -229,7 +230,7 @@ const SingleShop = (props: any) => {
                 <FlatList
                     data={Data}
                     renderItem={({ item, index }) => (
-                        <ServiceCard key={index} navigation={Navigation} name={item.name} desc={item.desc} img={item.img} />
+                        <ServiceCard key={index} navigation={props?.navigation} name={item.name} desc={item.desc} img={item.img} />
                     )}
                     //Setting the number of column
                     numColumns={2}
@@ -318,12 +319,12 @@ const SingleShop = (props: any) => {
                         <Pressable onPress={() => setModalVisible(!modalVisible)} style={{ backgroundColor: '#F1F1F0', padding: 10, borderRadius: 15, width: 45, height: 45, alignItems: 'center', justifyContent: 'center', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.5, shadowRadius: 5 }}>
                             <X color='black' />
                         </Pressable>
-                        <Text style={{ textAlign: 'center', width: '78%', fontSize: 18, fontWeight: '600' }}>Item Wise Prices</Text>
+                        <Text style={{ textAlign: 'center', width: '78%', fontSize: 18, fontWeight: '600', color: 'black' }}>Item Wise Prices</Text>
                     </View>
                     {basketItems.length != allShopsPriceList[0].length ?
                         <Text style={{ marginHorizontal: 20, marginTop: 20, fontWeight: '500', fontSize: 15, color: 'red' }}>Note: Highlighted items are those on which this shop not provides service. Highlighted items will not be added in your order!</Text>
                         : null}
-                    <View style={{ margin: 20, borderRadius: 10, backgroundColor: 'white', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.25, shadowRadius: 3 }}>
+                    <View style={{ margin: 20, borderRadius: 10, backgroundColor: 'white', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.25, shadowRadius: 3, elevation: 5 }}>
                         <FlatList
                             style={{ marginVertical: 5 }}
                             data={basketItems}

@@ -8,7 +8,7 @@ import { useDistance } from '../../helpers/DistanceCalculator'
 import { useAppSelector } from '../../hooks/Hooks'
 import LottieView from 'lottie-react-native'
 
-const RideReqCard = ({ navigation, ride }: any) => {
+const RideReqCard = ({ navigation, ride, rejectRide }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [user, setUser] = useState<any>({});
     const [loading, setLoading] = useState(false);
@@ -53,9 +53,9 @@ const RideReqCard = ({ navigation, ride }: any) => {
         <>
             <Pressable key={ride._id} onPress={() => setModalVisible(true)} style={{ marginHorizontal: 20, marginTop: 5, borderColor: 'black', borderWidth: 1, borderRadius: 10, backgroundColor: 'white' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ margin: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    <View style={{ margin: 10, flexDirection: 'row', gap: 10, alignItems: 'center', width: '50%' }}>
                         <Image style={{ width: 40, height: 40, borderRadius: 50 }} defaultSource={require('../../assets/images/profileph.png')} source={user?.profile ? { uri: user?.profile } : require('../../assets/images/profileph.png')} />
-                        <View style={{}}>
+                        <View>
                             <Text style={{ fontSize: 16, fontWeight: '500', color: 'black', marginTop: 0 }}>{ride?.bkdBy == 'Shop' ? shop?.title : user?.name}</Text>
                             <Text style={{ fontSize: 14, fontWeight: '300', color: 'black', flexWrap: 'wrap' }}>+92 {ride?.bkdBy == 'Shop' ? shop?.contact : user?.phone}</Text>
                         </View>
@@ -71,6 +71,7 @@ const RideReqCard = ({ navigation, ride }: any) => {
                         </View>
                     </View>
                 </View>
+                <View style={{ height: 1, backgroundColor: '#e8e8e8', marginBottom: 10 }}></View>
                 <View style={{ alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', width: '88%' }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: LightGreen, borderRadius: 10 }}>
@@ -98,7 +99,7 @@ const RideReqCard = ({ navigation, ride }: any) => {
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
-                    <TouchableOpacity style={{ backgroundColor: DarkGrey, width: '48%', borderRadius: 5, padding: 8 }}>
+                    <TouchableOpacity onPress={() => rejectRide(ride)} style={{ backgroundColor: DarkGrey, width: '48%', borderRadius: 5, padding: 8 }}>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Reject</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={acceptRide} style={{ backgroundColor: BlueColor, width: '48%', borderRadius: 5, padding: 8 }}>

@@ -36,9 +36,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 0.5,
         gap: 10,
-        margin: 6,
+        margin: 4,
         borderColor: 'grey',
-        shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 3
+        shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 4,
+        elevation: 5,
+        minWidth: 173
+
     },
     title:
     {

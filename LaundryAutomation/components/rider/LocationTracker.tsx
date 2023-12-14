@@ -11,6 +11,8 @@ interface LocationTrackerProps {
     children: ReactNode; // Explicitly define children prop
 }
 
+export const rejectedRides: any = []
+
 const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     let locationUpdateInterval: NodeJS.Timeout;
 
@@ -92,15 +94,13 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
             });
     };
 
-    useEffect(() => {
-        socket.onmessage = (e) => {
-            const message = JSON.parse(e.data);
-            if (message.msg) {
-                const nMsg: any = { from: 'other', msg: message.msg };
-                dispatch(addMsg(nMsg))
-            }
+    socket.onmessage = (e) => {
+        const message = JSON.parse(e.data);
+        if (message.msg) {
+            const nMsg: any = { from: 'other', msg: message.msg };
+            dispatch(addMsg(nMsg))
         }
-    }, []);
+    }
 
     return (
         <>

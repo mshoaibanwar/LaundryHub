@@ -15,6 +15,7 @@ import { Switch } from 'react-native-gesture-handler';
 import RideReqCard from './RideReqCard';
 import socket from '../../helpers/Socket';
 import { addUser } from '../../reduxStore/reducers/UserReducer';
+import { rejectedRides } from './LocationTracker';
 
 const Rides = ({ navigation }: any) => {
     const user: any = useAppSelector(state => state.user.value);
@@ -24,14 +25,20 @@ const Rides = ({ navigation }: any) => {
     const [refreshing, setRefreshing] = useState(false);
 
     const getRides = () => {
-        axiosInstance.get(`rides/`)
+        axiosInstance.get(`rides/requests/`)
             .then((res) => {
-                setRides(res.data.reverse());
+                let nRides = res.data.reverse();
+                setRides(nRides.filter((ride: any) => !rejectedRides.some((rejected: any) => rejected._id === ride._id)));
                 setRefreshing(false);
             })
             .catch((err) => {
                 console.log(err.response.data);
             })
+    }
+
+    const rejectRide = (ride: any) => {
+        rejectedRides.push(ride);
+        setRides(rides.filter((ride: any) => !rejectedRides.some((rejected: any) => rejected._id === ride._id)));
     }
 
     useEffect(() => {
@@ -70,14 +77,25 @@ const Rides = ({ navigation }: any) => {
             })
         getRides();
     }
-    useEffect(() => {
-        socket.onmessage = (e) => {
-            const message = JSON.parse(e.data);
-            if (message?.newRide) {
-                getRides();
+
+    socket.onmessage = (e) => {
+        const message = JSON.parse(e.data);
+        if (message?.newRide) {
+            getRides();
+        }
+        else if (message?.rideStatus == "Accepted") {
+            if (rides.some((ride: any) => ride._id == message?.rideId)) {
+                console.log("Ride Accepted");
+                setRides(rides.filter((ride: any) => ride._id != message?.rideId));
             }
         }
-    }, []);
+        else if (message?.delRide) {
+            if (rides.some((ride: any) => ride._id == message?.rideId)) {
+                setRides(rides.filter((ride: any) => ride._id != message?.rideId));
+            }
+        }
+    }
+
     return (
         <SafeAreaView style={{ height: '100%' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 20, marginBottom: 0 }}>
@@ -99,7 +117,7 @@ const Rides = ({ navigation }: any) => {
                 <View style={{ marginTop: 15 }}>
                     <FlatList
                         data={rides}
-                        renderItem={({ item }) => <RideReqCard navigation={navigation} ride={item} />}
+                        renderItem={({ item }) => <RideReqCard navigation={navigation} ride={item} rejectRide={rejectRide} />}
                         keyExtractor={item => item}
                         refreshControl={
                             <RefreshControl

@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react'
-import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import socket from '../helpers/Socket'
-import { ChevronLeft } from 'lucide-react-native'
+import { ArrowLeft, ChevronLeft } from 'lucide-react-native'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
 import { addMsg, selectUserChat } from '../reduxStore/reducers/MessagesReducer'
+import { GreyColor } from '../constants/Colors'
 
 const Chat = (props: any) => {
     const [message, setMessage] = React.useState<string>("")
@@ -25,27 +26,25 @@ const Chat = (props: any) => {
         setMessage("")
     }
 
-    useEffect(() => {
-        socket.onmessage = ((msg) => {
-            const parsedMsg = JSON.parse(msg.data);
-            if (parsedMsg.msg) {
-                const nMsg: any = { from: 'other', msg: parsedMsg.msg };
-                setMessages((prevMessages: any) => [...prevMessages, { from: 'other', msg: parsedMsg.msg }]);
-                dispatch(addMsg({ userId, message: nMsg }));
-            }
-        })
-    }, [])
+    socket.onmessage = ((msg) => {
+        const parsedMsg = JSON.parse(msg.data);
+        if (parsedMsg.msg) {
+            const nMsg: any = { from: 'other', msg: parsedMsg.msg };
+            setMessages((prevMessages: any) => [...prevMessages, { from: 'other', msg: parsedMsg.msg }]);
+            dispatch(addMsg({ userId, message: nMsg }));
+        }
+    })
 
     return (
-        <SafeAreaView style={{ height: '100%', padding: 20, backgroundColor: 'white' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }}>
+        <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 10, paddingHorizontal: 20, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                    <ChevronLeft size={30} />
+                    <ArrowLeft size={25} color='black' />
                 </TouchableOpacity>
-                <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500' }}>Chat</Text>
+                <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500', color: 'black' }}>Chat</Text>
                 <View style={{ width: 30 }}></View>
             </View>
-            <ScrollView style={{ paddingHorizontal: 20 }}>
+            <ScrollView style={{ padding: 20, backgroundColor: GreyColor }}>
                 {msgs.length > 0 && msgs.map((item: any, index: number) => (
                     <View key={index} style={item.from == 'me' ? { padding: 5, paddingHorizontal: 10, borderRadius: 10, backgroundColor: 'pink', gap: 5, alignSelf: 'flex-end', marginVertical: 5 } : { marginVertical: 5, padding: 5, paddingHorizontal: 10, borderRadius: 10, backgroundColor: 'pink', gap: 5, alignSelf: 'flex-start' }}>
                         <Text style={{ fontSize: 16, color: 'black' }} key={index}>{item.msg}</Text>
@@ -53,8 +52,8 @@ const Chat = (props: any) => {
                 ))}
                 <View style={{ height: 60 }}></View>
             </ScrollView>
-            <View style={{ position: 'absolute', bottom: 10, width: '100%', flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', padding: 20 }}>
-                <TextInput value={message} onChangeText={setMessage} style={{ borderWidth: 0.5, padding: 5, width: '82%', borderRadius: 10 }} placeholder="Type your message here" />
+            <View style={[{ position: 'absolute', bottom: 0, width: '100%', flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', padding: 20 }, Platform.OS == 'ios' ? { bottom: 10 } : null]}>
+                <TextInput value={message} onChangeText={setMessage} style={{ borderWidth: 0.5, padding: 5, paddingHorizontal: 10, width: '82%', borderRadius: 10 }} placeholder="Type your message here" />
                 <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 10 }} onPress={sendMessage}>
                     <Text style={{ color: 'white' }}>Send</Text>
                 </TouchableOpacity>

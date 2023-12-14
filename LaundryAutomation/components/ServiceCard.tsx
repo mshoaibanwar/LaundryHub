@@ -5,7 +5,6 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
-import { FrontColor } from '../constants/Colors';
 
 type Props =
     {
@@ -37,9 +36,12 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         gap: 10,
         margin: 6,
+        borderWidth: 0.5,
+        borderColor: 'grey',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
+        elevation: 5
     },
     title:
     {

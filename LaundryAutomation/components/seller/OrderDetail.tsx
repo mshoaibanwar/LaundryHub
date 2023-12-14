@@ -1,6 +1,6 @@
 import { ArrowLeft, MessageSquare, Phone } from 'lucide-react-native'
 import React, { useEffect, useState } from 'react'
-import { Image, Linking, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Linking, Platform, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BlueColor, DarkGrey, GreyColor } from '../../constants/Colors'
 import { axiosInstance } from '../../helpers/AxiosAPI'
 import { useToast } from 'react-native-toast-notifications'
@@ -152,14 +152,14 @@ const OrderDetail = (props: any) => {
     }
 
     return (
-        <SafeAreaView style={{ padding: 20 }}>
-            <View style={{ paddingHorizontal: 20 }}>
-                <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                        <ArrowLeft color='black' size={25} />
-                    </TouchableOpacity>
-                    <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 20, fontWeight: '700' }}>Order Details</Text>
-                </View>
+        <SafeAreaView style={{ backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', paddingBottom: 10, paddingHorizontal: 20, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
+                <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                    <ArrowLeft color='black' size={25} />
+                </TouchableOpacity>
+                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Order Details</Text>
+            </View>
+            <View style={{ paddingHorizontal: 20, backgroundColor: GreyColor }}>
                 <ScrollView refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }>
@@ -262,10 +262,10 @@ const OrderDetail = (props: any) => {
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: DarkGrey, fontSize: 16 }}>Subtotal</Text>
-                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {props?.route?.params?.tprice - props?.route?.params?.delFee}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {props?.route?.params?.tprice - (props?.route?.params?.delFee * 2)}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ color: DarkGrey, fontSize: 16 }}>Delivery Fee</Text>
+                                <Text style={{ color: DarkGrey, fontSize: 16 }}>Delivery Fee (x2)</Text>
                                 <Text style={{ color: 'black', fontSize: 16 }}>Rs. {props?.route?.params?.delFee}</Text>
                             </View>
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
@@ -280,7 +280,7 @@ const OrderDetail = (props: any) => {
 
                         </View>
                     </View>
-                    <View style={{ height: 130 }}></View>
+                    <View style={{ height: 190 }}></View>
                 </ScrollView>
             </View >
             {loading ?

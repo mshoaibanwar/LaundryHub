@@ -154,10 +154,11 @@ const Home = ({ navigation }: any) => {
                             : null
                         }
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconimg}>
+                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.icon}>
                         <Image
                             style={styles.iconimg}
-                            source={require('../../assets/icons/user.png')}
+                            defaultSource={require('../../assets/icons/user.png')}
+                            source={user?.user?.profile ? { uri: user?.user?.profile } : require('../../assets/icons/user.png')}
                         />
                     </TouchableOpacity>
                 </View>
@@ -238,8 +239,9 @@ const styles = StyleSheet.create({
             width: 3,
             height: 3,
         },
-        shadowRadius: 5,
-        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        shadowOpacity: 0.3,
+        elevation: 5,
     },
     notiIcon:
     {
@@ -263,6 +265,7 @@ const styles = StyleSheet.create({
         },
         shadowRadius: 5,
         shadowOpacity: 0.1,
+        borderRadius: 20,
     }
 });
 

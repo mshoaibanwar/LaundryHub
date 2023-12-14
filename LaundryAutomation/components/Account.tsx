@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { Alert, Image, PermissionsAndroid, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { BlueColor } from '../constants/Colors'
+import { BlueColor, GreyColor } from '../constants/Colors'
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
 import { addUser } from '../reduxStore/reducers/UserReducer'
 import { useToast } from 'react-native-toast-notifications'
@@ -57,14 +57,41 @@ const Account = (props: any) => {
         return imageUrl;
     }
 
+    const updateProfile = async (profile: any) => {
+        setLoading(true);
+        let profiledata = await updateImage(profile);
+        setOnProfile(profiledata);
+        const newData: any = { ...user, user: { ...user?.user, profile: profiledata } };
+        axiosInstance.post('users/update/profile', { profile: profiledata })
+            .then(function (response: any) {
+                // handle success
+                dispatch(addUser(newData));
+                toast.show(response.data, {
+                    type: "success",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                });
+                setLoading(false);
+            })
+            .catch(function (error) {
+                // handle error
+                setLoading(false);
+                toast.show(error.response.data, {
+                    type: "danger",
+                    placement: "top",
+                    duration: 3000,
+                    animationType: "slide-in",
+                });
+            })
+    }
+
     const dispatch = useAppDispatch();
     const UpdateAccount = async () => {
 
         setLoading(true);
-        let profiledata = await updateImage(profile);
-        setOnProfile(profiledata);
-        const updata: any = { email: email, name: fName + ' ' + lName, phone: num, profile: profiledata }
-        const newData: any = { token: user?.token, user: { ...user?.user, name: fName + ' ' + lName, phone: num, profile: profiledata } };
+        const updata: any = { email: email, name: fName + ' ' + lName, phone: num }
+        const newData: any = { ...user, user: { ...user?.user, name: fName + ' ' + lName, phone: num } };
         axiosInstance.post('users/update', updata)
             .then(function (response: any) {
                 // handle success
@@ -101,6 +128,7 @@ const Account = (props: any) => {
                     console.log('Image Camera error Code: ', response.errorCode);
                 } else {
                     setProfile(response.assets?.[0]);
+                    updateProfile(response.assets?.[0]);
                 }
             });
         } else {
@@ -114,6 +142,7 @@ const Account = (props: any) => {
                     console.log('Image picker error Code: ', response.errorCode);
                 } else {
                     setProfile(response.assets?.[0]);
+                    updateProfile(response.assets?.[0]);
                 }
             });
         }
@@ -163,32 +192,34 @@ const Account = (props: any) => {
     }
 
     return (
-        <SafeAreaView style={{ height: '100%' }}>
-            <View style={{ flexDirection: 'row', padding: 20 }}>
+        <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
+            <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
                     <ArrowLeft color='black' size={25} />
                 </TouchableOpacity>
-                <Text style={{ textAlign: 'center', color: 'black', width: '87%', fontSize: 20, fontWeight: '700' }}>Account</Text>
+                <Text style={{ textAlign: 'center', color: 'black', width: '87%', fontSize: 18, fontWeight: '600' }}>Account</Text>
             </View>
-            <ScrollView>
-                <TouchableOpacity onPress={() => ImagePickerAlert()} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Image style={{ width: 90, height: 90, borderRadius: 50 }} defaultSource={require('../assets/images/profileph.png')} source={profile ? profile : onprofile ? { uri: onprofile } : require('../assets/images/profileph.png')} resizeMode='cover' />
-                </TouchableOpacity>
-                <View style={{ padding: 20, gap: 10 }}>
-                    <Text style={{ color: 'black' }}>First Name</Text>
-                    <TextInput value={fName} onChangeText={setFName} placeholder='First Name' style={{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }} />
-                    <Text style={{ color: 'black' }}>Last Name</Text>
-                    <TextInput value={lName} onChangeText={setLName} placeholder='Last Name' style={{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }} />
-                    <Text style={{ color: 'black' }}>Mobile Number</Text>
-                    <TextInput value={num} onChangeText={setNum} placeholder='Phone No' inputMode='tel' maxLength={11} style={{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }} />
-                    <Text style={{ color: 'black' }}>Email</Text>
-                    <TextInput value={email} placeholder='Email' editable={false} inputMode='email' style={{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }} />
-                    <TouchableOpacity onPress={UpdateAccount} style={{ backgroundColor: BlueColor, padding: 8, borderRadius: 10, marginTop: 20 }}>
-                        <Text style={{ textAlign: 'center', color: 'white', fontSize: 20 }}>Update</Text>
+            <View style={{ backgroundColor: GreyColor, height: '100%' }}>
+                <ScrollView style={{ backgroundColor: GreyColor }}>
+                    <TouchableOpacity onPress={() => ImagePickerAlert()} style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+                        <Image style={{ width: 90, height: 90, borderRadius: 50 }} defaultSource={require('../assets/images/profileph.png')} source={profile ? profile : onprofile ? { uri: onprofile } : require('../assets/images/profileph.png')} resizeMode='cover' />
                     </TouchableOpacity>
-                </View>
-                <View style={{ height: 100 }}></View>
-            </ScrollView>
+                    <View style={{ padding: 20, gap: 10 }}>
+                        <Text style={{ color: 'black' }}>First Name</Text>
+                        <TextInput value={fName} onChangeText={setFName} placeholder='First Name' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <Text style={{ color: 'black' }}>Last Name</Text>
+                        <TextInput value={lName} onChangeText={setLName} placeholder='Last Name' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <Text style={{ color: 'black' }}>Mobile Number</Text>
+                        <TextInput value={num} onChangeText={setNum} placeholder='Phone No' inputMode='tel' maxLength={11} style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <Text style={{ color: 'black' }}>Email</Text>
+                        <TextInput value={email} placeholder='Email' editable={false} inputMode='email' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <TouchableOpacity onPress={UpdateAccount} style={{ backgroundColor: BlueColor, padding: 8, borderRadius: 10, marginTop: 20 }}>
+                            <Text style={{ textAlign: 'center', color: 'white', fontSize: 18 }}>Update</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ height: 100 }}></View>
+                </ScrollView>
+            </View>
             {loading ?
                 <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
                     <LottieView style={{ width: 150, height: 150 }} source={require('../assets/animated/loading.json')} autoPlay loop />
