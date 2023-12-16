@@ -1,6 +1,5 @@
 const router = require("express").Router();
 let Shop = require("../models/shop.model");
-var ObjectId = require("mongodb").ObjectID;
 
 router.route("/").get((req, res) => {
   Shop.find()

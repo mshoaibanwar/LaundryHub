@@ -9,6 +9,7 @@ import {
   Bicycle,
   StarFill,
 } from "react-bootstrap-icons";
+import HomeCard from "./HomeCard";
 
 function Home() {
   const [ordersCount, setOrdersCount] = useState(null);
@@ -86,83 +87,63 @@ function Home() {
       });
   }, []);
 
+  const Data = [
+    {
+      id: "0",
+      name: "Users",
+      count: usersCount,
+      img: <PeopleFill size={60} fill="#0E1446" />,
+    },
+    {
+      id: "1",
+      name: "Shops",
+      count: shopsCount,
+      img: <Shop size={60} fill="red" />,
+    },
+    {
+      id: "2",
+      name: "Riders",
+      count: ridersCount,
+      img: <PeopleFill size={60} fill="orange" />,
+    },
+    {
+      id: "3",
+      name: "Orders",
+      count: ordersCount,
+      img: <BoxSeamFill size={60} fill="#38304d" />,
+    },
+    {
+      id: "4",
+      name: "Rides",
+      count: ridesCount,
+      img: <Bicycle size={60} fill="green" />,
+    },
+    {
+      id: "5",
+      name: "Ratings",
+      count: ratingsCount,
+      img: (
+        <StarFill size={60} fill="#FFD130" stroke="black" strokeWidth="0.5px" />
+      ),
+    },
+  ];
+
   return (
-    <div className="col-lg-10 p-4">
-      <div className="bg-white rounded-4 p-3 rightSec">
+    <div className="p-4 rightSec">
+      <div className="rounded-4">
         <div className="container-fluid overflow-y-scroll h-100">
-          <h2 className="m-4">Home</h2>
-          <div className="row m-0 justify-content-between">
-            <div className="p-1 col-lg-6">
-              <div className="card flex-row align-items-center justify-content-between p-2">
-                <PeopleFill size={62}></PeopleFill>
-                <div className="text-end me-2">
-                  <h4>Users</h4>
-                  <h1 className=" fw-light">
-                    {usersCount ? usersCount : "Loading..."}
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-1 col-lg-6">
-              <div className="card flex-row align-items-center justify-content-between p-2">
-                <Shop size={62}></Shop>
-                <div className="text-end me-2">
-                  <h4>Shops</h4>
-                  <h1 className=" fw-light">
-                    {shopsCount ? shopsCount : "Loading..."}
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-1 col-lg-6">
-              <div className="card flex-row align-items-center justify-content-between p-2">
-                <PeopleFill size={62}></PeopleFill>
-                <div className="text-end me-2">
-                  <h4>Riders</h4>
-                  <h1 className=" fw-light">
-                    {ridersCount ? ridersCount : "Loading..."}
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-1 col-lg-6">
-              <div className="card flex-row align-items-center justify-content-between p-2">
-                <BoxSeamFill size={62}></BoxSeamFill>
-                <div className="text-end me-2">
-                  <h4>Orders</h4>
-                  <h1 className=" fw-light">
-                    {ordersCount ? ordersCount : "Loading..."}
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-1 col-lg-6">
-              <div className="card flex-row align-items-center justify-content-between p-2">
-                <Bicycle size={62}></Bicycle>
-                <div className="text-end me-2">
-                  <h4>Rides</h4>
-                  <h1 className=" fw-light">
-                    {ridesCount ? ridesCount : "Loading..."}
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-1 col-lg-6">
-              <div className="card flex-row align-items-center justify-content-between p-2">
-                <StarFill size={62}></StarFill>
-                <div className="text-end me-2">
-                  <h4>Ratings</h4>
-                  <h1 className=" fw-light">
-                    {ratingsCount ? ratingsCount : "Loading..."}
-                  </h1>
-                </div>
-              </div>
-            </div>
+          {/* <h2 className="mb-4">Home</h2> */}
+          <div className="row m-0">
+            {Data.map((item) => {
+              return (
+                <HomeCard
+                  key={item.id}
+                  name={item.name}
+                  count={item.count}
+                  img={item.img}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

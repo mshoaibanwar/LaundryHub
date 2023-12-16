@@ -17,7 +17,6 @@ const OrderDetail = (props: any) => {
     const [showBookRide, setShowBookRide] = useState<any>(true);
     const [disableBookRide, setDisableBookRide] = useState<any>(true);
 
-    const user: any = useAppSelector((state) => state.user.value);
     const ShopData: any = useAppSelector((state) => state.shopdata.value);
 
     const [statuses, setStatuses] = useState([
@@ -177,7 +176,7 @@ const OrderDetail = (props: any) => {
                                         <Phone color='black' size={20} />
                                         <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Phone</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', props?.route?.params?.uid)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', { uid: props?.route?.params?.uid, id: props?.route?.params?._id })} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                         <MessageSquare color='black' size={20} />
                                         <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Chat</Text>
                                     </TouchableOpacity>

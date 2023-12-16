@@ -49,10 +49,9 @@ function Users() {
   };
 
   return (
-    <div className="col-lg-10 p-4">
-      <div className="bg-white rounded-4 p-3 rightSec">
+    <div className="p-3 rightSec">
+      <div className="">
         <div className="container overflow-y-scroll h-100">
-          <h2>Users</h2>
           <div className="d-flex my-3">
             <ButtonGroup className="flex-fill" aria-label="Filters">
               <Button

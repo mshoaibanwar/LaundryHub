@@ -67,7 +67,7 @@ const Register = (props: any) => {
                     animationType: "slide-in",
                 });
                 setLoading(false);
-                // props.navigation.navigate("Login");
+                props.navigation.navigate("Login");
             })
             .catch(function (error) {
                 // handle error

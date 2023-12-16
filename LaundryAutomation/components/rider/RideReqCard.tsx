@@ -7,12 +7,14 @@ import RideDetails from './RideDetails'
 import { useDistance } from '../../helpers/DistanceCalculator'
 import { useAppSelector } from '../../hooks/Hooks'
 import LottieView from 'lottie-react-native'
+import { useToast } from 'react-native-toast-notifications'
 
 const RideReqCard = ({ navigation, ride, rejectRide }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [user, setUser] = useState<any>({});
     const [loading, setLoading] = useState(false);
     const [shop, setShop] = useState<any>({});
+    const toast = useToast();
     useEffect(() => {
         axiosInstance.get(`users/getUser/${ride.uid}`)
             .then((res) => {
@@ -45,6 +47,12 @@ const RideReqCard = ({ navigation, ride, rejectRide }: any) => {
                 navigation.navigate("CRide", { ride, user, shop });
             })
             .catch((err) => {
+                toast.show(err?.response?.data ? err?.response?.data : 'Something went Wrong!', {
+                    type: "danger",
+                    placement: "top",
+                    duration: 2000,
+                    animationType: "slide-in",
+                });
                 console.log(err.response.data);
             })
     }

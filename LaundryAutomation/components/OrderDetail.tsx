@@ -150,7 +150,7 @@ const OrderDetail = (props: any) => {
         let nowTime = new Date().getHours() + 1;
         setNowTime(nowTime);
 
-        if (nowTime >= 7 && nowTime < shopCloseHour) {
+        if (nowTime >= 7 && nowTime < shopCloseHour && props?.route?.params?.status == 'Pending') {
             setCanChangePickup(true);
         }
         else {
@@ -358,7 +358,7 @@ const OrderDetail = (props: any) => {
                                     <Phone color='black' size={20} />
                                     <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Phone</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', ShopData.uid)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', { uid: ShopData.uid, id: props?.route?.params?._id })} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                     <MessageSquare color='black' size={20} />
                                     <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Chat</Text>
                                 </TouchableOpacity>

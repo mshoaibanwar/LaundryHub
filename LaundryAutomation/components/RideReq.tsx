@@ -171,7 +171,7 @@ const RideReq = ({ navigation }: any) => {
                                 </View>
                             </View>
                             <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                                <TouchableOpacity onPress={() => navigation.navigate('Chat', rider?._id)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Chat', { uid: rider?._id, id: rideData._id })} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
                                     <MessageSquare size={20} color={'green'} />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>

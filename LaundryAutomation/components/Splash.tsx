@@ -34,15 +34,15 @@ const Splash = (props: any) => {
                         await axiosInstance.post('users/updateToken', { email: user?.user?.email, token: token })
                             .then(function (response: any) {
                                 if (user.userType == "user")
-                                    props.navigation.navigate("Tab");
+                                    props.navigation.navigate("MainStack", { screen: "Tab" });
                                 else if (user.userType == "seller") {
                                     axiosInstance.get(`shops/user/${user.user._id}`)
                                         .then(async function (sresponse: any) {
                                             if (sresponse.data.length == 0) {
-                                                props.navigation.navigate("AddShopData");
+                                                props.navigation.navigate("MainStack", { screen: "AddShopData" });
                                             }
                                             else {
-                                                props.navigation.navigate("SellerTab");
+                                                props.navigation.navigate("MainStack", { screen: "SellerTab" });
                                             }
                                         })
                                         .catch(function (error) {
@@ -59,10 +59,10 @@ const Splash = (props: any) => {
                                     axiosInstance.get(`riders/user/${user.user._id}`)
                                         .then(async function (sresponse: any) {
                                             if (sresponse.data.length == 0) {
-                                                props.navigation.navigate("AddRiderData");
+                                                props.navigation.navigate("MainStack", { screen: "AddRiderData" });
                                             }
                                             else {
-                                                props.navigation.navigate("RiderTab");
+                                                props.navigation.navigate("MainStack", { screen: "RiderTab" });
                                             }
                                         })
                                         .catch(function (error) {
@@ -88,15 +88,15 @@ const Splash = (props: any) => {
                     }
                     else {
                         if (user.userType == "user")
-                            props.navigation.navigate("Tab");
+                            props.navigation.navigate("MainStack", { screen: "Tab" });
                         else if (user.userType == "seller") {
                             axiosInstance.get(`shops/user/${user.user._id}`)
                                 .then(async function (sresponse: any) {
                                     if (sresponse.data.length == 0) {
-                                        props.navigation.navigate("AddShopData");
+                                        props.navigation.navigate("MainStack", { screen: "AddShopData" });
                                     }
                                     else {
-                                        props.navigation.navigate("SellerTab");
+                                        props.navigation.navigate("MainStack", { screen: "SellerTab" });
                                     }
                                 })
                                 .catch(function (error) {
@@ -113,10 +113,10 @@ const Splash = (props: any) => {
                             axiosInstance.get(`riders/user/${user.user._id}`)
                                 .then(async function (sresponse: any) {
                                     if (sresponse.data.length == 0) {
-                                        props.navigation.navigate("AddRiderData");
+                                        props.navigation.navigate("MainStack", { screen: "AddRiderData" });
                                     }
                                     else {
-                                        props.navigation.navigate("RiderTab");
+                                        props.navigation.navigate("MainStack", { screen: "RiderTab" });
                                     }
                                 })
                                 .catch(function (error) {
@@ -138,11 +138,11 @@ const Splash = (props: any) => {
                     //     duration: 3000,
                     //     animationType: "slide-in",
                     // });
-                    props.navigation.navigate("Login");
+                    props.navigation.navigate("MainStack", { screen: 'Login' });
                 });
         }
         else
-            props.navigation.navigate("Login");
+            props.navigation.navigate("MainStack");
     }
 
     useEffect(() => {

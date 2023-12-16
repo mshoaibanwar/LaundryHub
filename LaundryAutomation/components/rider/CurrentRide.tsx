@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import { axiosInstance } from '../../helpers/AxiosAPI';
-import LottieView from 'lottie-react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { Banknote, BikeIcon, LocateFixed, MapPin, MessageSquare, Navigation, Phone } from 'lucide-react-native';
 import { useRef } from "react";
@@ -66,8 +65,24 @@ const CurrentRide = (props: any) => {
         }))
         if (btnPressCount == 1) {
             setIsPicked(true);
+            axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Pickedup' })
+                .then((res) => {
+                    props.navigation.navigate('RideComp', { ride, distance });
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                })
         }
-        if (btnPressCount == 3) {
+        else if (btnPressCount == 2) {
+            axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Droppedoff' })
+                .then((res) => {
+                    props.navigation.navigate('RideComp', { ride, distance });
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                })
+        }
+        else if (btnPressCount == 3) {
             dispatch(emptyMsg());
             axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Completed' })
                 .then((res) => {
@@ -196,7 +211,7 @@ const CurrentRide = (props: any) => {
                             </View>
                         </View>
                         <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                            <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ride?.bkdBy == 'Shop' ? ruser._id : shop.uid)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ride?.bkdBy == 'Shop' ? { uid: ruser._id, id: ride._id } : { uid: shop.uid, id: ride._id })} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
                                 <MessageSquare size={20} color={'green'} />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${ride?.bkdBy == 'Shop' ? ruser?.phone : shop?.contact}`)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
@@ -214,7 +229,7 @@ const CurrentRide = (props: any) => {
                             </View>
                         </View>
                         <View style={{ justifyContent: 'center', gap: 10, flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                            <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ride?.bkdBy == 'Shop' ? shop.uid : ruser._id)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('Chat', ride?.bkdBy == 'Shop' ? { uid: shop.uid, id: ride?._id } : { uid: ruser._id, id: ride?._id })} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>
                                 <MessageSquare size={20} color={'green'} />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${ride?.bkdBy == 'Shop' ? shop?.contact : ruser?.phone}`)} style={{ backgroundColor: LightGreen, borderRadius: 10, padding: 10 }}>

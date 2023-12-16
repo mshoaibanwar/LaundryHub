@@ -15,6 +15,7 @@ export const rejectedRides: any = []
 
 const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     let locationUpdateInterval: NodeJS.Timeout;
+    const user: any = useAppSelector((state) => state.user.value);
 
     const dispatch = useAppDispatch();
 
@@ -63,7 +64,6 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
         };
     }, []);
 
-    const user: any = useAppSelector((state) => state.user.value);
     const trackLocation = () => {
         locationUpdateInterval = setInterval(() => {
             GetLocation.getCurrentPosition({
@@ -97,7 +97,7 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ children }) => {
     socket.onmessage = (e) => {
         const message = JSON.parse(e.data);
         if (message.msg) {
-            const nMsg: any = { from: 'other', msg: message.msg };
+            const nMsg: any = { from: message.from, msg: message.msg };
             dispatch(addMsg(nMsg))
         }
     }

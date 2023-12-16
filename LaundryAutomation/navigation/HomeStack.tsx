@@ -11,7 +11,6 @@ import OrderDetail from '../components/OrderDetail';
 import ChangePswrd from '../components/ChangePswrd';
 import Notifications from '../components/Notifications';
 import MyRides from '../components/rider/MyRides';
-import Chat from '../components/Chat';
 
 const HomeStack = () => {
     const stack = createStackNavigator();

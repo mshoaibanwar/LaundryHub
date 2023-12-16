@@ -13,8 +13,8 @@ const SocketReceiver: React.FC<SocketReceiverProps> = ({ children }) => {
     socket.onmessage = (e) => {
         const message = JSON.parse(e.data);
         if (message.msg) {
-            const nMsg: any = { from: 'other', msg: message.msg };
-            dispatch(addMsg(nMsg))
+            const nMsg: any = { from: message.from, msg: message.msg };
+            dispatch(addMsg({ userId: message.id, message: nMsg }))
         }
     }
 

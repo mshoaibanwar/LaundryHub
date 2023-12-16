@@ -1,5 +1,6 @@
 .rightSec
 {
-    bottom: 0px;
-    height: 94vh;
+    min-height: calc(100vh - 60px);
+    background-color: #f1f5f9;
+    overflow-y: scroll;
 }

@@ -59,6 +59,30 @@ const Rides = ({ navigation }: any) => {
             })
 
         getRides();
+
+        axiosInstance.get(`rides/rider/${user.user._id}`)
+            .then((res) => {
+                if (res.data.length > 0) {
+                    axiosInstance.get(`shops/shopInfo/${res.data[0]?.sid}`)
+                        .then(function (response: any) {
+                            // handle success
+                            axiosInstance.get(`users/getUser/${res.data[0]?.uid}`)
+                                .then((ures) => {
+                                    navigation.navigate("CRide", { ride: res.data[0], user: ures?.data, shop: response?.data });
+                                })
+                                .catch((err) => {
+                                    console.log(err.response.data);
+                                })
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error.response.data);
+                        })
+                }
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
     }, []);
     const toggleSwitch = () => {
         socket.send(

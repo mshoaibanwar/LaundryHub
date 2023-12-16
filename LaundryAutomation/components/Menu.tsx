@@ -23,15 +23,15 @@ const Menu = ({ setModal, modalVisible, navigation }: propsTypes) => {
     const logoutUser = async () => {
         try {
             // Assuming emptyShopData and logout are asynchronous operations
-            dispatch(emptyShopData(''));
             dispatch(logout(''));
+            dispatch(emptyShopData(''));
             toastRef.current?.show("Logged Out!", {
                 type: "success",
                 placement: "top",
                 duration: 2000,
                 animationType: "slide-in",
             });
-            navigation.navigate("Login");
+            navigation.navigate("MainStack", { screen: 'Login' });
             setModal(false);
         } catch (error) {
             console.error("Error during logout:", error);
