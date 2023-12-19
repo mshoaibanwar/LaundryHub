@@ -61,7 +61,7 @@ const Notifications = (props: any) => {
 
     notifications.reverse();
     return (
-        <SafeAreaView style={{ backgroundColor: 'white' }}>
+        <SafeAreaView style={{ backgroundColor: 'white', height: '100%' }}>
             <View style={[{ paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
                     <TouchableOpacity onPress={() => props.navigation.goBack()}>
@@ -73,7 +73,7 @@ const Notifications = (props: any) => {
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity onPress={markAsRead} style={{ marginTop: 5, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                         <Paintbrush color='grey' size={20} />
-                        <Text style={{}}>Mark all as read</Text>
+                        <Text style={{ color: 'grey' }}>Mark all as read</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -93,7 +93,7 @@ const Notifications = (props: any) => {
                         <Text style={{ fontSize: 14, fontWeight: '400', color: 'black' }}>{noti?.body}</Text>
                     </View>
                 ))}
-                <View style={{ height: 220 }}></View>
+                <View style={{ height: 190 }}></View>
             </ScrollView>
             {refreshing || loading ?
                 <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>

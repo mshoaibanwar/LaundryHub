@@ -183,7 +183,7 @@ router.route("/acceptRide/:id").post((req, res) => {
           status: req.body.status,
         })
           .then((ride) => {
-            Rider.find({}, "uid") // Assuming 'uid' is the field you want to retrieve
+            Rider.find({ status: "Verified", dutyStatus: "On" }, "uid") // Assuming 'uid' is the field you want to retrieve
               .then((riders) => {
                 const riderIds = riders.map((rider) => rider.uid.toString());
                 // Assuming you have access to the object you want to send to riders
@@ -261,7 +261,10 @@ router.route("/add").post((req, res) => {
   newRide
     .save()
     .then(() => {
-      Rider.find({}, "uid currentLocation disLimit")
+      Rider.find(
+        { status: "Verified", dutyStatus: "On" },
+        "uid currentLocation disLimit"
+      )
         .then((riders) => {
           const wss = req.app.get("wss");
           // Create a set to store rider IDs for quick lookup
@@ -299,7 +302,7 @@ router.route("/add").post((req, res) => {
 router.route("/delete/:id").post((req, res) => {
   Ride.findByIdAndDelete(req.params.id)
     .then(() => {
-      Rider.find({}, "uid") // Assuming 'uid' is the field you want to retrieve
+      Rider.find({ status: "Verified", dutyStatus: "On" }, "uid") // Assuming 'uid' is the field you want to retrieve
         .then((riders) => {
           const riderIds = riders.map((rider) => rider.uid.toString());
           // Assuming you have access to the object you want to send to riders

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { DarkPurple, LightPurple, LoginBtn } from '../constants/Colors'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native'
@@ -35,6 +35,7 @@ const Login = (props: any) => {
     });
     const {
         control,
+        reset,
         handleSubmit,
         formState: { errors },
     } = useForm({
@@ -58,7 +59,10 @@ const Login = (props: any) => {
             formData.token = token;
         }
         else {
-            formData.token = '';
+            await messaging().requestPermission();
+            await messaging().registerDeviceForRemoteMessages();
+            const token = await messaging().getToken();
+            formData.token = token;
         }
 
         axiosInstance.post('users/login', formData)
@@ -76,6 +80,7 @@ const Login = (props: any) => {
                     duration: 2000,
                     animationType: "slide-in",
                 });
+                reset();
                 setLoading(false);
                 if (isUser && !isRider)
                     props.navigation.navigate("Tab");

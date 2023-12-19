@@ -16,6 +16,7 @@ import RideReqCard from './RideReqCard';
 import socket from '../../helpers/Socket';
 import { addUser } from '../../reduxStore/reducers/UserReducer';
 import { rejectedRides } from './LocationTracker';
+import { useToast } from 'react-native-toast-notifications';
 
 const Rides = ({ navigation }: any) => {
     const user: any = useAppSelector(state => state.user.value);
@@ -23,6 +24,9 @@ const Rides = ({ navigation }: any) => {
     const [rides, setRides] = useState([]);
     const dispatch = useAppDispatch();
     const [refreshing, setRefreshing] = useState(false);
+    const [status, setStatus] = useState('');
+
+    const toast = useToast();
 
     const getRides = () => {
         axiosInstance.get(`rides/requests/`)
@@ -33,6 +37,7 @@ const Rides = ({ navigation }: any) => {
             })
             .catch((err) => {
                 console.log(err.response.data);
+                setRefreshing(false);
             })
     }
 
@@ -42,20 +47,36 @@ const Rides = ({ navigation }: any) => {
     }
 
     useEffect(() => {
-        getRides();
+        axiosInstance.get(`riders/user/${user.user._id}`)
+            .then((res) => {
+                setStatus(res.data[0].status);
+                if (res.data[0].status == 'Verified') {
+                    getRides();
+                }
+                else {
+                    setIsEnabled(false);
+                }
+                setRefreshing(false);
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+                setRefreshing(false);
+            })
     }, [refreshing]);
 
     useEffect(() => {
         axiosInstance.get(`riders/getDutyStatus/${user.user._id}`)
             .then((res) => {
                 if (res.data === 'On') {
-                    setIsEnabled(true);
+                    if (status == 'Verified')
+                        setIsEnabled(true);
                 } else {
                     setIsEnabled(false);
                 }
             })
             .catch((err) => {
                 console.log(err.response.data);
+                setRefreshing(false);
             })
 
         getRides();
@@ -85,21 +106,30 @@ const Rides = ({ navigation }: any) => {
             })
     }, []);
     const toggleSwitch = () => {
-        socket.send(
-            JSON.stringify({
-                RiderStatus: !isEnabled,
-            })
-        );
-        setIsEnabled(previousState => !previousState);
-        axiosInstance.post(`riders/updateDutyStatus/${user.user._id}`, { status: isEnabled ? 'Off' : 'On' })
-            .then((res) => {
-                console.log(res.data);
-                dispatch(addUser({ ...user, status: !isEnabled }));
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            })
-        getRides();
+        if (status == 'Verified') {
+            socket.send(
+                JSON.stringify({
+                    RiderStatus: !isEnabled,
+                })
+            );
+            setIsEnabled(previousState => !previousState);
+            axiosInstance.post(`riders/updateDutyStatus/${user.user._id}`, { status: isEnabled ? 'Off' : 'On' })
+                .then((res) => {
+                    dispatch(addUser({ ...user, status: !isEnabled }));
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                })
+            getRides();
+        }
+        else {
+            toast.show("Your Account is not verified yet!", {
+                type: "danger",
+                placement: "top",
+                duration: 2000,
+                animationType: "slide-in",
+            });
+        }
     }
 
     socket.onmessage = (e) => {
@@ -109,7 +139,6 @@ const Rides = ({ navigation }: any) => {
         }
         else if (message?.rideStatus == "Accepted") {
             if (rides.some((ride: any) => ride._id == message?.rideId)) {
-                console.log("Ride Accepted");
                 setRides(rides.filter((ride: any) => ride._id != message?.rideId));
             }
         }
@@ -152,13 +181,12 @@ const Rides = ({ navigation }: any) => {
                     />
                 </View>
                 : null}
-            {isEnabled ? null :
+            {isEnabled && rides.length > 0 ? null :
                 <View style={{ justifyContent: 'center', alignItems: 'center', height: '75%' }}>
                     <LottieView style={{ width: 250, height: 250 }} source={require('../../assets/animated/animation.json')} autoPlay loop />
-                    <Text style={{ fontSize: 20, fontWeight: '500', color: 'black', marginTop: 10 }}>No Ride Requests!</Text>
+                    <Text style={{ fontSize: 20, fontWeight: '500', color: 'black', marginTop: 10 }}>{isEnabled ? "No Ride Requests!" : "You duty status is Off!"}</Text>
                 </View>
             }
-
         </SafeAreaView>
     );
 }

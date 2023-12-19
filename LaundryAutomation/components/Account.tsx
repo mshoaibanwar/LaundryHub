@@ -206,13 +206,13 @@ const Account = (props: any) => {
                     </TouchableOpacity>
                     <View style={{ padding: 20, gap: 10 }}>
                         <Text style={{ color: 'black' }}>First Name</Text>
-                        <TextInput value={fName} onChangeText={setFName} placeholder='First Name' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <TextInput value={fName} onChangeText={setFName} placeholder='First Name' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white', color: 'black' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
                         <Text style={{ color: 'black' }}>Last Name</Text>
-                        <TextInput value={lName} onChangeText={setLName} placeholder='Last Name' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <TextInput value={lName} onChangeText={setLName} placeholder='Last Name' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white', color: 'black' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
                         <Text style={{ color: 'black' }}>Mobile Number</Text>
-                        <TextInput value={num} onChangeText={setNum} placeholder='Phone No' inputMode='tel' maxLength={11} style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <TextInput value={num} onChangeText={setNum} placeholder='Phone No' inputMode='tel' maxLength={11} style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white', color: 'black' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
                         <Text style={{ color: 'black' }}>Email</Text>
-                        <TextInput value={email} placeholder='Email' editable={false} inputMode='email' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
+                        <TextInput value={email} placeholder='Email' editable={false} inputMode='email' style={[{ borderWidth: 0.5, padding: 13, borderRadius: 10, backgroundColor: 'white', color: 'black' }, Platform.OS == 'android' ? { paddingVertical: 5, paddingHorizontal: 10 } : null]} />
                         <TouchableOpacity onPress={UpdateAccount} style={{ backgroundColor: BlueColor, padding: 8, borderRadius: 10, marginTop: 20 }}>
                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 18 }}>Update</Text>
                         </TouchableOpacity>

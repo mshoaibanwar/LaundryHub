@@ -35,10 +35,11 @@ const Checkout = (props: any) => {
     orderDetails?.prices.forEach((num: any) => {
         subTotal += num;
     })
+
     let delFee = 0;
     let tPrice = 0;
     if (bookRider) {
-        delFee = Math.round(80 + distance * 10);
+        delFee = Math.round(80 + Number(distance) * 10);
         tPrice = subTotal + delFee + delFee;
     }
     else

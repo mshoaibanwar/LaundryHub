@@ -245,20 +245,20 @@ const Manage = (props: any) => {
             <View style={{ backgroundColor: GreyColor }}>
                 <ScrollView style={{ padding: 20 }}>
                     <View style={{ marginVertical: 10 }}>
-                        <Text style={{ fontSize: 16, fontWeight: '500' }}>Bike Details</Text>
+                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Bike Details</Text>
                         <View style={{ gap: 5, marginVertical: 10 }}>
-                            <TextInput value={bikeName} onChangeText={setBikeName} placeholder='Bike Name' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
-                            <TextInput value={bikeNumber} onChangeText={setBikeNumber} placeholder='Bike Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
+                            <TextInput value={bikeName} onChangeText={setBikeName} placeholder='Bike Name' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white', color: 'black' }} />
+                            <TextInput value={bikeNumber} onChangeText={setBikeNumber} placeholder='Bike Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white', color: 'black' }} />
                         </View>
                         <TouchableOpacity onPress={updateBikeDeatils} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{ marginVertical: 10 }}>
-                        <Text style={{ fontSize: 16, fontWeight: '500' }}>Personal Details</Text>
+                        <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Personal Details</Text>
                         <View style={{ gap: 5, marginVertical: 10 }}>
-                            <TextInput value={address} onChangeText={setAddress} placeholder='Your Address' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
-                            <TextInput maxLength={13} value={cnic} onChangeText={setCnic} placeholder='CNIC Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white' }} />
+                            <TextInput value={address} onChangeText={setAddress} placeholder='Your Address' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white', color: 'black' }} />
+                            <TextInput maxLength={13} value={cnic} onChangeText={setCnic} placeholder='CNIC Number' style={{ borderWidth: 1, borderColor: 'black', padding: 10, borderRadius: 5, backgroundColor: 'white', color: 'black' }} />
                         </View>
                         <TouchableOpacity onPress={updatePersonalDetails} style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 16, fontWeight: '500' }}>Update</Text>

@@ -38,6 +38,7 @@ const Register = (props: any) => {
     });
     const {
         control,
+        reset,
         handleSubmit,
         formState: { errors },
     } = useForm({
@@ -66,6 +67,7 @@ const Register = (props: any) => {
                     duration: 3000,
                     animationType: "slide-in",
                 });
+                reset();
                 setLoading(false);
                 props.navigation.navigate("Login");
             })

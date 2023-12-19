@@ -1,0 +1,3 @@
+NGROK_AUTHTOKEN=2ZiwFAUq7xSXypfJfhgFYx7Ug7K_49DL2vTt1CCa4boN7iHJM npm run ngrok
+
+nodemon server

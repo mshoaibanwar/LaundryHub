@@ -25,6 +25,11 @@ router.route("/getShops/").get(async (req, res) => {
         cnicimgs: 0,
       },
     },
+    {
+      $match: {
+        status: "Verified",
+      },
+    },
   ]).exec();
 
   res.json(agg);
@@ -38,6 +43,22 @@ router.route("/count/").get((req, res) => {
         .catch((err) => res.status(404).json("Count Error: " + err));
     })
     .catch((err) => res.status(404).json("Error: " + err));
+});
+
+router.route("/verify/:id").post((req, res) => {
+  Shop.findByIdAndUpdate(req.params.id, { status: "Verified" })
+    .then((updated) => {
+      res.json("Shop Verified!");
+    })
+    .catch((err) => res.status(404).json("Shop not found" + err));
+});
+
+router.route("/reject/:id").post((req, res) => {
+  Shop.findByIdAndUpdate(req.params.id, { status: "Rejected" })
+    .then((updated) => {
+      res.json("Shop Rejected!");
+    })
+    .catch((err) => res.status(404).json("Shop not found" + err));
 });
 
 router.route("/updateTiming/:id").post((req, res) => {
@@ -166,6 +187,17 @@ router.route("/updateMinimums/:id").post((req, res) => {
     minOrderPrice: minOrderPrice,
   })
     .then(() => res.json("Minimums Updated!"))
+    .catch((err) => res.status(404).send(err));
+});
+
+router.route("/updateLoc/:id").post((req, res) => {
+  const lati = req.body.lati;
+  const longi = req.body.longi;
+  Shop.findByIdAndUpdate(req.params.id, {
+    lati: lati,
+    longi: longi,
+  })
+    .then(() => res.json("Map Location Updated!"))
     .catch((err) => res.status(404).send(err));
 });
 

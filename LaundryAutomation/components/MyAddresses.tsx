@@ -6,6 +6,7 @@ import { useAppSelector } from '../hooks/Hooks'
 import { ScrollView } from 'react-native-gesture-handler'
 import { axiosInstance } from '../helpers/AxiosAPI'
 import { useToast } from 'react-native-toast-notifications'
+import LottieView from 'lottie-react-native'
 
 const MyAddresses = (props: any) => {
     const [addresses, setAddresses] = React.useState([]);
@@ -105,9 +106,14 @@ const MyAddresses = (props: any) => {
                     <View style={{ height: 180 }}></View>
                 </ScrollView>
             </View>
-            {addresses.length == 0 ?
+            {!loading && addresses.length == 0 ?
                 <View style={{ alignItems: 'center', justifyContent: 'center', position: 'absolute', marginTop: 100, top: 0, bottom: 100, right: 0, left: 0 }}>
                     <Text style={{ fontSize: 18, fontWeight: '400', color: 'black' }}>No Addresses Found!</Text>
+                </View>
+                : null}
+            {loading ?
+                <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
+                    <LottieView style={{ width: 150, height: 150 }} source={require('../assets/animated/loading.json')} autoPlay loop />
                 </View>
                 : null}
         </SafeAreaView>

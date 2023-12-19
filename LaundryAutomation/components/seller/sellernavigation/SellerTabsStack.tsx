@@ -6,6 +6,7 @@ import Chat from '../../Chat';
 import SellerTabs from './SellerTabs';
 import AboutUs from '../../AboutUs';
 import SocketReceiver from '../../../helpers/SocketReceiver';
+import UpdateLoc from '../../UpdateLoc';
 
 const UserTabsStack = () => {
     const stack = createStackNavigator();
@@ -19,6 +20,7 @@ const UserTabsStack = () => {
                     <stack.Screen name='Tabs' component={SellerTabs} options={{ headerShown: false }} />
                     <stack.Screen name='Chat' component={Chat} options={{ headerShown: false }} />
                     <stack.Screen name='AboutUs' component={AboutUs} options={{ headerShown: false }} />
+                    <stack.Screen name='UpdateLoc' component={UpdateLoc} options={{ headerShown: false }} />
                 </stack.Navigator>
             </SocketReceiver>
         </>

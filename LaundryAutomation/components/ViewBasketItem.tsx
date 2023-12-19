@@ -26,12 +26,12 @@ const ViewBasketItem = (props: BasketProps) => {
     return (
 
         <View style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <Image source={props.img} style={{ width: 50, height: 50, borderRadius: 10 }} resizeMode='cover' />
-                <Text style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>{props.name}</Text>
+                <Text style={{ fontSize: 18, color: 'black', fontWeight: '500' }}>{props.name}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 25 }}>
-                <Text style={{ fontSize: 18, color: 'grey' }}>{props.type === 'WashIron' ? 'Wash & Iron' : props.type === 'DryClean' ? 'Dry Clean' : props.type}</Text>
+                <Text style={{ fontSize: 16, color: 'grey' }}>{props.type === 'WashIron' ? 'Wash & Iron' : props.type === 'DryClean' ? 'Dry Clean' : props.type}</Text>
                 <Pressable onPress={delItem}>
                     <Trash2 color='red' size={23} />
                 </Pressable>

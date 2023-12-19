@@ -23,23 +23,19 @@ const RideReq = ({ navigation }: any) => {
     let fare = Math.round(80 + distance * 10);
 
     const goToRider = () => {
-        //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: riderLocation?.latitude, longitude: riderLocation?.longitude, latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
     const goToPickup = () => {
-        //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: Number(rideData?.pCord?.lati), longitude: Number(rideData?.pCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
     const goToDest = () => {
-        //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: Number(rideData?.dCord?.lati), longitude: Number(rideData?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
     const getRideData = () => {
         axiosInstance.get(`rides/user/${user.user._id}`)
             .then((res) => {
-                // console.log(res.data[0])
                 setRideData(res.data[0])
                 setRideAccepted(res.data[0].status != 'Pending' && res.data[0].status != 'Cancelled' && res.data[0].status != 'Completed')
 

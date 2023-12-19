@@ -10,19 +10,11 @@ import {
 import Carousel from 'react-native-snap-carousel';
 import ShopCardCarousel from './ShopCardCarousel';
 import MapView from 'react-native-maps';
-
 import { Marker } from 'react-native-maps';
 import { ArrowLeft } from 'lucide-react-native';
-
-type Location = {
-    latitude: number | undefined,
-    longitude: number | undefined,
-}
-
 import { useAppSelector } from '../hooks/Hooks';
 import { CalcPrices } from '../helpers/PriceCalculator';
 import { axiosInstance } from '../helpers/AxiosAPI';
-
 
 const ShopsMap = ({ route, navigation }: any) => {
 
@@ -57,11 +49,11 @@ const ShopsMap = ({ route, navigation }: any) => {
     const caroRef = useRef<any>(null);
 
     const goToMarker = (lati: number, longi: number) => {
-        mapRef?.current?.animateToRegion({ latitude: lati, longitude: longi, latitudeDelta: 0.0239, longitudeDelta: 0.0112 });
+        mapRef?.current?.animateToRegion({ latitude: Number(lati), longitude: Number(longi), latitudeDelta: 0.0239, longitudeDelta: 0.0112 });
     }
 
     const getIndex = (lati: number, longi: number) => {
-        const ind = ShopData.findIndex((obj: any) => (obj.lati === lati && obj.longi === longi));
+        const ind = ShopData.findIndex((obj: any) => (obj.lati == lati && obj.longi == longi));
         return (ind);
     }
 
@@ -83,9 +75,14 @@ const ShopsMap = ({ route, navigation }: any) => {
                     latitudeDelta: route?.params ? 0.0239 : 0.2239,
                     longitudeDelta: route?.params ? 0.0112 : 0.1412,
                 }}
-                // showsUserLocation={true}
+                showsUserLocation={true}
+                showsMyLocationButton={true}
+                showsCompass={true}
+                scrollEnabled={true}
+                zoomEnabled={true}
+                pitchEnabled={true}
+                rotateEnabled={true}
                 //followsUserLocation
-                showsMyLocationButton
                 loadingEnabled
             >
                 {ShopData.map((item: any, index: any) => (

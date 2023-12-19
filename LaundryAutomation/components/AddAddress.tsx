@@ -3,11 +3,11 @@ import { Bed, Building2, Home, MapPin, X } from 'lucide-react-native'
 import React, { useRef, useState } from 'react'
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { BlueColor, FrontColor, GreyColor } from '../constants/Colors'
+import { BlueColor, GreyColor } from '../constants/Colors'
 import MapView from 'react-native-maps'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { useToast } from "react-native-toast-notifications";
-import { useAppDispatch, useAppSelector } from '../hooks/Hooks'
+import { useAppSelector } from '../hooks/Hooks'
 import { axiosInstance } from '../helpers/AxiosAPI'
 
 const AddAddress = (props: any) => {
@@ -43,7 +43,6 @@ const AddAddress = (props: any) => {
     const toast = useToast();
     const AddAddress = () => {
         if (name != undefined && add != undefined && num != undefined && stateD != null) {
-            //props.navigation.navigate("ShopsStack", { screen: 'ColDel', params: { name, num, add, stateD } });
             const addressObj: any = { type: home ? 'Home' : hotel ? 'Hotel' : work ? 'Work' : 'Home', name: name, num: num, add: add, cords: { lat: stateD.latitude, lon: stateD.longitude }, uid: user?.user?._id }
             if (isUpdating) {
                 axiosInstance.post(`addresses/update/${props?.route?.params?._id}`, addressObj)
@@ -58,7 +57,6 @@ const AddAddress = (props: any) => {
                         props.navigation.navigate("HomeStack", { screen: 'Addresses', params: { name: name } })
                     })
                     .catch(function (error) {
-                        // handle error
                         setLoading(false);
                         toast.show(error.response.data.message, {
                             type: "danger",
@@ -134,26 +132,29 @@ const AddAddress = (props: any) => {
                         <View style={{ gap: 10 }}>
                             <Text style={{ color: 'black' }}>Full Name</Text>
                             <TextInput
-                                style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
+                                style={{ backgroundColor: 'white', padding: 15, borderRadius: 10, color: 'black' }}
                                 onChangeText={text => setName(text)}
                                 value={name}
                                 placeholder="Full Name"
+                                placeholderTextColor={"grey"}
                             />
                             <Text style={{ color: 'black' }}>Mobile Number</Text>
                             <TextInput
-                                style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
+                                style={{ backgroundColor: 'white', padding: 15, borderRadius: 10, color: 'black' }}
                                 onChangeText={text => setNum(text)}
                                 value={num}
                                 placeholder="Mobile Number"
                                 keyboardType='numeric'
+                                placeholderTextColor={"grey"}
                             />
                         </View>
                         <Text style={{ color: 'black' }}>Full Address</Text>
                         <TextInput
-                            style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}
+                            style={{ backgroundColor: 'white', padding: 15, borderRadius: 10, color: 'black' }}
                             onChangeText={text => setAdd(text)}
                             value={add}
                             placeholder="Full Address"
+                            placeholderTextColor={"grey"}
                         />
                     </View>
                     <View style={{ marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>

@@ -87,6 +87,12 @@ const Splash = (props: any) => {
                             });
                     }
                     else {
+                        await messaging().requestPermission();
+                        await messaging().registerDeviceForRemoteMessages();
+                        const token = await messaging().getToken();
+                        await axiosInstance.post('users/updateToken', { email: user?.user?.email, token: token })
+                            .then(function (response: any) {
+                            });
                         if (user.userType == "user")
                             props.navigation.navigate("MainStack", { screen: "Tab" });
                         else if (user.userType == "seller") {

@@ -30,6 +30,56 @@ router.route("/").get(async (req, res) => {
   }
 });
 
+router.route("/getRiders").get(async (req, res) => {
+  try {
+    const riders = await Rider.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "uid",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $project: {
+          pswrd: 0,
+          token: 0,
+        },
+      },
+      {
+        $match: {
+          status: "Verified",
+        },
+      },
+    ]).exec();
+
+    res.json(riders);
+  } catch (error) {
+    console.error("Error fetching riders data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.route("/verify/:id").post((req, res) => {
+  Rider.findByIdAndUpdate(req.params.id, { status: "Verified" })
+    .then((updated) => {
+      res.json("Rider Verified!");
+    })
+    .catch((err) => res.status(404).json("Shop not found" + err));
+});
+
+router.route("/reject/:id").post((req, res) => {
+  Rider.findByIdAndUpdate(req.params.id, { status: "Rejected" })
+    .then((updated) => {
+      res.json("Rider Rejected!");
+    })
+    .catch((err) => res.status(404).json("Shop not found" + err));
+});
+
 router.route("/count/").get((req, res) => {
   Rider.find()
     .then(() => {

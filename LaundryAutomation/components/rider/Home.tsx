@@ -10,15 +10,17 @@ import {
     SafeAreaView,
     TouchableOpacity,
     RefreshControl,
+    ScrollView,
 } from 'react-native';
 
-import { useAppSelector } from '../../hooks/Hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/Hooks';
 import Menu from '../Menu';
 import { axiosInstance } from '../../helpers/AxiosAPI';
 
-import { Banknote, Bell, Box, PackageCheck, PiggyBank, Star } from 'lucide-react-native';
+import { Banknote, Bell, Bike, BikeIcon, Box, PackageCheck, PiggyBank, Star } from 'lucide-react-native';
 import LottieView from 'lottie-react-native';
 import StatsCard from '../seller/StatsCard';
+import { addShopData } from '../../reduxStore/reducers/ShopDataReducer';
 
 const Home = ({ navigation }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -45,47 +47,58 @@ const Home = ({ navigation }: any) => {
                 id: '0',
                 name: 'Rides',
                 count: ridesCount,
-                img: <PackageCheck size={35} color='green' fill='orange' />
+                img: <BikeIcon size={45} color='green' fill='orange' />
             },
             {
                 id: '1',
                 name: 'Cancelled',
                 count: cancelledCount,
-                img: <Box size={35} color='red' fill='orange' />
+                img: <Bike size={45} color='red' fill='orange' />
             },
             {
                 id: '2',
                 name: 'Ratings',
                 count: ratingsCount,
-                img: <Star size={35} color='orange' fill='orange' />
+                img: <Star size={45} color='orange' fill='orange' />
             },
             {
                 id: '3',
                 name: 'Avg. Rating',
                 count: avgRating,
-                img: <Star size={35} color={BlueColor} fill='orange' />
+                img: <Star size={45} color={BlueColor} fill='orange' />
             },
             {
                 id: '4',
                 name: 'COD Earnings',
                 count: codEarnings,
-                img: <Banknote size={35} color={BlueColor} fill='green' />
+                img: <Banknote size={45} color={BlueColor} fill='green' />
             },
             {
                 id: '5',
                 name: 'Total Earnings',
                 count: totalEarnings,
-                img: <PiggyBank size={35} color={BlueColor} fill='yellow' />
+                img: <PiggyBank size={45} color={BlueColor} fill='yellow' />
             },
         ];
 
     const user: any = useAppSelector((state) => state.user.value);
     const shopData: any = useAppSelector((state) => state.shopdata.value);
 
+    const dispatch = useAppDispatch();
+
     const [notiCount, setNotiCount] = useState(0);
     const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
+        axiosInstance.get(`riders/user/${user.user._id}`)
+            .then(function (response: any) {
+                dispatch(addShopData(response.data[0]));
+            })
+            .catch(function (error: any) {
+                // handle error
+                console.log(error.response.data);
+            })
+
         axiosInstance.get(`notifications/rider/count/unread/${user.user._id}`)
             .then(function (response: any) {
                 setNotiCount(response.data.Count);
@@ -132,7 +145,7 @@ const Home = ({ navigation }: any) => {
                 console.log(error.response.data);
             })
 
-    }, [refreshing, navigation,])
+    }, [refreshing, navigation])
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -167,39 +180,28 @@ const Home = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={{}}>
-
-                <FlatList
-                    style={{ paddingHorizontal: 20 }}
-                    data={Data}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }
-                    renderItem={({ item }) => (
-                        <StatsCard navigation={navigation} name={item.name} count={item.count} img={item.img} />
-                    )}
-                    //Setting the number of column
-                    numColumns={2}
-                    keyExtractor={item => item.id}
-
-                    ListHeaderComponent={
-                        <View>
-                            {shopData && shopData[0]?.status != "Approved" ?
-                                <View style={{ marginTop: 5, padding: 15, borderWidth: 0.5, borderColor: 'orange', borderRadius: 10, gap: 5, marginBottom: 8, backgroundColor: 'white', shadowColor: 'orange', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 3 }}>
-                                    <Text style={{ fontSize: 20, fontWeight: '500', color: 'black' }}>Your Profile is not Active Yet!</Text>
-                                    <Text style={{ fontSize: 16, fontWeight: '400', color: BlueColor }}>Your Profile is {shopData?.status}.</Text>
-                                    <Text style={{ fontSize: 16, fontWeight: '400', color: DarkGrey }}>Please wait for the admin to approve your Profile.</Text>
-                                </View>
-                                : null}
-                            <Text style={{ marginVertical: 10, fontSize: 20, fontWeight: '600', color: 'black' }}>Your Stats</Text>
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                <View>
+                    {shopData && shopData?.status != "Verified" ?
+                        <View style={{ marginTop: 5, padding: 15, borderWidth: 0.5, borderColor: 'orange', borderRadius: 10, gap: 5, marginBottom: 8, backgroundColor: 'white', shadowColor: 'orange', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 3 }}>
+                            <Text style={{ fontSize: 20, fontWeight: '500', color: 'black' }}>Your Profile is not Active Yet!</Text>
+                            <Text style={{ fontSize: 16, fontWeight: '400', color: BlueColor }}>Your Profile is {shopData?.status}.</Text>
+                            <Text style={{ fontSize: 16, fontWeight: '400', color: DarkGrey }}>Please wait for the admin to approve your Profile.</Text>
                         </View>
-                    }
-                    ListFooterComponent={
-                        <View>
-                        </View>
-                    }
-                />
-            </View>
+                        : null}
+                    <Text style={{ marginVertical: 0, marginHorizontal: 20, fontSize: 20, fontWeight: '600', color: 'black' }}>Your Stats</Text>
+                </View>
+
+                <View style={{ marginHorizontal: 20, marginVertical: 5 }}>
+                    {Data.map((item, index) => (
+                        <StatsCard navigation={navigation} key={index} name={item.name} count={item.count} img={item.img} />
+                    ))}
+                </View>
+
+                <View style={{ height: 200 }}></View>
+
+            </ScrollView>
 
             <Menu setModal={setModalVisible} modalVisible={modalVisible} navigation={navigation} />
 

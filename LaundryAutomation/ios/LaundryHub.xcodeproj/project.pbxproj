@@ -55,6 +55,7 @@
 		049D39AD2AD9CE75009E4A94 /* AirGoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AirGoogleMaps; path = "../node_modules/react-native-maps/ios/AirGoogleMaps"; sourceTree = "<group>"; };
 		049D39AF2AD9CEA6009E4A94 /* AirGoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AirGoogleMaps; path = "../node_modules/react-native-maps/ios/AirGoogleMaps"; sourceTree = "<group>"; };
 		049D39B12AD9CED9009E4A94 /* AirGoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AirGoogleMaps; path = "../node_modules/react-native-maps/ios/AirGoogleMaps"; sourceTree = "<group>"; };
+		04AAE2E62B30E8A500C743C7 /* LaundryHub.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LaundryHub.entitlements; sourceTree = "<group>"; };
 		04FE84AE2AD4B015008C66D1 /* AirMaps.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* LaundryHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaundryHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = LaundryAutomation/AppDelegate.h; sourceTree = "<group>"; };
@@ -120,6 +121,7 @@
 		13B07FAE1A68108700A75B9A /* LaundryHub */ = {
 			isa = PBXGroup;
 			children = (
+				04AAE2E62B30E8A500C743C7 /* LaundryHub.entitlements */,
 				049D39B12AD9CED9009E4A94 /* AirGoogleMaps */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -561,10 +563,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = LaundryHub.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LU3GR4GSX9;
+				DEVELOPMENT_TEAM = AQL985AWX5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = LaundryAutomation/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Laundry Hub";
@@ -596,10 +599,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = LaundryHub.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LU3GR4GSX9;
+				DEVELOPMENT_TEAM = AQL985AWX5;
 				INFOPLIST_FILE = LaundryAutomation/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Laundry Hub";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";

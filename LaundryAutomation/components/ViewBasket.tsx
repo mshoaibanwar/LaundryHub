@@ -13,7 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import ViewBasketItem from './ViewBasketItem';
 import { useAppDispatch, useAppSelector } from '../hooks/Hooks';
 import { emptyBasket } from '../reduxStore/reducers/BasketReducer';
-import { BlueColor, GreyColor } from '../constants/Colors';
+import { BlueColor } from '../constants/Colors';
 
 const FlatListItemSeparator = () => {
     return (

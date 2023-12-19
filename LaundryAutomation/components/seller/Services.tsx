@@ -283,7 +283,7 @@ const Services = (props: any) => {
                             setItems={setServices}
                         />
 
-                        <TextInput value={price} onChangeText={setPrice} style={[{ borderWidth: 1, borderColor: 'black', width: '30%', borderRadius: 10, textAlign: 'center', fontSize: 18 }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholder='Price' />
+                        <TextInput value={price} onChangeText={setPrice} style={[{ borderWidth: 1, borderColor: 'black', width: '30%', borderRadius: 10, textAlign: 'center', fontSize: 18, color: 'black' }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholder='Price' />
 
                         <TouchableOpacity onPress={onServAdd} style={{ backgroundColor: BlueColor, padding: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
                             <Plus color='white' size={20} />

@@ -30,11 +30,9 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
     let fare = Math.round(80 + distance * 10);
 
     const goToPickup = () => {
-        //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: Number(ride?.pCord?.lati), longitude: Number(ride?.pCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
     const goToDest = () => {
-        //Animate the user to new region. Complete this animation in 3 seconds
         mapRef?.current?.animateToRegion({ latitude: Number(ride?.dCord?.lati), longitude: Number(ride?.dCord?.longi), latitudeDelta: 0.025, longitudeDelta: 0.0121 }, 2000);
     };
 
@@ -93,12 +91,12 @@ const RideDetails = ({ navigation, setModal, modalVisible, isAccepted, ride = { 
                                             ref={mapRef}
                                             style={{ width: '100%', height: 200, borderRadius: 10 }}
                                             initialRegion={{
-                                                latitude: ride ? Number(ride?.pCord?.lati) : 0,
-                                                longitude: ride ? Number(ride?.pCord?.longi) : 0,
+                                                latitude: ride?.pCord?.lati ? Number(ride?.pCord?.lati) : 0,
+                                                longitude: ride?.pCord?.longi ? Number(ride?.pCord?.longi) : 0,
                                                 latitudeDelta: 0.0922,
                                                 longitudeDelta: 0.0421,
                                             }}
-                                            // showsUserLocation={true}
+                                            showsUserLocation={true}
                                             showsMyLocationButton={true}
                                         >
                                             <Marker

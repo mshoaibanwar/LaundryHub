@@ -3,12 +3,11 @@ const router = express.Router();
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const shortid = require("shortid");
-const Razorpay = require("razorpay");
 const tokens = [];
-const { WebSocket, WebSocketServer } = require("ws");
+const { WebSocketServer } = require("ws");
 
 const app = express();
+const ngrok = require("ngrok");
 
 router.use(express.json());
 app.use(cors());
@@ -29,11 +28,6 @@ var serviceAccount = require("./laundryhub-acc7b-firebase-adminsdk-dgh19-262bb84
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
-
-// const razorpay = new Razorpay({
-//   key_id: "rzp_test_hE2NsqW3oAhWNq",
-//   key_secret: "WE2yRUyGV4gnQyWeFtv6oTBU",
-// });
 
 //Mongo DB Start
 const uri = process.env.ATLAS_URI;
@@ -67,60 +61,47 @@ app.use("/chats", chatsRouter);
 var server = app.listen(8080, function () {
   var host = server.address().address;
   var port = server.address().port;
-
-  //  app.get("/razorpay/:p", async (req, res) => {
-  //     res.setHeader('Access-Control-Allow-Origin', '*');
-  //     const payment_capture = 1;
-  //     const amount = req.params.p;
-  //     const currency = "PKR";
-
-  //     const options = {
-  //       amount: amount * 100,
-  //       currency,
-  //       receipt: shortid.generate(),
-  //       payment_capture,
-  //     };
-
-  //     try {
-  //       const response = await razorpay.orders.create(options);
-  //       console.log(response);
-  //       res.status(200).json({
-  //         id: response.id,
-  //         currency: response.currency,
-  //         amount: response.amount,
-  //       });
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   });
-
-  //Notifications
-  app.post("/registernot", (req, res) => {
-    tokens.push(req.body.token);
-    console.log(req.body.token);
-    res.status(200).json({ message: "Successfully registered FCM Token!" });
-  });
-
-  console.log(tokens);
-
-  app.post("/sendnoti", async (req, res) => {
-    try {
-      const { title, body } = req.body;
-
-      await admin.messaging().sendMulticast({
-        tokens,
-        notification: {
-          title: "New Order",
-          body: "You have a new order!",
-        },
-      });
-      res.status(200).json({ message: "Successfully sent notifications!" });
-    } catch (err) {
-      res.status(500).json({ message: err.message || "Something went wrong!" });
-    }
-  });
-
   console.log("LaundryHub app listening at http://", host, port);
+});
+
+ngrok.connect(
+  {
+    proto: "http",
+    authtoken_from_env: true,
+    addr: process.env.PORT,
+  },
+  (err, url) => {
+    if (err) {
+      console.error("Error while connecting Ngrok", err);
+      return new Error("Ngrok Failed");
+    }
+  }
+);
+
+//Notifications
+app.post("/registernot", (req, res) => {
+  tokens.push(req.body.token);
+  console.log(req.body.token);
+  res.status(200).json({ message: "Successfully registered FCM Token!" });
+});
+
+console.log(tokens);
+
+app.post("/sendnoti", async (req, res) => {
+  try {
+    const { title, body } = req.body;
+
+    await admin.messaging().sendMulticast({
+      tokens,
+      notification: {
+        title: "New Order",
+        body: "You have a new order!",
+      },
+    });
+    res.status(200).json({ message: "Successfully sent notifications!" });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Something went wrong!" });
+  }
 });
 
 //WebSocket

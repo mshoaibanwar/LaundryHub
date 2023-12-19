@@ -53,7 +53,7 @@ const RideReqCard = ({ navigation, ride, rejectRide }: any) => {
                     duration: 2000,
                     animationType: "slide-in",
                 });
-                console.log(err.response.data);
+                setLoading(false);
             })
     }
 

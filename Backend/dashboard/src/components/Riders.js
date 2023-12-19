@@ -17,7 +17,7 @@ function Riders() {
   const [ridersUpdated, setRidersUpdated] = useState([]);
   const [filter, setFilter] = useState("All");
 
-  useEffect(() => {
+  const getRiders = () => {
     axios
       .get(`http://localhost:8080/riders/`)
       .then(function (response) {
@@ -29,6 +29,10 @@ function Riders() {
         // handle error
         console.log(error);
       });
+  };
+
+  useEffect(() => {
+    getRiders();
   }, []);
 
   const onFilter = (filter) => {
@@ -59,8 +63,30 @@ function Riders() {
 
   const View = (itemId) => {};
 
-  const Verify = (itemId) => {};
-  const Reject = (itemId) => {};
+  const Verify = (itemId) => {
+    axios
+      .post(`http://localhost:8080/riders/verify/${itemId}`)
+      .then(function (response) {
+        // handle success
+        getRiders();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  };
+  const Reject = (itemId) => {
+    axios
+      .post(`http://localhost:8080/riders/reject/${itemId}`)
+      .then(function (response) {
+        // handle success
+        getRiders();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  };
 
   return (
     <div className="rightSec p-3">
@@ -130,12 +156,14 @@ function Riders() {
                             >
                               <TrashFill></TrashFill>
                             </button>
-                            <button
-                              onClick={() => Reject(item["_id"])}
-                              className="btn btn-warning"
-                            >
-                              <SlashCircleFill></SlashCircleFill>
-                            </button>
+                            {item.status != "Rejected" ? (
+                              <button
+                                onClick={() => Reject(item["_id"])}
+                                className="btn btn-warning"
+                              >
+                                <SlashCircleFill></SlashCircleFill>
+                              </button>
+                            ) : null}
                             {item.status != "Verified" ? (
                               <button
                                 onClick={() => Verify(item["_id"])}

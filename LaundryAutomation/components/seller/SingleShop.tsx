@@ -34,6 +34,7 @@ const SingleShop = (props: any) => {
     const [tratings, setTRatings] = useState<any>(0);
     const [minDelTime, setMinDelTime] = useState<any>(0);
     const [minOrderPrice, setMinOrderPrice] = useState<any>(0);
+    const [shopLoc, setShopLoc] = useState<any>(null);
 
     useEffect(() => {
         axiosInstance.get(`/shops/user/${user.user._id}`)
@@ -45,6 +46,7 @@ const SingleShop = (props: any) => {
                 setContact(res.data[0].contact);
                 setMinDelTime(res.data[0].minDelTime);
                 setMinOrderPrice(res.data[0].minOrderPrice);
+                setShopLoc({ lati: res.data[0].lati, longi: res.data[0].longi });
             })
             .catch((err) => {
                 console.log(err);
@@ -188,6 +190,14 @@ const SingleShop = (props: any) => {
                     <ScrollView style={{ top: -120 }} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }>
+                        <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
+                            <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 10, color: 'black' }}>Update Map Location</Text>
+                            <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, gap: 6, backgroundColor: 'white' }}>
+                                <TouchableOpacity onPress={() => props.navigation.navigate('UpdateLoc', { shopLoc, id: shopData?._id })} style={[{ backgroundColor: BlueColor, padding: 8, borderRadius: 6 }, Platform.OS === 'android' ? { padding: 7 } : {}]}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: 'white', textAlign: 'center' }}>Update Location</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                         <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
                             <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 10, color: 'black' }}>Update Minimums</Text>
                             <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, gap: 6, backgroundColor: 'white' }}>

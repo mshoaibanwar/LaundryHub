@@ -23,7 +23,6 @@ import { axiosInstance } from '../../helpers/AxiosAPI';
 import { Banknote, Bell, Box, PackageCheck, Star } from 'lucide-react-native';
 import LottieView from 'lottie-react-native';
 import socket from '../../helpers/Socket';
-import { set } from 'react-hook-form';
 
 const Home = ({ navigation }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -49,7 +48,7 @@ const Home = ({ navigation }: any) => {
                 id: '0',
                 name: 'Active Orders',
                 count: activeOrdersCount,
-                img: <Box size={45} color='red' fill='orange' />
+                img: <Box size={45} color={BlueColor} fill='orange' />
             },
             {
                 id: '1',
@@ -162,7 +161,7 @@ const Home = ({ navigation }: any) => {
             <ScrollView refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <View style={{ paddingHorizontal: 20 }}>
-                    {shopData && shopData[0]?.status != "Approved" ?
+                    {shopData && shopData?.status != "Verified" ?
                         <View style={{ marginTop: 5, padding: 15, borderWidth: 0.5, borderColor: 'orange', borderRadius: 10, gap: 5, marginBottom: 8, backgroundColor: 'white', shadowColor: 'orange', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 3, elevation: 5 }}>
                             <Text style={{ fontSize: 20, fontWeight: '500', color: 'black' }}>Your Shop is not Live Yet!</Text>
                             <Text style={{ fontSize: 16, fontWeight: '400', color: BlueColor }}>Your Shop is {shopData?.status}.</Text>
@@ -171,22 +170,11 @@ const Home = ({ navigation }: any) => {
                         : null}
                     <Text style={{ marginTop: 10, fontSize: 20, fontWeight: '600', color: 'black' }}>Your Stats</Text>
                 </View>
-                <ScrollView horizontal={true} scrollEnabled={false}>
-                    <View style={{ width: '100%' }}>
-                        <FlatList
-                            style={{ paddingHorizontal: 16, paddingVertical: 10, width: '100%' }}
-                            data={Data}
-                            scrollEnabled={false}
-                            renderItem={({ item }) => (
-                                <StatsCard navigation={navigation} name={item.name} count={item.count} img={item.img} />
-                            )}
-                            //Setting the number of column
-                            numColumns={2}
-                            keyExtractor={item => item.id}
-                        />
-                    </View>
-
-                </ScrollView>
+                <View style={{ marginHorizontal: 20, marginVertical: 5 }}>
+                    {Data.map((item, index) => (
+                        <StatsCard navigation={navigation} key={index} name={item.name} count={item.count} img={item.img} />
+                    ))}
+                </View>
                 <View style={{ paddingHorizontal: 20 }}>
                     <View style={{}}>
                         <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: 10, color: 'black' }}>Update Prices</Text>

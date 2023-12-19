@@ -19,14 +19,14 @@ const AboutUs = ({ navigation }: any) => {
                             <Image source={require('../assets/images/LogoTrans.png')} style={{ width: 300, height: 300 }} />
                         </View>
                         <View style={{ alignItems: 'center', gap: 5 }}>
-                            <Text style={{ fontSize: 20, fontWeight: '600' }}>Developed by:</Text>
-                            <Text style={{ fontSize: 16 }}>Muhammad Shoaib Anwar</Text>
-                            <Text style={{ fontSize: 16 }}>Aoun Raza</Text>
-                            <Text style={{ fontSize: 16 }}>Wali Muhammad</Text>
+                            <Text style={{ fontSize: 20, fontWeight: '600', color: 'black' }}>Developed by:</Text>
+                            <Text style={{ fontSize: 16, color: 'black' }}>Muhammad Shoaib Anwar</Text>
+                            <Text style={{ fontSize: 16, color: 'black' }}>Aoun Raza</Text>
+                            <Text style={{ fontSize: 16, color: 'black' }}>Wali Muhammad</Text>
                         </View>
                     </View>
                     <View style={{ alignItems: 'center' }}>
-                        <Text>Version 1.0.0</Text>
+                        <Text style={{ color: 'black' }}>Version 1.0.0</Text>
                     </View>
                 </View>
             </View>

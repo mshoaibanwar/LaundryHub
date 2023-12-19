@@ -17,6 +17,7 @@ const OrderDetail = (props: any) => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoading] = useState(false);
     const [ShopData, setShopData] = useState<any>([]);
+    const [orderData, setOrderData] = useState<any>([]);
 
     const [canChangePickup, setCanChangePickup] = useState<any>(false);
     const [showBookRide, setShowBookRide] = useState<any>(false);
@@ -36,10 +37,22 @@ const OrderDetail = (props: any) => {
     }
 
     useEffect(() => {
+        setLoading(true);
         axiosInstance.get(`/shops/shop/${props?.route?.params?.shopid}`)
             .then(function (response: any) {
+                setLoading(false);
                 setShopData(response.data);
                 isShopOpen(response.data);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error.response);
+            })
+
+        axiosInstance.get(`/orders/order/${props?.route?.params?._id}`)
+            .then(function (response: any) {
+                setLoading(false);
+                setOrderData(response.data);
             })
             .catch(function (error) {
                 // handle error
@@ -48,7 +61,8 @@ const OrderDetail = (props: any) => {
     }, [refreshing]);
 
     useEffect(() => {
-        axiosInstance.get(`ratings/order/${props?.route?.params?.shopid}/${props?.route?.params?._id}`)
+        setLoading(true);
+        axiosInstance.get(`ratings/order/${orderData?.shopid}/${orderData?._id}`)
             .then(function (response: any) {
                 if (response.data.length > 0) {
                     setLoading(false);
@@ -56,6 +70,7 @@ const OrderDetail = (props: any) => {
                     setRating(response?.data[0]?.rating);
                     setReview(response?.data[0]?.review);
                 }
+                setLoading(false);
             })
             .catch(function (error) {
                 // handle error
@@ -81,13 +96,13 @@ const OrderDetail = (props: any) => {
             return;
         }
         services = [];
-        props?.route?.params?.items.map((item: any) => {
+        orderData?.items.map((item: any) => {
             if (isServiceUnique(item.serType)) {
                 services.push(item.serType);
             }
         })
 
-        axiosInstance.post('ratings/add', { rating: rating, review: review, oid: props?.route?.params?._id, uid: user.user._id, shopid: props?.route?.params?.shopid, uname: user?.user.name, services: services })
+        axiosInstance.post('ratings/add', { rating: rating, review: review, oid: orderData?._id, uid: user.user._id, shopid: orderData?.shopid, uname: user?.user.name, services: services })
             .then(function (response: any) {
                 toast.show(response.data, {
                     type: "success",
@@ -127,7 +142,6 @@ const OrderDetail = (props: any) => {
     const [nowTime, setNowTime] = useState<any>(7);
     const [shopCloseTime, setShopCloseTime] = useState<any>(22);
     const toastRef = useRef<any>(null);
-    const toDay = new Date();
     let minDeliveryTime = ShopData?.minDelTime ? ShopData?.minDelTime : 2;
     let nextDates: any = [];
     for (let i = minDeliveryTime; nextDates.length < 7; i++) {
@@ -150,7 +164,7 @@ const OrderDetail = (props: any) => {
         let nowTime = new Date().getHours() + 1;
         setNowTime(nowTime);
 
-        if (nowTime >= 7 && nowTime < shopCloseHour && props?.route?.params?.status == 'Pending') {
+        if (nowTime >= 7 && nowTime < shopCloseHour && orderData?.status == 'Pending') {
             setCanChangePickup(true);
         }
         else {
@@ -179,7 +193,7 @@ const OrderDetail = (props: any) => {
                 setLoading(true);
                 if (isCol) {
                     setColData(selcTime);
-                    axiosInstance.post(`orders/reschedule/collection/${props?.route?.params?._id}`, { collection: selcTime })
+                    axiosInstance.post(`orders/reschedule/collection/${orderData?._id}`, { collection: selcTime })
                         .then(function (response: any) {
                             toast.show(response.data, {
                                 type: "success",
@@ -203,7 +217,7 @@ const OrderDetail = (props: any) => {
                 else {
                     setDelData([selcDay, selcTime]);
                     let delDate = selcDay.getDate() + "-" + (selcDay.getMonth() + 1) + "-" + new Date().getFullYear();
-                    axiosInstance.post(`orders/reschedule/delivery/${props?.route?.params?._id}`, { delivery: { date: delDate, time: selcTime } })
+                    axiosInstance.post(`orders/reschedule/delivery/${orderData?._id}`, { delivery: { date: delDate, time: selcTime } })
                         .then(function (response: any) {
                             toast.show(response.data, {
                                 type: "success",
@@ -212,6 +226,7 @@ const OrderDetail = (props: any) => {
                                 animationType: "slide-in",
                             });
                             setLoading(false);
+                            onRefresh();
                         })
                         .catch(function (error) {
                             // handle error
@@ -266,19 +281,19 @@ const OrderDetail = (props: any) => {
     }
 
     useEffect(() => {
-        if (props?.route?.params?.status == 'Confirmed') {
+        if (orderData?.status == 'Confirmed') {
             const date = new Date();
             let time = date.getHours();
             const nampm = time >= 12 ? 'PM' : 'AM';
-            const ampm = (props?.route?.params?.ocollection)?.split(':')[1]?.split(' ')[1];
-            let colTime = (props?.route?.params?.ocollection)?.split(':')[0];
+            const ampm = (orderData?.ocollection)?.split(':')[1]?.split(' ')[1];
+            let colTime = (orderData?.ocollection)?.split(':')[0];
             colTime = colTime + ampm;
             time = time % 12;
             time = time ? time : 12;
             const currentTime = time + nampm;
             const isCurrentTimeGreaterThanColTime = currentTime.localeCompare(colTime) > 0;
             //Date
-            const dateString = props?.route?.params?.orderDate;
+            const dateString = orderData?.orderDate;
             const targetDate = new Date(dateString);
             const currentDate = new Date();
             currentDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
@@ -299,7 +314,7 @@ const OrderDetail = (props: any) => {
     }, []);
 
     const BookRide = () => {
-        let rideData = { uid: user?.user?._id, sid: props?.route?.params?.shopid, pLoc: props?.route?.params?.address?.add, dLoc: ShopData?.address, pCord: props?.route?.params?.address?.coordinates ? props?.route?.params?.address?.coordinates : props?.route?.params?.address?.cords, dCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: props?.route?.params?.items, pMethod: props?.route?.params?.pMethod, fare: props?.route?.params?.delFee, bkdBy: 'Customer' };
+        let rideData = { uid: user?.user?._id, sid: orderData?.shopid, pLoc: orderData?.address?.add, dLoc: ShopData?.address, pCord: orderData?.address?.coordinates ? orderData?.address?.coordinates : orderData?.address?.cords, dCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: orderData?.items, pMethod: orderData?.pMethod, fare: orderData?.delFee, bkdBy: 'Customer' };
         setLoading(true);
         axiosInstance.post('rides/add', rideData)
             .then(function (response: any) {
@@ -330,7 +345,7 @@ const OrderDetail = (props: any) => {
                 <ScrollView refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }>
-                    {props?.route?.params?.status == 'Delivered' ?
+                    {orderData?.status == 'Delivered' ?
                         <View style={{ marginTop: 15, justifyContent: 'center', alignItems: 'center', width: '100%', padding: 20, borderWidth: 0.5, borderRadius: 10, gap: 10 }}>
                             <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>Rate Your Experience!</Text>
                             <StarRating
@@ -358,7 +373,7 @@ const OrderDetail = (props: any) => {
                                     <Phone color='black' size={20} />
                                     <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Phone</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', { uid: ShopData.uid, id: props?.route?.params?._id })} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', { uid: ShopData.uid, id: orderData?._id })} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                     <MessageSquare color='black' size={20} />
                                     <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Chat</Text>
                                 </TouchableOpacity>
@@ -370,10 +385,10 @@ const OrderDetail = (props: any) => {
                         <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <View style={{ gap: 2 }}>
-                                    <Text style={{ color: BlueColor }}>{props?.route?.params?.address.name}</Text>
-                                    <Text style={{ color: BlueColor }}>{props?.route?.params?.address.num}</Text>
+                                    <Text style={{ color: BlueColor, fontSize: 16 }}>{orderData?.address?.name}</Text>
+                                    <Text style={{ color: BlueColor, fontSize: 16 }}>+92 {orderData?.address?.num}</Text>
                                 </View>
-                                <Text style={{ color: 'black' }}>{props?.route?.params?.address.add}</Text>
+                                <Text style={{ color: 'black', fontSize: 17 }}>{orderData?.address?.add}</Text>
                             </View>
                         </View>
                     </View>
@@ -382,25 +397,25 @@ const OrderDetail = (props: any) => {
                         <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 18, color: BlueColor }}>Order # {props?.route?.params?._id.slice(props?.route?.params?._id.length - 5, props?.route?.params?._id.length)}</Text>
+                                    <Text style={{ fontSize: 18, color: BlueColor }}>Order # {orderData?._id?.slice(orderData?._id?.length - 5, orderData?._id?.length)}</Text>
                                 </View>
                                 <View style={{ gap: 2 }}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%' }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '94%' }}>
                                         <Text style={{ color: 'black' }}>Pickup On: </Text>
-                                        <Text style={{ color: 'black' }}>{props?.route?.params?.orderDate} | {props?.route?.params?.ocollection}</Text>
+                                        <Text style={{ color: 'black' }}>{orderData?.orderDate} | {orderData?.ocollection}</Text>
                                     </View>
                                     {showBookRide && shopStatus == 'Open' ?
                                         <TouchableOpacity onPress={BookRide} style={{ padding: 5, backgroundColor: BlueColor, borderRadius: 5, marginRight: 10 }}>
                                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 16 }}>Book Rider for Pickup</Text>
                                         </TouchableOpacity>
                                         : null}
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%' }}>
-                                        <Text style={{ color: 'black' }}>{props?.route?.params?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
-                                        <Text style={{ color: 'black' }}>{props?.route?.params?.delivery.date} | {props?.route?.params?.delivery.time}</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '94%' }}>
+                                        <Text style={{ color: 'black' }}>{orderData?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
+                                        <Text style={{ color: 'black' }}>{orderData?.delivery?.date} | {orderData?.delivery?.time}</Text>
                                     </View>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={{ color: 'black', fontWeight: '500', fontSize: 16 }}>Status: </Text>
-                                        <Text style={{ color: 'blue', fontWeight: '500', fontSize: 16 }}>{props?.route?.params?.status}</Text>
+                                        <Text style={{ color: 'blue', fontWeight: '500', fontSize: 16 }}>{orderData?.status}</Text>
                                     </View>
                                     <Text style={{ fontSize: 16, marginTop: 3, color: 'black' }}>ReSchedule Your Order</Text>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', borderTopWidth: 0.5, borderColor: 'grey', paddingTop: 8 }}>
@@ -410,7 +425,7 @@ const OrderDetail = (props: any) => {
                                                 <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Pickup</Text>
                                             </TouchableOpacity>
                                             : <View style={{ width: '50%', justifyContent: 'center', alignItems: 'center', borderRightWidth: 0.5, borderColor: 'grey' }}>
-                                                <Text style={{}}>Can't Change Pickup</Text>
+                                                <Text style={{ color: 'black' }}>Can't Change Pickup</Text>
                                             </View>}
                                         <TouchableOpacity onPress={() => { setModalVisible(true); setIsCol(false) }} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                             <TimerReset color='black' size={20} />
@@ -424,44 +439,46 @@ const OrderDetail = (props: any) => {
                     <View>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Summary</Text>
                         <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, marginVertical: 10, backgroundColor: 'white' }}>
-                            {props?.route?.params?.items.map((item: any, index: number) => (
+                            {orderData?.items?.map((item: any, index: number) => (
                                 <View key={index} style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginVertical: 5 }}>
                                     <View style={{ alignItems: 'center', flexDirection: 'row', gap: 20 }}>
                                         <Image defaultSource={require('../assets/images/Logo.png')} source={{ uri: item.images[0].toString() }} style={{ width: 40, height: 40, borderRadius: 10 }} resizeMode='cover' />
-                                        <Text style={{ color: 'black' }}>{item.item}</Text>
+                                        <View>
+                                            <Text style={{ color: 'black', fontSize: 17, fontWeight: '600' }}>{item.item}</Text>
+                                            <Text style={{ color: 'black', fontSize: 13 }}>{item.serType}</Text>
+                                        </View>
                                     </View>
-                                    <View style={{ flexDirection: 'row', width: '50%', justifyContent: 'space-between' }}>
-                                        <Text style={{ color: 'black' }}>{item.serType}</Text>
-                                        <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.prices[index]}</Text>
+                                    <View >
+                                        <Text style={{ color: 'black', fontSize: 18 }}>Rs. {orderData?.prices[index]}</Text>
                                     </View>
                                 </View>
                             ))}
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: DarkGrey, fontSize: 16 }}>Items</Text>
-                                <Text style={{ color: 'black', fontSize: 16 }}>x {props?.route?.params?.items.length}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>x {orderData?.items?.length}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ color: DarkGrey }}>Subtotal</Text>
-                                <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.tprice - (props?.route?.params?.delFee * 2)}</Text>
+                                <Text style={{ color: DarkGrey, fontSize: 16 }}>Subtotal</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {orderData?.tprice - (orderData?.delFee * 2)}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ color: DarkGrey }}>Delivery Fee (x2)</Text>
-                                <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.delFee}</Text>
+                                <Text style={{ color: DarkGrey, fontSize: 16 }}>Delivery Fee (x2)</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {orderData?.delFee}</Text>
                             </View>
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ color: 'black' }}>Total</Text>
-                                <Text style={{ color: 'black' }}>Rs. {props?.route?.params?.tprice}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Total</Text>
+                                <Text style={{ color: 'black', fontSize: 16, fontWeight: '500' }}>Rs. {orderData?.tprice}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                <Text style={{ color: 'black' }}>Payment</Text>
-                                <Text style={{ color: 'black' }}>{props?.route?.params?.pMethod}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Payment</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>{orderData?.pMethod}</Text>
                             </View>
 
                         </View>
                     </View>
-                    <View style={{ height: 130 }}></View>
+                    <View style={{ height: 190 }}></View>
                 </ScrollView>
             </View >
             {loading ?
@@ -483,12 +500,12 @@ const OrderDetail = (props: any) => {
                         <Pressable onPress={() => setModalVisible(!modalVisible)} style={{ backgroundColor: '#F1F1F0', padding: 10, borderRadius: 20, width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }}>
                             <X color='black' />
                         </Pressable>
-                        <Text style={{ width: '80%', textAlign: 'center', fontSize: 25, fontWeight: '700', color: 'black' }}>{isCol ? "Collection Time" : "Delivery Date & Time"}</Text>
+                        <Text style={{ width: '80%', textAlign: 'center', fontSize: 20, fontWeight: '700', color: 'black' }}>{isCol ? "Collection Time" : "Delivery Date & Time"}</Text>
                     </View>
 
                     {isCol ? null :
                         <>
-                            <Text style={{ fontSize: 20, fontWeight: '600', marginVertical: 30, color: 'black' }}>Select Weekday</Text>
+                            <Text style={{ fontSize: 18, fontWeight: '600', marginVertical: 30, color: 'black' }}>Select Weekday</Text>
                             <FlatList
                                 data={nextDates}
                                 renderItem={({ item, index }) => (
@@ -504,7 +521,7 @@ const OrderDetail = (props: any) => {
                             />
                         </>
                     }
-                    <Text style={{ fontSize: 20, fontWeight: '600', marginVertical: 30, color: 'black' }}>Select Time</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '600', marginVertical: 30, color: 'black' }}>Select Time</Text>
                     <FlatList
                         data={isCol ? Times.slice(nowTime, shopCloseTime) : Times.slice(8, shopCloseTime)}
                         renderItem={({ item, index }) => (
@@ -519,7 +536,7 @@ const OrderDetail = (props: any) => {
                     />
                 </View>
                 <View style={{ position: 'absolute', bottom: 20, width: '100%' }}>
-                    <TouchableOpacity onPress={() => SelectData} style={{ backgroundColor: BlueColor, padding: 15, margin: 20, borderRadius: 10 }}>
+                    <TouchableOpacity onPress={SelectData} style={{ backgroundColor: BlueColor, padding: 15, margin: 20, borderRadius: 10 }}>
                         <Text style={{ textAlign: 'center', color: 'white', fontSize: 22, fontWeight: '500' }}>ReSchedule</Text>
                     </TouchableOpacity>
                 </View>

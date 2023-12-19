@@ -12,10 +12,11 @@ const OrderDetail = (props: any) => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoading] = useState(false);
     const [openStatusSelc, setOpenStatusSelc] = useState(false);
-    const [statusValue, setStatusValue] = useState(props?.route?.params?.status);
     const toast = useToast();
     const [showBookRide, setShowBookRide] = useState<any>(true);
     const [disableBookRide, setDisableBookRide] = useState<any>(true);
+    const [orderData, setOrderData] = useState<any>([]);
+    const [statusValue, setStatusValue] = useState(orderData?.status ? orderData?.status : props?.route?.params?.status);
 
     const ShopData: any = useAppSelector((state) => state.shopdata.value);
 
@@ -30,6 +31,20 @@ const OrderDetail = (props: any) => {
         { label: 'Cancelled', value: 'Cancelled' },
     ]);
 
+    useEffect(() => {
+        setLoading(true);
+        axiosInstance.get(`/orders/order/${props?.route?.params?._id}`)
+            .then(function (response: any) {
+                setLoading(false);
+                setOrderData(response.data);
+                setStatusValue(response.data?.status);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error.response);
+            })
+    }, [refreshing]);
+
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {
@@ -39,9 +54,10 @@ const OrderDetail = (props: any) => {
 
     const updateStatus = (nstatus: any) => {
         setLoading(true);
-        axiosInstance.post(`/orders/update/${props?.route?.params?._id}`, { status: nstatus })
+        axiosInstance.post(`/orders/update/${orderData?._id}`, { status: nstatus })
             .then((res) => {
                 setLoading(false);
+                setStatusValue(nstatus);
                 toast.show(res.data, {
                     type: "success",
                     placement: "top",
@@ -58,16 +74,16 @@ const OrderDetail = (props: any) => {
             })
     }
 
-    let ddate = props?.route?.params?.delivery.date;
-    let dtime = props?.route?.params?.delivery.time;
-    let dhour = parseInt(dtime.split(':')[0]) + 12;
+    let ddate = orderData?.delivery?.date;
+    let dtime = orderData?.delivery?.time;
+    let dhour = parseInt(dtime?.split(':')[0]) + 12;
 
-    let pdate = props?.route?.params?.orderDate;
-    let ptime = props?.route?.params?.ocollection;
+    let pdate = orderData?.orderDate;
+    let ptime = orderData?.ocollection;
     let phour = parseInt(ptime?.split('-')[1]?.split(':')[0]) + 12;
 
-    const ptargetTime = new Date(pdate.slice(6, 10), pdate.slice(3, 5) - 1, pdate.slice(0, 2), phour, 0, 0, 0);
-    const dtargetTime = new Date(ddate.slice(6, 10), ddate.slice(3, 5) - 1, ddate.slice(0, 2), dhour, 0, 0, 0);
+    const ptargetTime = new Date(pdate?.slice(6, 10), pdate?.slice(3, 5) - 1, pdate?.slice(0, 2), phour, 0, 0, 0);
+    const dtargetTime = new Date(ddate?.slice(6, 10), ddate?.slice(3, 5) - 1, ddate?.slice(0, 2), dhour, 0, 0, 0);
 
     const [ptimeRemaining, setPTimeRemaining] = useState("");
     const [dtimeRemaining, setDTimeRemaining] = useState("");
@@ -101,15 +117,15 @@ const OrderDetail = (props: any) => {
             const date = new Date();
             let time = date.getHours();
             const nampm = time >= 12 ? 'PM' : 'AM';
-            const ampm = (props?.route?.params?.delivery?.time)?.split(':')[1]?.split(' ')[1];
-            let delTime = (props?.route?.params?.delivery?.time)?.split(':')[0];
+            const ampm = (orderData?.delivery?.time)?.split(':')[1]?.split(' ')[1];
+            let delTime = (orderData?.delivery?.time)?.split(':')[0];
             delTime = delTime + ampm;
             time = time % 12;
             time = time ? time : 12;
             const currentTime = time + nampm;
             const isCurrentTimeGreaterThanDelTime = currentTime.localeCompare(delTime) > 0;
             //Date
-            const dateString = props?.route?.params?.delivery?.date;
+            const dateString = orderData?.delivery?.date;
             const targetDate = new Date(dateString);
             const currentDate = new Date();
             currentDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
@@ -127,11 +143,11 @@ const OrderDetail = (props: any) => {
         else {
             setShowBookRide(false);
         }
-    }, [statusValue]);
+    }, [statusValue, refreshing]);
 
 
     const BookRide = () => {
-        let rideData = { uid: props?.route?.params?.uid, sid: props?.route?.params?.shopid, dLoc: props?.route?.params?.address?.add, pLoc: ShopData?.address, dCord: props?.route?.params?.address?.coordinates ? props?.route?.params?.address?.coordinates : props?.route?.params?.address?.cords, pCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: props?.route?.params?.items, pMethod: props?.route?.params?.pMethod, fare: props?.route?.params?.delFee, bkdBy: 'Shop' };
+        let rideData = { uid: orderData?.uid, sid: orderData?.shopid, dLoc: orderData?.address?.add, pLoc: ShopData?.address, dCord: orderData?.address?.coordinates ? orderData?.address?.coordinates : orderData?.address?.cords, pCord: { lati: ShopData?.lati, longi: ShopData?.longi }, oItems: orderData?.items, pMethod: orderData?.pMethod, fare: orderData?.delFee, bkdBy: 'Shop' };
         setLoading(true);
         axiosInstance.post('rides/add', rideData)
             .then(function (response: any) {
@@ -167,16 +183,16 @@ const OrderDetail = (props: any) => {
                         <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5 }}>
                                 <View style={{ gap: 2 }}>
-                                    <Text style={{ color: BlueColor, fontSize: 16 }}>{props?.route?.params?.address.name}</Text>
-                                    <Text style={{ color: BlueColor, fontSize: 16 }}>+92 {props?.route?.params?.address.num}</Text>
+                                    <Text style={{ color: BlueColor, fontSize: 16 }}>{orderData?.address?.name}</Text>
+                                    <Text style={{ color: BlueColor, fontSize: 16 }}>+92 {orderData?.address?.num}</Text>
                                 </View>
-                                <Text style={{ color: 'black', fontSize: 16 }}>{props?.route?.params?.address.add}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>{orderData?.address?.add}</Text>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', borderTopWidth: 0.5, borderColor: 'grey', paddingTop: 8, marginTop: 4 }}>
-                                    <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${props?.route?.params?.address?.num}`)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center', borderRightWidth: 0.5, borderColor: 'grey' }}>
+                                    <TouchableOpacity onPress={() => Linking.openURL(`tel:+92 ${orderData?.address?.num}`)} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center', borderRightWidth: 0.5, borderColor: 'grey' }}>
                                         <Phone color='black' size={20} />
                                         <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Phone</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', { uid: props?.route?.params?.uid, id: props?.route?.params?._id })} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => props?.navigation.navigate('Chat', { uid: orderData?.uid, id: orderData?._id })} style={{ justifyContent: 'center', flexDirection: 'row', width: '50%', gap: 10, alignItems: 'center' }}>
                                         <MessageSquare color='black' size={20} />
                                         <Text style={{ textAlign: 'center', fontSize: 16, color: 'black' }}>Chat</Text>
                                     </TouchableOpacity>
@@ -189,11 +205,11 @@ const OrderDetail = (props: any) => {
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Details</Text>
                         <View style={{ flexDirection: 'row', marginVertical: 10, padding: 10, borderWidth: 0.5, borderRadius: 10, backgroundColor: 'white' }}>
                             <View style={{ gap: 5, width: '100%' }}>
-                                <Text style={{ fontSize: 17, color: BlueColor }}>Order # {props?.route?.params?._id.slice(props?.route?.params?._id.length - 5, props?.route?.params?._id.length)}</Text>
+                                <Text style={{ fontSize: 17, color: BlueColor }}>Order # {orderData?._id?.slice(orderData?._id?.length - 5, orderData?._id?.length)}</Text>
                                 <View style={{ gap: 2 }}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Text style={{ color: DarkGrey, fontSize: 14, fontWeight: '600' }}>Pickup On: </Text>
-                                        <Text style={{ color: DarkGrey, fontSize: 14, fontWeight: '500' }}>{props?.route?.params?.orderDate} | {props?.route?.params?.ocollection}</Text>
+                                        <Text style={{ color: DarkGrey, fontSize: 14, fontWeight: '500' }}>{orderData?.orderDate} | {orderData?.ocollection}</Text>
                                     </View>
                                     {statusValue == 'Pending' || statusValue == 'Confirmed' ?
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -202,10 +218,10 @@ const OrderDetail = (props: any) => {
                                         </View>
                                         : null}
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text style={{ color: 'black', fontSize: 14, fontWeight: '600' }}>{props?.route?.params?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
-                                        <Text style={{ color: 'black', fontSize: 14, fontWeight: '500' }}>{props?.route?.params?.delivery.date} | {props?.route?.params?.delivery.time}</Text>
+                                        <Text style={{ color: 'black', fontSize: 14, fontWeight: '600' }}>{orderData?.status != 'delivered' ? 'Delivery On:' : 'Delivered On: '}</Text>
+                                        <Text style={{ color: 'black', fontSize: 14, fontWeight: '500' }}>{orderData?.delivery?.date} | {orderData?.delivery?.time}</Text>
                                     </View>
-                                    {showBookRide && props?.route?.params?.ride ?
+                                    {showBookRide && orderData?.ride ?
                                         <TouchableOpacity disabled={disableBookRide} onPress={BookRide} style={[{ padding: 5, backgroundColor: BlueColor, borderRadius: 5, marginVertical: 5 }, disableBookRide ? { backgroundColor: 'grey' } : null]}>
                                             <Text style={{ textAlign: 'center', color: 'white', fontSize: 18 }}>Book Rider for Delivery</Text>
                                         </TouchableOpacity>
@@ -242,39 +258,41 @@ const OrderDetail = (props: any) => {
                     <View>
                         <Text style={{ fontSize: 16, fontWeight: '500', color: 'black' }}>Order Summary</Text>
                         <View style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, marginVertical: 10, backgroundColor: 'white' }}>
-                            {props?.route?.params?.items.map((item: any, index: number) => (
+                            {orderData?.items?.map((item: any, index: number) => (
                                 <View key={index} style={{ alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginVertical: 5 }}>
                                     <View style={{ alignItems: 'center', flexDirection: 'row', gap: 20 }}>
                                         <Image defaultSource={require('../../assets/images/Logo.png')} source={{ uri: item.images[0].toString() }} style={{ width: 40, height: 40, borderRadius: 10 }} resizeMode='cover' />
-                                        <Text style={{ color: 'black', fontSize: 18 }}>{item.item}</Text>
+                                        <View>
+                                            <Text style={{ color: 'black', fontSize: 17, fontWeight: '600' }}>{item.item}</Text>
+                                            <Text style={{ color: 'black', fontSize: 13 }}>{item.serType}</Text>
+                                        </View>
                                     </View>
-                                    <View style={{ flexDirection: 'row', width: '50%', justifyContent: 'space-between' }}>
-                                        <Text style={{ color: 'black', fontSize: 16 }}>{item.serType}</Text>
-                                        <Text style={{ color: 'black', fontSize: 16 }}>Rs. {props?.route?.params?.prices[index]}</Text>
+                                    <View >
+                                        <Text style={{ color: 'black', fontSize: 18 }}>Rs. {orderData?.prices[index]}</Text>
                                     </View>
                                 </View>
                             ))}
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: DarkGrey, fontSize: 16 }}>Items</Text>
-                                <Text style={{ color: 'black', fontSize: 16 }}>x {props?.route?.params?.items.length}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>x {orderData?.items?.length}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: DarkGrey, fontSize: 16 }}>Subtotal</Text>
-                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {props?.route?.params?.tprice - (props?.route?.params?.delFee * 2)}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {orderData?.tprice - (orderData?.delFee * 2)}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: DarkGrey, fontSize: 16 }}>Delivery Fee (x2)</Text>
-                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {props?.route?.params?.delFee}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>Rs. {orderData?.delFee}</Text>
                             </View>
                             <View style={{ height: 1, backgroundColor: 'grey', marginVertical: 10 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{ color: 'black', fontSize: 16 }}>Total</Text>
-                                <Text style={{ color: BlueColor, fontSize: 16, fontWeight: '500' }}>Rs. {props?.route?.params?.tprice}</Text>
+                                <Text style={{ color: BlueColor, fontSize: 16, fontWeight: '500' }}>Rs. {orderData?.tprice}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                 <Text style={{ color: 'black', fontSize: 16 }}>Payment</Text>
-                                <Text style={{ color: 'black', fontSize: 16 }}>{props?.route?.params?.pMethod}</Text>
+                                <Text style={{ color: 'black', fontSize: 16 }}>{orderData?.pMethod}</Text>
                             </View>
 
                         </View>

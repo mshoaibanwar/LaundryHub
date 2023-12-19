@@ -37,6 +37,7 @@ const Home = ({ navigation }: any) => {
     const [notiCount, setNotiCount] = useState(0);
     const [refreshing, setRefreshing] = React.useState(false);
     const [ShopData, setShopData] = useState<any>([]);
+    const [location, setLocation] = useState<any>({ latitude: 33.70395347266037, longitude: 73.04128451925754 });
     const path =
     {
         wash: require("../assets/icons/washin.png"),
@@ -62,8 +63,6 @@ const Home = ({ navigation }: any) => {
             navigation?.addListener('beforeRemove', (e: any) => {
                 // Prevent default behavior of leaving the screen
                 e.preventDefault();
-
-                // Prompt the user before leaving the screen
             });
 
         }, [navigation]);
@@ -143,6 +142,7 @@ const Home = ({ navigation }: any) => {
         })
             .then(location => {
                 getAddress(location);
+                setLocation({ latitude: location.latitude, longitude: location.longitude });
             })
             .catch(error => {
                 const { code, message } = error;
@@ -245,19 +245,22 @@ const Home = ({ navigation }: any) => {
                                     ref={mapRef}
                                     style={{ width: "100%", height: 250, borderRadius: 15 }}
                                     initialRegion={{
-                                        latitude: 33.70395347266037,
-                                        longitude: 73.04128451925754,
+                                        latitude: Number(location?.latitude),
+                                        longitude: Number(location?.longitude),
                                         latitudeDelta: 0.0922,
                                         longitudeDelta: 0.0421,
                                     }}
-                                    // showsUserLocation={true}
+                                    showsUserLocation={true}
                                     cacheEnabled
                                 >
-                                    <Marker
-                                        coordinate={{ latitude: 33.70395347266037, longitude: 73.04128451925754 }}
-                                        title={"Title of Marker"}
-                                        description={'description'}
-                                    />
+                                    {ShopData?.map((item: any, index: any) => (
+                                        <Marker
+                                            key={index}
+                                            coordinate={{ latitude: item ? Number(item?.lati) : 33.70395347266037, longitude: item ? Number(item?.longi) : 73.04128451925754 }}
+                                            title={"Title of Marker"}
+                                            description={'description'}
+                                        />
+                                    ))}
                                 </MapView>
 
                                 <View style={{ padding: 10, alignItems: 'center', backgroundColor: 'white', bottom: 30, position: 'absolute', left: 20, right: 20, borderRadius: 10, borderWidth: 1 }}>

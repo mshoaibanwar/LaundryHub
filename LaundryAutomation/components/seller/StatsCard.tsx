@@ -12,12 +12,13 @@ type Props =
         img: any,
         name: string,
         count: any,
-        navigation: any
+        navigation: any,
+        key: number
     };
 
-const StatsCard: React.FC<Props> = ({ navigation, img, name, count }) => {
+const StatsCard: React.FC<Props> = ({ navigation, img, name, count, key }) => {
     return (
-        <TouchableOpacity style={styles.view}>
+        <TouchableOpacity key={key} style={styles.view}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View>{img}</View>
                 <Text adjustsFontSizeToFit={true} numberOfLines={1} style={{ fontSize: 33, fontWeight: '700', color: 'black' }}>{count}</Text>
@@ -36,11 +37,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 0.5,
         gap: 10,
-        margin: 4,
+        marginVertical: 4,
         borderColor: 'grey',
         shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 4,
         elevation: 5,
-        minWidth: 173
 
     },
     title:
