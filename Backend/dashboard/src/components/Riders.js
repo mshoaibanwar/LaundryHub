@@ -12,10 +12,18 @@ import {
 } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 
+import Modal from "react-bootstrap/Modal";
+import Image from "react-bootstrap/Image";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+
 function Riders() {
   const [riders, setRiders] = useState([]);
   const [ridersUpdated, setRidersUpdated] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [modalShow, setModalShow] = React.useState(false);
+  const [selectedItem, setSelectedItem] = useState([]);
+  const [searchVal, setSearchVal] = useState("");
 
   const getRiders = () => {
     axios
@@ -61,7 +69,10 @@ function Riders() {
       });
   };
 
-  const View = (itemId) => {};
+  const View = (itemId) => {
+    setModalShow(true);
+    setSelectedItem(ridersUpdated.filter((item) => item["_id"] === itemId));
+  };
 
   const Verify = (itemId) => {
     axios
@@ -87,6 +98,19 @@ function Riders() {
         console.log(error);
       });
   };
+
+  function handleSearchClick() {
+    if (searchVal === "") {
+      setRidersUpdated(riders);
+      return;
+    }
+    const filterBySearch = riders.filter((item) => {
+      if (item.cnic.toLowerCase().includes(searchVal.toLowerCase())) {
+        return item;
+      }
+    });
+    setRidersUpdated(filterBySearch);
+  }
 
   return (
     <div className="rightSec p-3">
@@ -119,6 +143,20 @@ function Riders() {
                 All
               </Button>
             </ButtonGroup>
+          </div>
+          <div className="d-flex gap-2 mb-3">
+            <input
+              className="d-flex flex-grow-1"
+              placeholder="Search by CNIC"
+              onChange={(e) => {
+                setSearchVal(e.target.value);
+              }}
+              onKeyPress={(e) => {
+                setSearchVal(e.target.value);
+                if (e.key === "Enter") handleSearchClick();
+              }}
+            ></input>
+            <Button onClick={handleSearchClick}>Search</Button>
           </div>
           <div>
             {ridersUpdated.length > 0 || riders.length > 0 ? (
@@ -195,6 +233,73 @@ function Riders() {
           </div>
         </div>
       </div>
+      <Modal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            {selectedItem[0]?.user.name}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col>
+              <h6 className="mb-0">Address:</h6>
+              {selectedItem[0]?.address}
+            </Col>
+            <Col>
+              <h6 className="mb-0">Contact:</h6>
+              +92 {selectedItem[0]?.user.phone}
+            </Col>
+          </Row>
+          <Row className="mt-2">
+            <Col>
+              <h6 className="mb-0">CNIC:</h6>
+              {selectedItem[0]?.cnic}
+            </Col>
+            <Col>
+              <h6 className="mb-0">Bike Name:</h6>
+              {selectedItem[0]?.bikename}
+            </Col>
+          </Row>
+          <Row className="mt-2">
+            <Col>
+              <h6 className="mb-0">Bike Number:</h6>
+              {selectedItem[0]?.bikenum}
+            </Col>
+            <Col>
+              <h6 className="mb-0">Status:</h6>
+              {selectedItem[0]?.status}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <h6 className="mb-1 mt-2">User Profile:</h6>
+              <Image src={selectedItem[0]?.img} rounded fluid />
+            </Col>
+            <Col>
+              <h6 className="mb-1 mt-2">License:</h6>
+              <Image src={selectedItem[0]?.licenseimg} rounded fluid />
+            </Col>
+          </Row>
+          <h6 className="mt-2">CNIC Images:</h6>
+          <Row>
+            <Col>
+              <Image src={selectedItem[0]?.cnicimgs[0]} rounded fluid />
+            </Col>
+            <Col>
+              <Image src={selectedItem[0]?.cnicimgs[1]} rounded fluid />
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setModalShow(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

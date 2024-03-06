@@ -11,6 +11,7 @@ function Users() {
   const [users, setUsers] = useState([]);
   const [usersUpdated, setUsersUpdated] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [searchVal, setSearchVal] = useState("");
 
   useEffect(() => {
     axios
@@ -48,6 +49,19 @@ function Users() {
       });
   };
 
+  function handleSearchClick() {
+    if (searchVal === "") {
+      setUsersUpdated(users);
+      return;
+    }
+    const filterBySearch = users.filter((item) => {
+      if (item.email.toLowerCase().includes(searchVal.toLowerCase())) {
+        return item;
+      }
+    });
+    setUsersUpdated(filterBySearch);
+  }
+
   return (
     <div className="p-3 rightSec">
       <div className="">
@@ -73,6 +87,20 @@ function Users() {
                 All
               </Button>
             </ButtonGroup>
+          </div>
+          <div className="d-flex gap-2 mb-3">
+            <input
+              className="d-flex flex-grow-1"
+              placeholder="Search by Email"
+              onChange={(e) => {
+                setSearchVal(e.target.value);
+              }}
+              onKeyPress={(e) => {
+                setSearchVal(e.target.value);
+                if (e.key === "Enter") handleSearchClick();
+              }}
+            ></input>
+            <Button onClick={handleSearchClick}>Search</Button>
           </div>
           <div>
             {usersUpdated.length > 0 || users.length > 0 ? (

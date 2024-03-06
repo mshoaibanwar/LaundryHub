@@ -10,6 +10,7 @@ import {
   StarFill,
 } from "react-bootstrap-icons";
 import HomeCard from "./HomeCard";
+import Chart from "react-apexcharts";
 
 function Home() {
   const [ordersCount, setOrdersCount] = useState(null);
@@ -128,6 +129,34 @@ function Home() {
     },
   ];
 
+  const options = {
+    chart: {
+      id: "basic-bar",
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "March",
+        "April",
+        "May",
+        "June",
+        "july",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+    },
+  };
+  const series = [
+    {
+      name: "Users",
+      data: [30, 40, 45, 50, 49, 60, 70, 91],
+    },
+  ];
+
   return (
     <div className="p-4 rightSec">
       <div className="rounded-4">
@@ -146,6 +175,7 @@ function Home() {
             })}
           </div>
         </div>
+        <Chart options={options} series={series} type="line" width="500" />
       </div>
     </div>
   );

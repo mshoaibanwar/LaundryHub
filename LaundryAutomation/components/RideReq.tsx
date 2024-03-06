@@ -81,13 +81,13 @@ const RideReq = ({ navigation }: any) => {
 
     const dispatch = useAppDispatch();
     const cancelRide = () => {
-        axiosInstance.get(`rides/cancelRide/${rideData._id}`)
+        axiosInstance.post(`rides/cancelRide/${rideData._id}`)
             .then((res) => {
                 dispatch(emptyMsg());
                 navigation.navigate('RideCancelled', { ride: rideData });
             })
             .catch((err) => {
-                console.log(err)
+                console.log(err.response.data)
             })
     }
 

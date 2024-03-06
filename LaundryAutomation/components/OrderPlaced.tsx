@@ -37,7 +37,7 @@ const OrderPlaced = (props: any) => {
             })
             .catch(function (error) {
                 // handle error
-                console.log(error);
+                console.log(error.response.data);
             })
     }
 
@@ -51,6 +51,8 @@ const OrderPlaced = (props: any) => {
                 setCancelled(true)
         }
     }
+
+    console.log(props?.route?.params)
 
     return (
         <SafeAreaView>

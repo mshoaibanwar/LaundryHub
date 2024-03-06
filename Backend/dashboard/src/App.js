@@ -13,6 +13,7 @@ import Riders from "./components/Riders";
 import Rides from "./components/Rides";
 import Ratings from "./components/Ratings";
 import Header from "./components/Header";
+import Login from "./components/Login";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Header />
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="login" element={<Login />} />
               <Route path="ratings" element={<Ratings />} />
               <Route path="shops" element={<Shops />} />
               <Route path="riders" element={<Riders />} />

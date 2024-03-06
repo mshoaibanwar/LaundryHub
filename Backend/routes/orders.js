@@ -11,7 +11,7 @@ router.route("/").get((req, res) => {
     .then((orders) => {
       res.json(orders);
     })
-    .catch((err) => res.status(404).json("Categories not found" + err));
+    .catch((err) => res.status(404).json("Orders not found" + err));
 });
 
 router.route("/count/").get((req, res) => {
@@ -133,14 +133,7 @@ router.route("/add").post((req, res) => {
             admin.messaging().sendToDevice(user.token, {
               notification: {
                 title: `Your Order is Placed!`,
-                body: `Your order # ${order._id.slice(
-                  order._id.length - 5,
-                  order._id.length
-                )} is placed successfully. It will be picked on ${orderDate} at ${
-                  order.ocollection
-                } and will be delivered on ${order.delivery.date} at ${
-                  order.delivery.time
-                }.`,
+                body: `Your order # ${order._id} is placed successfully. It will be picked on ${orderDate} at ${order.ocollection} and will be delivered on ${order.delivery.date} at ${order.delivery.time}.`,
               },
             });
           }

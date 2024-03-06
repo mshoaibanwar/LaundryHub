@@ -280,8 +280,8 @@ router.route("/add").post((req, res) => {
               if (matchingRider) {
                 console.log("Sending message to a connected rider");
                 const dist = useDistance(matchingRider.currentLocation, {
-                  latitude: pCord.latitude,
-                  longitude: pCord.longitude,
+                  latitude: pCord.lati,
+                  longitude: pCord.longi,
                 });
                 if (dist <= matchingRider.disLimit) {
                   const message = { newRide: "New Ride Request!" };

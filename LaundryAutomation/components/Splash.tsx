@@ -16,13 +16,6 @@ const Splash = (props: any) => {
         if (user?.token != undefined) {
             axiosInstance.post('users/verifyToken', { token: user?.token })
                 .then(async function (response: any) {
-                    // toast.show(response?.data?.message, {
-                    //     type: "success",
-                    //     placement: "top",
-                    //     duration: 3000,
-                    //     animationType: "slide-in",
-                    // });
-
                     socket.send(
                         JSON.stringify({
                             userId: user.user._id,
@@ -138,12 +131,6 @@ const Splash = (props: any) => {
                     }
                 })
                 .catch(function (error) {
-                    // toast.show(error?.response?.data?.message, {
-                    //     type: "danger",
-                    //     placement: "top",
-                    //     duration: 3000,
-                    //     animationType: "slide-in",
-                    // });
                     props.navigation.navigate("MainStack", { screen: 'Login' });
                 });
         }
@@ -159,7 +146,6 @@ const Splash = (props: any) => {
         <SafeAreaView style={{ backgroundColor: DarkPurple, height: '100%', justifyContent: 'center', alignItems: 'center' }}>
             <View style={{ bottom: 30 }}>
                 <LottieView style={{ left: 5, width: 220, height: 220 }} source={require('../assets/animated/laundry.json')} loop={false} autoPlay />
-                {/* onAnimationFinish={closeSplashScreen} */}
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={{ color: LoginBtn, fontSize: 40, fontWeight: '700' }}>Laundry</Text>
                     <Text style={{ color: TabFocus, fontSize: 40, fontWeight: '700' }}>HUB</Text>

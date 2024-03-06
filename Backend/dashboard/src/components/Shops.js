@@ -11,11 +11,18 @@ import {
   TrashFill,
 } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
+import Modal from "react-bootstrap/Modal";
+import Image from "react-bootstrap/Image";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 function Shops() {
   const [shops, setShops] = useState([]);
   const [shopsUpdated, setShopsUpdated] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [modalShow, setModalShow] = React.useState(false);
+  const [selectedItem, setSelectedItem] = useState([]);
+  const [searchVal, setSearchVal] = useState("");
 
   const getShops = () => {
     axios
@@ -59,7 +66,10 @@ function Shops() {
       });
   };
 
-  const View = (itemId) => {};
+  const View = (itemId) => {
+    setModalShow(true);
+    setSelectedItem(shopsUpdated.filter((item) => item["_id"] === itemId));
+  };
 
   const Verify = (itemId) => {
     axios
@@ -85,6 +95,19 @@ function Shops() {
         console.log(error);
       });
   };
+
+  function handleSearchClick() {
+    if (searchVal === "") {
+      setShopsUpdated(shops);
+      return;
+    }
+    const filterBySearch = shops.filter((item) => {
+      if (item.title.toLowerCase().includes(searchVal.toLowerCase())) {
+        return item;
+      }
+    });
+    setShopsUpdated(filterBySearch);
+  }
 
   return (
     <div className="rightSec p-3">
@@ -117,6 +140,20 @@ function Shops() {
                 All
               </Button>
             </ButtonGroup>
+          </div>
+          <div className="d-flex gap-2 mb-3">
+            <input
+              className="d-flex flex-grow-1"
+              placeholder="Search by Title"
+              onChange={(e) => {
+                setSearchVal(e.target.value);
+              }}
+              onKeyPress={(e) => {
+                setSearchVal(e.target.value);
+                if (e.key === "Enter") handleSearchClick();
+              }}
+            ></input>
+            <Button onClick={handleSearchClick}>Search</Button>
           </div>
           <div>
             {shopsUpdated.length > 0 || shops.length > 0 ? (
@@ -187,6 +224,102 @@ function Shops() {
           </div>
         </div>
       </div>
+      <Modal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            {selectedItem[0]?.title}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col>
+              <h6 className="mb-0">Address:</h6>
+              {selectedItem[0]?.address}
+            </Col>
+            <Col>
+              <h6 className="mb-0">Contact:</h6>
+              {selectedItem[0]?.contact}
+            </Col>
+          </Row>
+          <Row className="mt-2">
+            <Col>
+              <h6 className="mb-0">CNIC:</h6>
+              {selectedItem[0]?.cnic}
+            </Col>
+            <Col>
+              <h6 className="mb-0">Minimum Order Price:</h6>
+              Rs. {selectedItem[0]?.minOrderPrice}
+            </Col>
+          </Row>
+          <Row className="mt-2">
+            <Col>
+              <h6 className="mb-0">Minimum Delivery Time:</h6>
+              {selectedItem[0]?.minDelTime} Days
+            </Col>
+            <Col>
+              <h6 className="mb-0">Status:</h6>
+              {selectedItem[0]?.status}
+            </Col>
+          </Row>
+          <h6 className="mb-1 mt-2">Shop Timings:</h6>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                {selectedItem[0]?.timing?.map((item) => (
+                  <th>{item.day}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="">
+                {selectedItem[0]?.timing?.map((item) => (
+                  <td>
+                    {item.status == "on"
+                      ? item.time.start + " - " + item.time.end
+                      : "Closed"}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </Table>
+
+          {/* <div style={{ height: "30vh", width: "100%" }}>
+            <GoogleMapReact
+              defaultCenter={{
+                lat: selectedItem[0]?.lati,
+                lng: selectedItem[0]?.longi,
+              }}
+              // defaultCenter={defaultProps.center}
+              defaultZoom={defaultProps.zoom}
+            >
+              <AnyReactComponent
+                lat={selectedItem[0]?.lati}
+                lng={selectedItem[0]?.longi}
+                text="My Marker"
+              />
+            </GoogleMapReact>
+          </div> */}
+
+          <h6 className="mb-2 mt-2">CNIC Images:</h6>
+          <Row>
+            <Col>
+              <Image src={selectedItem[0]?.cnicimgs[0]} rounded fluid />
+            </Col>
+            <Col>
+              <Image src={selectedItem[0]?.cnicimgs[1]} rounded fluid />
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setModalShow(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
