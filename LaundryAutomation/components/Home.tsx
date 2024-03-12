@@ -48,13 +48,13 @@ const Home = ({ navigation }: any) => {
 
     useEffect(() => {
 
-        axiosInstance.get(`/shops/getShops/`)
+        axiosInstance.get(`/shops/getShops/limited/10`)
             .then(function (response: any) {
                 setShopData(response.data);
             })
             .catch(function (error) {
                 // handle error
-                console.log(error);
+                console.log(error.response);
             })
     }, [refreshing]);
 

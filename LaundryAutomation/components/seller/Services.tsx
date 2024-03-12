@@ -13,10 +13,11 @@ const Services = (props: any) => {
 
     const [openServSelc, setOpenServSelc] = useState(false);
     const [servicesValue, setServicesValue] = useState('Wash');
-    const [price, setPrice] = useState("0");
+    const [price, setPrice] = useState();
     const [isUpdating, setIsUpdating] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [itemsList, setItemsList] = useState<any>([]);
+    const [nItemsList, setNItemsList] = useState<any>([]);
 
     const [services, setServices] = useState([
         { label: 'Wash', value: 'Wash' },
@@ -62,6 +63,7 @@ const Services = (props: any) => {
                 if (res.data) {
                     let revItems = res.data.reverse();
                     setItemsList(revItems);
+                    setNItemsList(revItems);
                 }
                 setRefreshing(false);
             })
@@ -103,7 +105,7 @@ const Services = (props: any) => {
                 const newService = { serv: servicesValue, pri: price };
                 setServicesList([...servicesList, newService]);
                 setServicesValue("Wash");
-                setPrice("0");
+                setPrice("");
             } else {
                 // Display a message or handle the case where the service already exists
                 toast.show(`Service "${servicesValue}" already exists.`, {
@@ -218,6 +220,15 @@ const Services = (props: any) => {
         setItemsValue(items[0].value);
     }
 
+    const OnSearch = (text: any) => {
+        if (text.length > 0) {
+            const updatedItemsList = nItemsList.filter((item: any) => item.title.toLowerCase().includes(text.toLowerCase()));
+            setItemsList(updatedItemsList);
+        }
+        else {
+            setItemsList(nItemsList);
+        }
+    }
 
     return (
         <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
@@ -303,6 +314,7 @@ const Services = (props: any) => {
                 </View>
 
                 <Text style={{ fontSize: 18, fontWeight: '500', color: 'black', marginBottom: 5 }}>Added Items</Text>
+                <TextInput onChangeText={(t) => OnSearch(t)} style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, backgroundColor: 'white', color: 'black', marginBottom: 5 }} placeholder='Search Items' />
                 <ScrollView>
                     {itemsList?.map((item: any, index: any) => (
                         <View key={index} style={{ borderWidth: 0.5, padding: 5, marginVertical: 2, borderRadius: 5, backgroundColor: 'white' }}>

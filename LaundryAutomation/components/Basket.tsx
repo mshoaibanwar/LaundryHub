@@ -10,7 +10,8 @@ import {
     Pressable,
     Alert,
     Platform,
-    PermissionsAndroid
+    PermissionsAndroid,
+    TextInput
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { PlusCircle, X, Camera, Trash2 } from 'lucide-react-native';
@@ -21,7 +22,7 @@ import { addItem } from '../reduxStore/reducers/BasketReducer';
 import { useAppSelector, useAppDispatch } from '../hooks/Hooks'
 import { useToast } from "react-native-toast-notifications";
 import Toast from "react-native-toast-notifications";
-import { BackgroundColor, BlueColor } from '../constants/Colors';
+import { BackgroundColor, BlueColor, GreyColor } from '../constants/Colors';
 
 
 const includeExtra = true;
@@ -67,6 +68,8 @@ const Basket = (props: any) => {
 
     const [serType, setSerType] = useState("");
     const [currentItem, setCurrentItem] = useState<any>(null);
+
+    const [filtData, setFiltData] = useState(DATA);
 
     const onButtonPress = React.useCallback((type: any, options: any) => {
         if (type === 'capture') {
@@ -187,14 +190,30 @@ const Basket = (props: any) => {
         }
     };
 
+    const SearchList = (searchPhrase: string) => {
+        if (searchPhrase) {
+            let filteredData = DATA.map((section) => {
+                let filteredData = section.data.filter((item) => {
+                    return item.value.toLowerCase().includes(searchPhrase.toLowerCase());
+                });
+                return { ...section, data: filteredData };
+            });
+            setFiltData(filteredData);
+        }
+        else {
+            setFiltData(DATA);
+        }
+    }
+
     return (
         <SafeAreaView>
             <View style={{ padding: 20, paddingTop: 0, height: Platform.OS == 'android' ? '90%' : '88%' }}>
                 <Text style={{ fontSize: 35, fontWeight: 'bold', marginVertical: 10, color: 'black' }}>
                     Create Laundry Basket
                 </Text>
+                <TextInput onChangeText={(t) => SearchList(t)} style={{ backgroundColor: 'white', padding: 10, borderRadius: 10, marginVertical: 0, borderWidth: 0.5, borderColor: 'grey' }} placeholder="Search" />
                 <SectionList
-                    sections={DATA}
+                    sections={filtData}
                     keyExtractor={(item, index) => item.value + index}
                     ItemSeparatorComponent={FlatListItemSeparator}
                     renderItem={({ item, index }) => (

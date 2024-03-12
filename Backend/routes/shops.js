@@ -35,6 +35,35 @@ router.route("/getShops/").get(async (req, res) => {
   res.json(agg);
 });
 
+router.route("/getShops/limited/:lim").get(async (req, res) => {
+  const agg = await Shop.aggregate([
+    {
+      $lookup: {
+        from: "ratings",
+        localField: "_id",
+        foreignField: "shopid",
+        as: "ratings",
+      },
+    },
+    {
+      $project: {
+        cnic: 0,
+        cnicimgs: 0,
+      },
+    },
+    {
+      $match: {
+        status: "Verified",
+      },
+    },
+    {
+      $limit: Number(req.params.lim), // Limit the number of records to 10
+    },
+  ]).exec();
+
+  res.json(agg);
+});
+
 router.route("/count/").get((req, res) => {
   Shop.find()
     .then(() => {
@@ -111,11 +140,7 @@ router.route("/shopInfo/:id").get((req, res) => {
   Shop.findById(req.params.id)
     .then((shop) => {
       const { title, contact, uid } = shop;
-
-      // Create a new object with the required fields
       const shopInfo = { title, contact, uid };
-
-      // Send the modified data in the response
       res.json(shopInfo);
     })
     .catch((err) =>

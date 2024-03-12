@@ -5,9 +5,9 @@ import {
     View,
     TouchableOpacity,
     SafeAreaView,
-    ScrollView,
     ActivityIndicator,
-    RefreshControl,
+    FlatList,
+    TextInput,
 } from 'react-native';
 import ShopCard from './ShopCard';
 import { MapPin } from 'lucide-react-native';
@@ -16,6 +16,7 @@ import { useDistance } from '../helpers/DistanceCalculator';
 import { CalcPrices } from '../helpers/PriceCalculator';
 import { axiosInstance } from '../helpers/AxiosAPI';
 import { BlueColor } from '../constants/Colors';
+import { set } from 'react-hook-form';
 
 function Shops(props: any) {
     const user: any = useAppSelector((state) => state.user.value);
@@ -23,6 +24,7 @@ function Shops(props: any) {
     const [nActive, setnActive] = useState(false);
     const [pActive, setpActive] = useState(true);
     const [cActive, setcActive] = useState(false);
+    const [NShopsData, setNShopsData] = useState<any>([]);
     const [ShopsData, setShopsData] = useState<any>([]);
     const [userLoc, setUserLoc] = useState<any>(user?.ccord);
     const [ratings, setRatings] = useState<any>([]);
@@ -32,10 +34,10 @@ function Shops(props: any) {
     const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
-
         axiosInstance.get(`/shops/getShops/`)
             .then(function (response: any) {
                 setShopsData(response.data);
+                setNShopsData(response.data);
             })
             .catch(function (error) {
                 // handle error
@@ -83,11 +85,9 @@ function Shops(props: any) {
                 const newRatings = await Promise.all(ShopsData?.map((shop: any) => getShopRating(shop.ratings)));
                 setRatings(newRatings);
             } catch (error) {
-                // Handle any errors that might occur during the request.
                 console.error(`Error fetching shop ratings: ${error}`);
             }
         };
-        // You can add a loading indicator here if needed
         setRatings([]);
         fetchShopRatings();
         OnPopular();
@@ -145,15 +145,26 @@ function Shops(props: any) {
         OnPopular();
     }, [ratings]);
 
+    const OnSearch = (text: string) => {
+        if (text) {
+            let newArray = NShopsData.filter((item: any) => item.title.toLowerCase().includes(text.toLowerCase()));
+            setShopsData(newArray);
+        }
+        else {
+            setShopsData(NShopsData);
+        }
+    }
+
     return (
         <SafeAreaView>
             {ShowLoader ?
                 <ActivityIndicator size={'large'} color="#0E1446" style={{ position: 'absolute', top: 420, left: "46%", zIndex: 1 }} />
                 : null}
-            <View style={{ flexDirection: 'row', gap: 10, padding: 20 }}>
+            <View style={{ flexDirection: 'row', gap: 10, marginHorizontal: 20, marginVertical: 10 }}>
                 <MapPin color='black' size={30} />
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'black' }}>{user?.cadd}</Text>
             </View>
+            <TextInput onChangeText={(t) => OnSearch(t)} style={{ backgroundColor: 'white', padding: 10, marginHorizontal: 20, marginBottom: 10, borderRadius: 10, borderWidth: 0.5, borderColor: 'grey' }} placeholder="Search for a shop" />
             <View style={{ flexDirection: 'row', padding: 20, paddingVertical: 0, gap: 10 }}>
                 <TouchableOpacity onPress={OnPopular} style={{ alignItems: 'center' }}>
                     <Text style={pActive ? styles.active : styles.topNav}>
@@ -181,12 +192,16 @@ function Shops(props: any) {
                 </TouchableOpacity>
             </View>
             {!ShowLoader ?
-                <ScrollView style={{}} refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }>
-                    {ShopsData.map((item: any, index: any) => (<ShopCard shopsData={ShopsData} id={item._id} key={index} prop={props} itemsdet={item} bprice={item?.bp ? item.bp : pricelist[index]} plist={item?.allPriceList ? item.allPriceList : allShopsPriceList[index]} dist={item?.dist ? item.dist : Distances[index]} bilength={basketItems.length} />))}
-                    <View style={{ height: 220 }}></View>
-                </ScrollView>
+                <>
+                    <FlatList
+                        data={ShopsData}
+                        renderItem={({ item, index }) => <ShopCard shopsData={ShopsData} id={item._id} key={index} prop={props} itemsdet={item} bprice={item?.bp ? item.bp : pricelist[index]} plist={item?.allPriceList ? item.allPriceList : allShopsPriceList[index]} dist={item?.dist ? item.dist : Distances[index]} bilength={basketItems.length} />}
+                        keyExtractor={item => item.id}
+                        ListFooterComponent={<View style={{ height: 220 }}></View>}
+                        onRefresh={onRefresh}
+                        refreshing={refreshing}
+                    />
+                </>
                 : null}
         </SafeAreaView>
     )
