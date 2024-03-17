@@ -13,7 +13,7 @@ const Services = (props: any) => {
 
     const [openServSelc, setOpenServSelc] = useState(false);
     const [servicesValue, setServicesValue] = useState('Wash');
-    const [price, setPrice] = useState();
+    const [price, setPrice] = useState("");
     const [isUpdating, setIsUpdating] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [itemsList, setItemsList] = useState<any>([]);
