@@ -164,7 +164,7 @@ function Shops(props: any) {
                 <MapPin color='black' size={30} />
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'black' }}>{user?.cadd}</Text>
             </View>
-            <TextInput onChangeText={(t) => OnSearch(t)} style={{ backgroundColor: 'white', padding: 10, marginHorizontal: 20, marginBottom: 10, borderRadius: 10, borderWidth: 0.5, borderColor: 'grey' }} placeholder="Search for a shop" />
+            <TextInput onChangeText={(t) => OnSearch(t)} style={{ backgroundColor: 'white', color: 'black', padding: 10, marginHorizontal: 20, marginBottom: 10, borderRadius: 10, borderWidth: 0.5, borderColor: 'grey' }} placeholder="Search for a shop" placeholderTextColor="grey" />
             <View style={{ flexDirection: 'row', padding: 20, paddingVertical: 0, gap: 10 }}>
                 <TouchableOpacity onPress={OnPopular} style={{ alignItems: 'center' }}>
                     <Text style={pActive ? styles.active : styles.topNav}>
@@ -197,7 +197,7 @@ function Shops(props: any) {
                         data={ShopsData}
                         renderItem={({ item, index }) => <ShopCard shopsData={ShopsData} id={item._id} key={index} prop={props} itemsdet={item} bprice={item?.bp ? item.bp : pricelist[index]} plist={item?.allPriceList ? item.allPriceList : allShopsPriceList[index]} dist={item?.dist ? item.dist : Distances[index]} bilength={basketItems.length} />}
                         keyExtractor={item => item.id}
-                        ListFooterComponent={<View style={{ height: 220 }}></View>}
+                        ListFooterComponent={<View style={{ height: 270 }}></View>}
                         onRefresh={onRefresh}
                         refreshing={refreshing}
                     />

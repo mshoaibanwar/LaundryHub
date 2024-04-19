@@ -136,7 +136,7 @@ const Login = (props: any) => {
             .catch(function (error) {
                 // handle error
                 setLoading(false);
-                toast.show(error.response.data, {
+                toast.show(error?.response?.data, {
                     type: "danger",
                     placement: "top",
                     duration: 3000,

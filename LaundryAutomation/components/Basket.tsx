@@ -211,7 +211,7 @@ const Basket = (props: any) => {
                 <Text style={{ fontSize: 35, fontWeight: 'bold', marginVertical: 10, color: 'black' }}>
                     Create Laundry Basket
                 </Text>
-                <TextInput onChangeText={(t) => SearchList(t)} style={{ backgroundColor: 'white', padding: 10, borderRadius: 10, marginVertical: 0, borderWidth: 0.5, borderColor: 'grey' }} placeholder="Search" />
+                <TextInput onChangeText={(t) => SearchList(t)} style={{ backgroundColor: 'white', color: 'black', padding: 10, borderRadius: 10, marginVertical: 0, borderWidth: 0.5, borderColor: 'grey' }} placeholder="Search" placeholderTextColor="grey" />
                 <SectionList
                     sections={filtData}
                     keyExtractor={(item, index) => item.value + index}

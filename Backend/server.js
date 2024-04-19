@@ -56,6 +56,7 @@ app.use("/orders", ordersRouter);
 app.use("/addresses", addressesRouter);
 app.use("/notifications", notificationsRouter);
 app.use("/chats", chatsRouter);
+
 //Mongo DB End
 
 var server = app.listen(8080, function () {
@@ -79,6 +80,7 @@ ngrok.connect(
 );
 
 //Notifications
+
 app.post("/registernot", (req, res) => {
   tokens.push(req.body.token);
   console.log(req.body.token);
