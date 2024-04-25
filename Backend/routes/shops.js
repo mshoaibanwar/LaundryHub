@@ -197,8 +197,8 @@ router.route("/edit/:id").post((req, res) => {
     title: title,
     address: address,
     contact: contact,
-    minDelTime: minDelTime,
-    minOrderPrice: minOrderPrice,
+    // minDelTime: minDelTime,
+    // minOrderPrice: minOrderPrice,
   })
     .then(() => res.json("Shop Data Updated!"))
     .catch((err) => res.status(404).send(err));

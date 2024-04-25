@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { BackgroundColor } from '../../../constants/Colors';
 import Services from '../Services';
 import SingleShop from '../SingleShop';
+import EditShopDetails from '../EditShopDetails';
 
 const ShopStack = () => {
     const stack = createStackNavigator();
@@ -16,6 +17,7 @@ const ShopStack = () => {
             >
                 <stack.Screen name='SingleShop' component={SingleShop} options={{ headerShown: false }} />
                 <stack.Screen name='Services' component={Services} options={{ headerShown: false }} />
+                <stack.Screen name='EditShopDetails' component={EditShopDetails} options={{ headerShown: false }} />
             </stack.Navigator>
         </>
     )

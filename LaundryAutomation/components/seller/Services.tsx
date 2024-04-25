@@ -341,7 +341,7 @@ const Services = (props: any) => {
                             </View>
                         </View>
                     ))}
-                    <View style={{ height: 370 }}></View>
+                    <View style={{ height: 420 }}></View>
                 </ScrollView>
             </View>
 

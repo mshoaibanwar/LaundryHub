@@ -148,7 +148,7 @@ const SingleShop = (props: any) => {
                             <TouchableOpacity onPress={() => { props.navigation.goBack() }} style={styles.backBtn}>
                                 <ChevronLeft size={30} color='#0E1446' />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { setEditable(!editable) }} style={styles.backBtn}>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('EditShopDetails', { sid: shopData?._id, title: title, address: address, contact: contact })} style={styles.backBtn}>
                                 <FileEdit size={30} color='#0E1446' />
                             </TouchableOpacity>
                         </View>
