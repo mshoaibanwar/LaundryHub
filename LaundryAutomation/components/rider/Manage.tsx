@@ -1,10 +1,8 @@
-import { ArrowLeft } from 'lucide-react-native'
 import React, { useEffect } from 'react'
 import { Alert, Image, PermissionsAndroid, Platform, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import * as ImagePicker from 'react-native-image-picker';
 import { axiosInstance } from '../../helpers/AxiosAPI';
 import { useAppSelector } from '../../hooks/Hooks';
-import { set } from 'react-hook-form';
 import LottieView from 'lottie-react-native';
 import { GreyColor } from '../../constants/Colors';
 
