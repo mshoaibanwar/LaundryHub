@@ -59,10 +59,7 @@ const Orders = (props: any) => {
     return (
         <SafeAreaView style={{ height: '100%', margin: 20 }}>
             <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'space-between', alignItems: 'center' }}>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                    <ArrowLeft color='black' size={25} />
-                </TouchableOpacity>
-                <Text style={{ width: '85%', right: 27, textAlign: 'center', position: 'relative', color: 'black', fontSize: 20, fontWeight: '700' }}>Orders</Text>
+                <Text style={{ width: '100%', textAlign: 'center', position: 'relative', color: 'black', fontSize: 20, fontWeight: '700' }}>Orders</Text>
             </View>
             <View style={{ flexDirection: 'row', minWidth: '100%' }}>
                 <TouchableOpacity onPress={() => changeTab('Pending')} style={tab == 'Pending' ? [styles.btnLeft, styles.btnActive] : styles.btnLeft}>
@@ -72,6 +69,12 @@ const Orders = (props: any) => {
                     <Text style={tab == 'Delivered' ? styles.btntextact : styles.btntxt}>Delivered</Text>
                 </TouchableOpacity>
             </View>
+            {ordersfilt.length == 0 ?
+
+                <View style={{ justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>No Orders!</Text>
+                </View>
+                : null}
             <ScrollView style={{ marginTop: 10 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }>

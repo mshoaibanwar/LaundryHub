@@ -314,7 +314,7 @@ const Services = (props: any) => {
                 </View>
 
                 <Text style={{ fontSize: 18, fontWeight: '500', color: 'black', marginBottom: 5 }}>Added Items</Text>
-                <TextInput onChangeText={(t) => OnSearch(t)} style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, backgroundColor: 'white', color: 'black', marginBottom: 5 }} placeholder='Search Items' />
+                <TextInput onChangeText={(t) => OnSearch(t)} style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, paddingVertical: 5, backgroundColor: 'white', color: 'black', marginBottom: 5 }} placeholder='Search Items' />
                 <ScrollView>
                     {itemsList?.map((item: any, index: any) => (
                         <View key={index} style={{ borderWidth: 0.5, padding: 5, marginVertical: 2, borderRadius: 5, backgroundColor: 'white' }}>

@@ -89,7 +89,7 @@ const UpdateLoc = (props: any) => {
                 <MapPin size={30} color='black' />
             </View>
             <TouchableOpacity onPress={SelectLoc} style={{ position: 'absolute', bottom: 20, left: 20, right: 20, backgroundColor: BlueColor, borderRadius: 30, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ padding: 20, textAlign: 'center', fontSize: 24, fontWeight: '500', color: 'white' }}>Update Shop Location</Text>
+                <Text style={{ padding: 15, textAlign: 'center', fontSize: 20, fontWeight: '500', color: 'white' }}>Update Shop Location</Text>
             </TouchableOpacity>
 
             <Pressable onPress={() => props.navigation.goBack()} style={{ position: 'absolute', top: 40, left: 20, backgroundColor: BlueColor, borderRadius: 10, justifyContent: 'center', alignItems: 'center', padding: 10 }}>

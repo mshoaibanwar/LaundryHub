@@ -52,10 +52,7 @@ const Ratings = (props: any) => {
     return (
         <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
             <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                    <ArrowLeft color='black' size={25} />
-                </TouchableOpacity>
-                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Ratings</Text>
+                <Text style={{ textAlign: 'center', color: 'black', width: '100%', fontSize: 18, fontWeight: '600' }}>Ratings</Text>
             </View>
             <ScrollView style={{ paddingHorizontal: 15, backgroundColor: GreyColor, paddingVertical: 12 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

@@ -78,6 +78,8 @@ const Notifications = (props: any) => {
                 </View>
             </View>
 
+
+
             <ScrollView style={{ paddingVertical: 10, backgroundColor: GreyColor, paddingHorizontal: 15 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }>
@@ -95,6 +97,12 @@ const Notifications = (props: any) => {
                 ))}
                 <View style={{ height: 190 }}></View>
             </ScrollView>
+            {notifications.length == 0 ?
+                <View style={{ justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>No Notifications!</Text>
+                </View>
+                : null
+            }
             {refreshing || loading ?
                 <View style={{ padding: 30, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
                     <LottieView style={{ width: 150, height: 150 }} source={require('../assets/animated/loading.json')} autoPlay loop />

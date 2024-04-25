@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { axiosInstance } from '../../helpers/AxiosAPI'
 import { useToast } from 'react-native-toast-notifications'
 import LottieView from 'lottie-react-native'
+import { GreyColor } from '../../constants/Colors'
 
 const EditShopDetails = (props: any) => {
     const [refreshing, setRefreshing] = useState(false);
@@ -34,17 +35,20 @@ const EditShopDetails = (props: any) => {
             })
     }
     return (
-        <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
-            <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
+        <SafeAreaView style={{ height: '100%' }}>
+            <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey', backgroundColor: 'white' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
                     <ArrowLeft color='black' size={25} />
                 </TouchableOpacity>
                 <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Edit Shop Details</Text>
             </View>
             <View style={{ padding: 20 }}>
-                <TextInput value={title} onChangeText={setTitle} style={{ borderWidth: 1, padding: 5, borderRadius: 5, marginBottom: 10 }} placeholder='Shop Name'></TextInput>
-                <TextInput value={address} onChangeText={setAddress} style={{ borderWidth: 1, padding: 5, borderRadius: 5, marginBottom: 10 }} placeholder='Shop Address'></TextInput>
-                <TextInput value={contact} onChangeText={setContact} style={{ borderWidth: 1, padding: 5, borderRadius: 5, marginBottom: 10 }} placeholder='Shop Contact'></TextInput>
+                <Text style={{ color: 'black', marginBottom: 5, fontSize: 15 }}>Shop Title:</Text>
+                <TextInput value={title} onChangeText={setTitle} style={{ borderWidth: 0.5, padding: 5, borderRadius: 5, marginBottom: 10, color: 'black', backgroundColor: 'white' }} placeholder='Shop Name'></TextInput>
+                <Text style={{ color: 'black', marginBottom: 5, fontSize: 15 }}>Address:</Text>
+                <TextInput value={address} onChangeText={setAddress} style={{ borderWidth: 0.5, padding: 5, borderRadius: 5, marginBottom: 10, color: 'black', backgroundColor: 'white' }} placeholder='Shop Address'></TextInput>
+                <Text style={{ color: 'black', marginBottom: 5, fontSize: 15 }}>Contact:</Text>
+                <TextInput value={contact} onChangeText={setContact} style={{ borderWidth: 0.5, padding: 5, borderRadius: 5, marginBottom: 10, color: 'black', backgroundColor: 'white' }} placeholder='Shop Contact'></TextInput>
                 <TouchableOpacity onPress={updateData} style={{ backgroundColor: '#0E1446', padding: 8, borderRadius: 5, marginTop: 12 }}>
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '600' }}>Update Details</Text>
                 </TouchableOpacity>

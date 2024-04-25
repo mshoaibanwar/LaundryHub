@@ -237,10 +237,7 @@ const Manage = (props: any) => {
     return (
         <SafeAreaView style={{ backgroundColor: 'white' }}>
             <View style={[{ flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 0.5, borderColor: 'grey' }, Platform.OS == 'android' ? { paddingVertical: 15 } : null]}>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                    <ArrowLeft color='black' size={25} />
-                </TouchableOpacity>
-                <Text style={{ textAlign: 'center', color: 'black', width: '85%', fontSize: 18, fontWeight: '600' }}>Manage</Text>
+                <Text style={{ textAlign: 'center', color: 'black', width: '100%', fontSize: 18, fontWeight: '600' }}>Manage</Text>
             </View>
             <View style={{ backgroundColor: GreyColor }}>
                 <ScrollView style={{ padding: 20 }}>
