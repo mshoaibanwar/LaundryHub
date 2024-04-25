@@ -102,8 +102,12 @@ const OrderDetail = (props: any) => {
         } else {
             if (isp == 'p')
                 setPTimeRemaining('Time is up!');
-            else
-                setDTimeRemaining('Time is up!');
+            else {
+                if ((ddate?.split('-')[0] - new Date().getDate()) <= 0)
+                    setDTimeRemaining('Time is up!');
+                else
+                    setDTimeRemaining(ddate?.split('-')[0] - new Date().getDate() + ' day(s)');
+            }
         }
     };
     useEffect(() => {
