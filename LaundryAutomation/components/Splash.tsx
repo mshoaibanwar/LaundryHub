@@ -139,7 +139,7 @@ const Splash = (props: any) => {
     }
 
     useEffect(() => {
-        setTimeout(closeSplashScreen, 2500);
+        setTimeout(closeSplashScreen, 1000);
     }, []);
 
     return (

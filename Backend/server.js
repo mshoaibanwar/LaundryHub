@@ -65,19 +65,19 @@ var server = app.listen(8080, function () {
   console.log("LaundryHub app listening at http://", host, port);
 });
 
-ngrok.connect(
-  {
-    proto: "http",
-    authtoken_from_env: true,
-    addr: process.env.PORT,
-  },
-  (err, url) => {
-    if (err) {
-      console.error("Error while connecting Ngrok", err);
-      return new Error("Ngrok Failed");
-    }
-  }
-);
+// ngrok.connect(
+//   {
+//     proto: "http",
+//     authtoken_from_env: true,
+//     addr: process.env.PORT,
+//   },
+//   (err, url) => {
+//     if (err) {
+//       console.error("Error while connecting Ngrok", err);
+//       return new Error("Ngrok Failed");
+//     }
+//   }
+// );
 
 //Notifications
 

@@ -1,3 +1,3 @@
-const socket = new WebSocket(`http://192.168.100.122:8080/`) //http://localhost:8080/
+const socket = new WebSocket(`https://laundryhubserver.onrender.com`) //http://localhost:8080/
 
 export default socket;
