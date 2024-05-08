@@ -57,7 +57,7 @@ function Riders() {
 
   const Delete = (itemId) => {
     axios
-      .post(`${axiosAPI}/users/delete/${itemId}`)
+      .post(`${axiosAPI}/riders/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setRidersUpdated(
