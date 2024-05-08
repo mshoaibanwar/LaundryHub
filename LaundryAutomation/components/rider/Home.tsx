@@ -184,7 +184,7 @@ const Home = ({ navigation }: any) => {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <View>
                     {shopData && shopData?.status != "Verified" ?
-                        <View style={{ marginTop: 5, padding: 15, borderWidth: 0.5, borderColor: 'orange', borderRadius: 10, gap: 5, marginBottom: 8, backgroundColor: 'white', shadowColor: 'orange', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 3 }}>
+                        <View style={{ marginTop: 5, marginHorizontal: 20, padding: 15, borderWidth: 0.5, borderColor: 'orange', borderRadius: 10, gap: 5, marginBottom: 8, backgroundColor: 'white', shadowColor: 'orange', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 3 }}>
                             <Text style={{ fontSize: 20, fontWeight: '500', color: 'black' }}>Your Profile is not Active Yet!</Text>
                             <Text style={{ fontSize: 16, fontWeight: '400', color: BlueColor }}>Your Profile is {shopData?.status}.</Text>
                             <Text style={{ fontSize: 16, fontWeight: '400', color: DarkGrey }}>Please wait for the admin to approve your Profile.</Text>
