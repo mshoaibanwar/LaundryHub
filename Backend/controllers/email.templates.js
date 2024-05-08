@@ -1,13 +1,11 @@
-
 // This file is exporting an Object with a single key/value pair.
 // However, because this is not a part of the logic of the application
-// it makes sense to abstract it to another file. Plus, it is now easily 
+// it makes sense to abstract it to another file. Plus, it is now easily
 // extensible if the application needs to send different email templates
 // (eg. unsubscribe) in the future.
 module.exports = {
-
-  confirm: id => ({
-    subject: 'LaundryHub Account Confirmation',
+  confirm: (id) => ({
+    subject: "LaundryHub Account Confirmation",
     html: `
 
     <!DOCTYPE html>
@@ -154,7 +152,7 @@ module.exports = {
                                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
                                             <table border="0" cellspacing="0" cellpadding="0">
                                                 <tr>
-                                                    <td align="center" style="border-radius: 3px;" bgcolor="#FFA73B"><a href="http://localhost:8080/users/confirm/${id}" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Confirm Account</a></td>
+                                                    <td align="center" style="border-radius: 3px;" bgcolor="#FFA73B"><a href="https://laundryhubserver.onrender.com/users/confirm/${id}" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Confirm Account</a></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -169,7 +167,7 @@ module.exports = {
                         </tr> <!-- COPY -->
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;"><a href="#" target="_blank" style="color: #FFA73B;">http://localhost:8080/users/confirm/${id}</a></p>
+                                <p style="margin: 0;"><a href="#" target="_blank" style="color: #FFA73B;">https://laundryhubserver.onrender.com/users/confirm/${id}</a></p>
                             </td>
                         </tr>
                         <tr>
@@ -201,14 +199,12 @@ module.exports = {
     </body>
     
     </html>
-    `,      
-    text: `Copy and paste this link: http://localhost:8080/users/confirm/${id}`
+    `,
+    text: `Copy and paste this link: https://laundryhubserver.onrender.com/users/confirm/${id}`,
   }),
 
-
-
-  forget: id => ({
-    subject: 'LaundryHub Email Confirmation | Forgot Password',
+  forget: (id) => ({
+    subject: "LaundryHub Email Confirmation | Forgot Password",
     html: `
 
     <!DOCTYPE html>
@@ -355,7 +351,7 @@ module.exports = {
                                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
                                             <table border="0" cellspacing="0" cellpadding="0">
                                                 <tr>
-                                                    <td align="center" style="border-radius: 3px;" bgcolor="#FFA73B"><a href="http://localhost:3001/reset/?id=${id}" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Reset Password</a></td>
+                                                    <td align="center" style="border-radius: 3px;" bgcolor="#FFA73B"><a href="https://laundryhubserver.onrender.com/reset/?id=${id}" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Reset Password</a></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -370,7 +366,7 @@ module.exports = {
                         </tr> <!-- COPY -->
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;"><a href="#" target="_blank" style="color: #FFA73B;">http://localhost:3001/reset/?id=${id}</a></p>
+                                <p style="margin: 0;"><a href="#" target="_blank" style="color: #FFA73B;">https://laundryhubserver.onrender.com/reset/?id=${id}</a></p>
                             </td>
                         </tr>
                         <tr>
@@ -402,12 +398,12 @@ module.exports = {
     </body>
     
     </html>
-    `,      
-    text: `Copy and paste this link: http://localhost:3001/reset/?id=${id}`
+    `,
+    text: `Copy and paste this link: https://laundryhubserver.onrender.com/reset/?id=${id}`,
   }),
 
-  codeemail: code => ({
-    subject: 'LaundryHub Email Confirmation | Forgot Password',
+  codeemail: (code) => ({
+    subject: "LaundryHub Email Confirmation | Forgot Password",
     html: `
 
     <!DOCTYPE html>
@@ -596,8 +592,7 @@ module.exports = {
     </body>
     
     </html>
-    `,      
-    text: `Copy and paste this code in the app: ${code}`
-  })
-  
-}
+    `,
+    text: `Copy and paste this code in the app: ${code}`,
+  }),
+};

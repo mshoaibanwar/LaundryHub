@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Table from "react-bootstrap/Table";
 import Spinner from "react-bootstrap/Spinner";
+import { axiosAPI } from "../AxiosAPI";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -15,7 +16,7 @@ function Users() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/users/`)
+      .get(`${axiosAPI}/users/`)
       .then(function (response) {
         // handle success
         setUsers(response.data);
@@ -38,7 +39,7 @@ function Users() {
 
   const Delete = (itemId) => {
     axios
-      .post(`http://localhost:8080/users/delete/${itemId}`)
+      .post(`${axiosAPI}/users/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setUsersUpdated(usersUpdated.filter((item) => item["_id"] !== itemId));

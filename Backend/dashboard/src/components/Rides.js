@@ -10,6 +10,7 @@ import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { axiosAPI } from "../AxiosAPI";
 
 function Rides() {
   const [rides, setRides] = useState([]);
@@ -21,7 +22,7 @@ function Rides() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/rides/`)
+      .get(`${axiosAPI}/rides/`)
       .then(function (response) {
         // handle success
         setRides(response.data);
@@ -48,7 +49,7 @@ function Rides() {
 
   const Delete = (itemId) => {
     axios
-      .post(`http://localhost:8080/rides/delete/${itemId}`)
+      .post(`${axiosAPI}/rides/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setRidesUpdated(ridesUpdated.filter((item) => item["_id"] !== itemId));

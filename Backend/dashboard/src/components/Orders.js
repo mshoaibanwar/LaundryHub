@@ -10,6 +10,7 @@ import Spinner from "react-bootstrap/Spinner";
 import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
+import { axiosAPI } from "../AxiosAPI";
 import Col from "react-bootstrap/Col";
 
 function Orders() {
@@ -23,7 +24,7 @@ function Orders() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/orders/`)
+      .get(`${axiosAPI}/orders/`)
       .then(function (response) {
         // handle success
         setOrders(response.data);
@@ -52,7 +53,7 @@ function Orders() {
 
   const Delete = (itemId) => {
     axios
-      .post(`http://localhost:8080/rides/delete/${itemId}`)
+      .post(`${axiosAPI}/rides/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setOrders(orders.filter((item) => item["_id"] !== itemId));

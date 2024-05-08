@@ -16,6 +16,7 @@ import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { axiosAPI } from "../AxiosAPI";
 
 function Riders() {
   const [riders, setRiders] = useState([]);
@@ -27,7 +28,7 @@ function Riders() {
 
   const getRiders = () => {
     axios
-      .get(`http://localhost:8080/riders/`)
+      .get(`${axiosAPI}/riders/`)
       .then(function (response) {
         // handle success
         setRiders(response.data);
@@ -56,7 +57,7 @@ function Riders() {
 
   const Delete = (itemId) => {
     axios
-      .post(`http://localhost:8080/users/delete/${itemId}`)
+      .post(`${axiosAPI}/users/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setRidersUpdated(
@@ -76,7 +77,7 @@ function Riders() {
 
   const Verify = (itemId) => {
     axios
-      .post(`http://localhost:8080/riders/verify/${itemId}`)
+      .post(`${axiosAPI}/riders/verify/${itemId}`)
       .then(function (response) {
         // handle success
         getRiders();
@@ -88,7 +89,7 @@ function Riders() {
   };
   const Reject = (itemId) => {
     axios
-      .post(`http://localhost:8080/riders/reject/${itemId}`)
+      .post(`${axiosAPI}/riders/reject/${itemId}`)
       .then(function (response) {
         // handle success
         getRiders();

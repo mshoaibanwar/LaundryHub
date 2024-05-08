@@ -7,9 +7,9 @@ import Table from "react-bootstrap/Table";
 import { EyeFill, TrashFill } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 import Modal from "react-bootstrap/Modal";
-import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { axiosAPI } from "../AxiosAPI";
 
 function Ratings() {
   const [ratings, setRatings] = useState([]);
@@ -21,7 +21,7 @@ function Ratings() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/ratings/`)
+      .get(`${axiosAPI}/ratings/`)
       .then(function (response) {
         // handle success
         setRatings(response.data);
@@ -41,7 +41,7 @@ function Ratings() {
 
   const Delete = (itemId) => {
     axios
-      .post(`http://localhost:8080/ratings/delete/${itemId}`)
+      .post(`${axiosAPI}/ratings/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setRatingsUpdated(

@@ -15,6 +15,7 @@ import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { axiosAPI } from "../AxiosAPI";
 
 function Shops() {
   const [shops, setShops] = useState([]);
@@ -26,7 +27,7 @@ function Shops() {
 
   const getShops = () => {
     axios
-      .get(`http://localhost:8080/shops/`)
+      .get(`${axiosAPI}/shops/`)
       .then(function (response) {
         // handle success
         setShops(response.data);
@@ -55,7 +56,7 @@ function Shops() {
 
   const Delete = (itemId) => {
     axios
-      .post(`http://localhost:8080/shops/delete/${itemId}`)
+      .post(`${axiosAPI}/shops/delete/${itemId}`)
       .then(function (response) {
         // handle success
         setShopsUpdated(shopsUpdated.filter((item) => item["_id"] !== itemId));
@@ -73,7 +74,7 @@ function Shops() {
 
   const Verify = (itemId) => {
     axios
-      .post(`http://localhost:8080/shops/verify/${itemId}`)
+      .post(`${axiosAPI}/shops/verify/${itemId}`)
       .then(function (response) {
         // handle success
         getShops();
@@ -85,7 +86,7 @@ function Shops() {
   };
   const Reject = (itemId) => {
     axios
-      .post(`http://localhost:8080/shops/reject/${itemId}`)
+      .post(`${axiosAPI}/shops/reject/${itemId}`)
       .then(function (response) {
         // handle success
         getShops();

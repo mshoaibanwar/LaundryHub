@@ -10,6 +10,7 @@ import {
   StarFill,
 } from "react-bootstrap-icons";
 import HomeCard from "./HomeCard";
+import { axiosAPI } from "../AxiosAPI";
 
 function Home() {
   const [ordersCount, setOrdersCount] = useState(null);
@@ -21,7 +22,7 @@ function Home() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/shops/count/`)
+      .get(`${axiosAPI}/shops/count/`)
       .then(function (response) {
         // handle success
         setShopsCount(response.data["Count"]);
@@ -32,7 +33,7 @@ function Home() {
       });
 
     axios
-      .get(`http://localhost:8080/ratings/count/`)
+      .get(`${axiosAPI}/ratings/count/`)
       .then(function (response) {
         // handle success
         setRatingsCount(response.data["Count"]);
@@ -43,7 +44,7 @@ function Home() {
       });
 
     axios
-      .get(`http://localhost:8080/users/count/`)
+      .get(`${axiosAPI}/users/count/`)
       .then(function (response) {
         // handle success
         setUsersCount(response.data["Count"]);
@@ -54,7 +55,7 @@ function Home() {
       });
 
     axios
-      .get(`http://localhost:8080/orders/count/`)
+      .get(`${axiosAPI}/orders/count/`)
       .then(function (response) {
         // handle success
         setOrdersCount(response.data["Count"]);
@@ -65,7 +66,7 @@ function Home() {
       });
 
     axios
-      .get(`http://localhost:8080/rides/count/`)
+      .get(`${axiosAPI}/rides/count/`)
       .then(function (response) {
         // handle success
         setRidesCount(response.data["Count"]);
@@ -76,7 +77,7 @@ function Home() {
       });
 
     axios
-      .get(`http://localhost:8080/riders/count/`)
+      .get(`${axiosAPI}/riders/count/`)
       .then(function (response) {
         // handle success
         setRidersCount(response.data["Count"]);
