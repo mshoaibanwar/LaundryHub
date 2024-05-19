@@ -203,6 +203,26 @@ module.exports = {
     text: `Copy and paste this link: https://laundryhubserver.onrender.com/users/confirm/${id}`,
   }),
 
+  newOrder: (oid) => ({
+    subject: "New Order | LaundryHUB",
+    html: `
+    <!DOCTYPE html>
+    <html>
+    
+    <head>
+    </head>
+    <body>
+        <h1>New Order!</h1>
+        <p>Your received a new order # ${oid}!</p>
+        <p>View order in app to accept or reject.</p>
+        <p>Thank you!</p>
+    </body>
+    
+    </html>
+    `,
+    text: `Your received a new order # ${oid}!`,
+  }),
+
   forget: (id) => ({
     subject: "LaundryHub Email Confirmation | Forgot Password",
     html: `

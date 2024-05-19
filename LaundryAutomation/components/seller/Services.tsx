@@ -268,7 +268,7 @@ const Services = (props: any) => {
                                     <Text style={{ color: 'black', fontSize: 16, fontWeight: '500', width: '30%' }}>{item.serv}</Text>
                                     <View style={{ width: '40%', flexDirection: 'row', alignItems: 'center' }}>
                                         <Text style={{ color: 'black', fontSize: 16 }}>Rs. </Text>
-                                        <TextInput editable={isUpdating} value={item.pri.toString()} onChangeText={(nv) => onUpdateServiceInfo(item.serv, nv)} style={[{ padding: 2, color: 'black', fontSize: 18, fontWeight: '500', borderWidth: 0.5, borderRadius: 5, textAlign: 'center', width: '80%' }, Platform.OS === 'android' ? { padding: 0 } : {}]}></TextInput>
+                                        <TextInput editable={isUpdating} value={item.pri.toString()} onChangeText={(nv) => onUpdateServiceInfo(item.serv, nv)} style={[{ padding: 2, color: 'black', fontSize: 18, fontWeight: '500', borderWidth: 0.5, borderRadius: 5, textAlign: 'center', width: '80%' }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholderTextColor={'grey'}></TextInput>
                                     </View>
                                     <TouchableOpacity style={{}} onPress={() => onServRemove(item)}>
                                         <Trash2 color='red' size={20} />
@@ -294,7 +294,7 @@ const Services = (props: any) => {
                             setItems={setServices}
                         />
 
-                        <TextInput value={price} onChangeText={setPrice} style={[{ borderWidth: 1, borderColor: 'black', width: '30%', borderRadius: 10, textAlign: 'center', fontSize: 18, color: 'black' }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholder='Price' />
+                        <TextInput value={price} onChangeText={setPrice} style={[{ borderWidth: 1, borderColor: 'black', width: '30%', borderRadius: 10, textAlign: 'center', fontSize: 18, color: 'black' }, Platform.OS === 'android' ? { padding: 0 } : {}]} placeholder='Price' placeholderTextColor={'grey'} />
 
                         <TouchableOpacity onPress={onServAdd} style={{ backgroundColor: BlueColor, padding: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
                             <Plus color='white' size={20} />
@@ -314,7 +314,7 @@ const Services = (props: any) => {
                 </View>
 
                 <Text style={{ fontSize: 18, fontWeight: '500', color: 'black', marginBottom: 5 }}>Added Items</Text>
-                <TextInput onChangeText={(t) => OnSearch(t)} style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, paddingVertical: 5, backgroundColor: 'white', color: 'black', marginBottom: 5 }} placeholder='Search Items' />
+                <TextInput onChangeText={(t) => OnSearch(t)} style={{ borderWidth: 0.5, borderRadius: 10, padding: 10, paddingVertical: 5, backgroundColor: 'white', color: 'black', marginBottom: 5 }} placeholder='Search Items' placeholderTextColor={'grey'} />
                 <ScrollView>
                     {itemsList?.map((item: any, index: any) => (
                         <View key={index} style={{ borderWidth: 0.5, padding: 5, marginVertical: 2, borderRadius: 5, backgroundColor: 'white' }}>

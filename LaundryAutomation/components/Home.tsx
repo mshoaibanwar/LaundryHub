@@ -154,7 +154,7 @@ const Home = ({ navigation }: any) => {
     const mapRef = useRef<any>(null);
     const getAddress = (loc: any) => {
         mapRef.current?.addressForCoordinate({ latitude: loc?.latitude, longitude: loc?.longitude }).then((address: any) => {
-            let moduser: any = { ...user, cadd: address.name, ccord: loc };
+            let moduser: any = { ...user, cadd: address.administrativeArea, ccord: loc };
             dispatch(addUser(moduser));
         })
     }

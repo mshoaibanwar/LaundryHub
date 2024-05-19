@@ -30,8 +30,7 @@ const Login = (props: any) => {
             .email('Invalid email'),
         password: yup
             .string()
-            .required('Password is required')
-            .min(8, 'Password must contain at least 8 characters'),
+            .required('Password is required'),
     });
     const {
         control,

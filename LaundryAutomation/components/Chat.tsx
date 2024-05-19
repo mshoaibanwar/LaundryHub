@@ -112,7 +112,7 @@ const Chat = (props: any) => {
                 <View style={{ height: 60 }}></View>
             </ScrollView>
             <View style={[{ position: 'absolute', bottom: 0, width: '100%', flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', padding: 20 }, Platform.OS == 'ios' ? { bottom: 10 } : null]}>
-                <TextInput value={message} onChangeText={setMessage} style={{ borderWidth: 0.5, padding: 5, paddingHorizontal: 10, width: '82%', borderRadius: 10, color: 'black' }} placeholder="Type your message here" />
+                <TextInput value={message} onChangeText={setMessage} style={{ borderWidth: 0.5, padding: 5, paddingHorizontal: 10, width: '82%', borderRadius: 10, color: 'black' }} placeholder="Type your message here" placeholderTextColor={'grey'} />
                 <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 10 }} onPress={sendMessage}>
                     <Text style={{ color: 'white' }}>Send</Text>
                 </TouchableOpacity>

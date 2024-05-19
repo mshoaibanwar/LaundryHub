@@ -110,6 +110,15 @@ const AddRiderData = (props: any) => {
     }
 
     const onPressSend = async (formData: any) => {
+        if (profile == null) {
+            toast.show('Please add your photo', {
+                type: "danger",
+                placement: "top",
+                duration: 3000,
+                animationType: "slide-in",
+            });
+            return;
+        }
         if (cnic1 == null || cnic2 == null) {
             toast.show('Please add CNIC photos', {
                 type: "danger",
@@ -128,17 +137,6 @@ const AddRiderData = (props: any) => {
             });
             return;
         }
-        if (profile == null) {
-            toast.show('Please add your photo', {
-                type: "danger",
-                placement: "top",
-                duration: 3000,
-                animationType: "slide-in",
-            });
-            return;
-        }
-        formData.lati = currentLocation.latitude;
-        formData.longi = currentLocation.longitude;
 
         setLoading(true);
         let cnicdata = [await updateImage(cnic1), await updateImage(cnic2)];
@@ -147,7 +145,9 @@ const AddRiderData = (props: any) => {
         formData.cnicimgs = cnicdata;
         formData.licimg = licdata;
         formData.profileimg = profiledata;
-        formData.uid = user.user._id;
+        formData.uid = user?.user?._id;
+        formData.lati = currentLocation?.latitude;
+        formData.longi = currentLocation?.longitude;
 
         axiosInstance.post('riders/add', formData)
             .then(function (response: any) {
@@ -174,6 +174,9 @@ const AddRiderData = (props: any) => {
     };
 
     const onButtonPress = React.useCallback((type: any, options: any, calling: Number) => {
+        if (loading) {
+            return;
+        }
         if (type === 'capture') {
             ImagePicker.launchCamera(options, (response) => {
                 if (response.didCancel) {
@@ -403,7 +406,7 @@ const AddRiderData = (props: any) => {
 
                     </View>
                 </TouchableWithoutFeedback>
-                <View style={{ alignItems: 'center', marginTop: 15 }}>
+                <View style={{ alignItems: 'center', marginVertical: 15 }}>
                     <TouchableOpacity disabled={loading ? true : false} onPress={handleSubmit(onPressSend)} style={{ paddingVertical: 20, paddingHorizontal: 80, backgroundColor: LoginBtn, borderRadius: 50 }}>
                         <Text style={{ color: 'black', textAlign: 'center', fontSize: 18, fontWeight: '700' }}>CONTINUE</Text>
                     </TouchableOpacity>

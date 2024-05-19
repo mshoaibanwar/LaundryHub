@@ -34,7 +34,11 @@ const Register = (props: any) => {
         password: yup
             .string()
             .required('Password is required')
-            .min(8, 'Password must contain at least 8 characters'),
+            .min(8, 'Password must contain at least 8 characters')
+            .matches(
+                /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?]).{8,}$/,
+                'Password must contain at least one uppercase letter, one digit, one special character, and be at least 8 characters long'
+            ),
     });
     const {
         control,

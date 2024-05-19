@@ -4,6 +4,10 @@ const User = require("../models/user.model");
 const Shop = require("../models/shop.model");
 const Notification = require("../models/notification.model");
 
+const sendEmail = require("../controllers/email.send");
+const msgs = require("../controllers/email.msgs");
+const templates = require("../controllers/email.templates");
+
 var admin = require("firebase-admin");
 
 router.route("/").get((req, res) => {
@@ -178,6 +182,13 @@ router.route("/add").post((req, res) => {
                         );
                     });
                   });
+
+                  User.findById(order.uid)
+                    .then(async (user) => {
+                      sendEmail(user.email, templates.newOrder(uid));
+                    })
+                    .catch((err) => console.log(err));
+
                   res.json({ id: order._id, msg: "Order Placed!" });
                 })
                 .catch((err) => console.log(err));
