@@ -5,7 +5,6 @@ const Shop = require("../models/shop.model");
 const Notification = require("../models/notification.model");
 
 const sendEmail = require("../controllers/email.send");
-const msgs = require("../controllers/email.msgs");
 const templates = require("../controllers/email.templates");
 
 var admin = require("firebase-admin");
