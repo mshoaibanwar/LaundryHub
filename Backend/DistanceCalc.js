@@ -4,10 +4,10 @@ const toRadius = (value) => (value * Math.PI) / 180;
 const useDistance = ({ from, to }) => {
   const distance =
     Math.acos(
-      Math.sin(toRadius(to.latitude)) * Math.sin(toRadius(from.latitude)) +
-        Math.cos(toRadius(to.latitude)) *
-          Math.cos(toRadius(from.latitude)) *
-          Math.cos(toRadius(from.longitude) - toRadius(to.longitude))
+      Math.sin(toRadius(to?.latitude)) * Math.sin(toRadius(from?.latitude)) +
+        Math.cos(toRadius(to?.latitude)) *
+          Math.cos(toRadius(from?.latitude)) *
+          Math.cos(toRadius(from?.longitude) - toRadius(to?.longitude))
     ) * earthRadius;
 
   //return Math.round(convertDistance(distance, 'km'));
