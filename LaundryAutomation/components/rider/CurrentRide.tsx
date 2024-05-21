@@ -67,7 +67,7 @@ const CurrentRide = (props: any) => {
             setIsPicked(true);
             axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Pickedup' })
                 .then((res) => {
-                    props.navigation.navigate('RideComp', { ride, distance });
+                    // props.navigation.navigate('RideComp', { ride, distance });
                 })
                 .catch((err) => {
                     console.log(err.response.data);
@@ -76,7 +76,7 @@ const CurrentRide = (props: any) => {
         else if (btnPressCount == 2) {
             axiosInstance.post(`rides/updateStatus/${ride._id}`, { status: 'Droppedoff' })
                 .then((res) => {
-                    props.navigation.navigate('RideComp', { ride, distance });
+                    // props.navigation.navigate('RideComp', { ride, distance });
                 })
                 .catch((err) => {
                     console.log(err.response.data);
