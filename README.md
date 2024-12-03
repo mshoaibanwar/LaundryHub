@@ -5,6 +5,7 @@ experience inefficiencies, such as paying on-demand prices, waiting for pick-up 
 the absence of door-to-door service. To address these issues, we propose a laundry management
 system that provides a single, comprehensive marketplace where customers can compare prices
 and connect digitally with Laundrymen.
+
 The proposed solution is a mobile application that allows customers to request laundry services,
 and Laundrymen to offer their services to customers. The mobile application includes features
 such as real-time pricing, scheduling, and tracking, as well as a rating and review system that
@@ -13,6 +14,7 @@ The proposed laundry automation system provides a socially responsible way to ma
 by providing an opportunity for women and poor people to earn from the comfort of their homes.
 This is achieved by allowing Laundrymen to work from home and accept laundry requests through
 the mobile application. Furthermore, the system includes a Rider feature that provides door-todoor service, ensuring that customers do not have to waste time waiting for pick-up or drop-off.
+
 The development of the proposed laundry management system involves the use of digital
 technologies and tools such as mobile application development, and digital marketing. The
 system's development also involves a comprehensive analysis of the laundry management market,
